@@ -1,0 +1,82 @@
+<?php
+
+namespace Tests\Feature;
+
+use App\Models\Branch;
+use App\Models\Outlet;
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
+
+class OutletTest extends TestCase
+{
+    use RefreshDatabase;
+
+    public function test_sales_can_only_see_outlets_from_their_own_branch(): void
+    {
+        $branchA = Branch::factory()->create(['name' => 'Cabang A']);
+        $branchB = Branch::factory()->create(['name' => 'Cabang B']);
+
+        $sales = User::factory()->create([
+            'branch_id' => $branchA->id,
+            'role' => User::ROLE_SALES,
+        ]);
+
+        $visibleOutlet = Outlet::factory()->create([
+            'branch_id' => $branchA->id,
+            'created_by' => $sales->id,
+        ]);
+
+        $hiddenOutlet = Outlet::factory()->create([
+            'branch_id' => $branchB->id,
+            'created_by' => $sales->id,
+        ]);
+
+        $response = $this->actingAs($sales)->get(route('outlets.index'));
+
+        $response->assertOk();
+        $response->assertSee($visibleOutlet->name);
+        $response->assertDontSee($hiddenOutlet->name);
+    }
+
+    public function test_admin_can_search_outlets_via_ajax_endpoint(): void
+    {
+        $admin = User::factory()->create([
+            'role' => User::ROLE_ADMIN_PUSAT,
+            'branch_id' => null,
+        ]);
+
+        $outlet = Outlet::factory()->create([
+            'name' => 'Salon Mawar Jaya',
+        ]);
+
+        $response = $this->actingAs($admin)->getJson(route('ajax.outlets.search', ['q' => 'Mawar']));
+
+        $response
+            ->assertOk()
+            ->assertJsonFragment([
+                'name' => $outlet->name,
+            ]);
+    }
+
+    public function test_pelanggan_lama_requires_official_kode(): void
+    {
+        $branch = Branch::factory()->create();
+        $sales = User::factory()->create([
+            'branch_id' => $branch->id,
+            'role' => User::ROLE_SALES,
+        ]);
+
+        $response = $this->actingAs($sales)->post(route('outlets.store'), [
+            'name' => 'Outlet Baru',
+            'address' => 'Jalan Test',
+            'district' => 'Coblong',
+            'city' => 'Bandung',
+            'category' => 'toko',
+            'outlet_type' => 'pelanggan_lama',
+            'verification_status' => 'pending',
+        ]);
+
+        $response->assertSessionHasErrors('official_kode');
+    }
+}
