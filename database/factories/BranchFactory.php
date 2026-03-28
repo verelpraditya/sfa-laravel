@@ -18,6 +18,7 @@ class BranchFactory extends Factory
             'code' => strtoupper(fake()->unique()->bothify('BR##')),
             'name' => 'Cabang '.fake()->city(),
             'city' => fake()->city(),
+            'timezone' => fake()->randomElement(array_keys(Branch::timezoneOptions())),
             'address' => fake()->address(),
             'is_active' => true,
         ];

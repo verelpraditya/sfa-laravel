@@ -132,7 +132,7 @@
                                     <p class="font-semibold text-slate-900" x-text="visit.outlet?.name || '-' "></p>
                                     <p class="mt-1 text-xs text-slate-500" x-text="`${String(visit.visit_type).toUpperCase()} · ${visit.user?.name || '-'}`"></p>
                                 </div>
-                                <p class="text-xs text-slate-400" x-text="formatVisitDate(visit.visited_at)"></p>
+                                <p class="text-xs text-slate-400" x-text="formatVisitDate(visit.visited_at, visit.branch?.timezone)"></p>
                             </div>
                             <p class="mt-3" x-text="visit.notes || 'Tanpa catatan tambahan.'"></p>
                         </div>
@@ -198,7 +198,7 @@
                     formatType(type) {
                         return String(type || '').replaceAll('_', ' ').replace(/\b\w/g, (char) => char.toUpperCase());
                     },
-                    formatVisitDate(value) {
+                    formatVisitDate(value, timezone = 'Asia/Jakarta') {
                         if (!value) {
                             return '-';
                         }
@@ -214,6 +214,7 @@
                             month: 'short',
                             hour: '2-digit',
                             minute: '2-digit',
+                            timeZone: timezone,
                         }).format(date);
                     },
                 }

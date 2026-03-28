@@ -31,6 +31,7 @@
 - `Verifikasi Outlet`
 - `Daftar Prospek`
 - `Daftar NOO`
+- `Outlet Inactive`
 - `Laporan Cabang`
 
 ## Sales Menu

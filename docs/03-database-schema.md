@@ -12,6 +12,7 @@
 - `code`
 - `name`
 - `city`
+- `timezone`
 - `address` nullable
 - `is_active`
 - timestamps

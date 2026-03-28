@@ -14,6 +14,7 @@ class Branch extends Model
         'code',
         'name',
         'city',
+        'timezone',
         'address',
         'is_active',
     ];
@@ -38,5 +39,14 @@ class Branch extends Model
     public function visits(): HasMany
     {
         return $this->hasMany(Visit::class);
+    }
+
+    public static function timezoneOptions(): array
+    {
+        return [
+            'Asia/Jakarta' => 'WIB - Asia/Jakarta',
+            'Asia/Makassar' => 'WITA - Asia/Makassar',
+            'Asia/Jayapura' => 'WIT - Asia/Jayapura',
+        ];
     }
 }

@@ -27,6 +27,7 @@ class DatabaseSeeder extends Seeder
             [
                 'name' => 'Cabang Bandung',
                 'city' => 'Bandung',
+                'timezone' => 'Asia/Jakarta',
                 'address' => 'Bandung',
                 'is_active' => true,
             ],

@@ -77,6 +77,26 @@ class User extends Authenticatable
         };
     }
 
+    public static function roleOptions(): array
+    {
+        return [
+            self::ROLE_ADMIN_PUSAT,
+            self::ROLE_SUPERVISOR,
+            self::ROLE_SALES,
+            self::ROLE_SMD,
+        ];
+    }
+
+    public static function roleLabels(): array
+    {
+        return [
+            self::ROLE_ADMIN_PUSAT => 'Admin Pusat',
+            self::ROLE_SUPERVISOR => 'Supervisor',
+            self::ROLE_SALES => 'Sales',
+            self::ROLE_SMD => 'SMD',
+        ];
+    }
+
     public function dashboardRoute(): string
     {
         return route('dashboard');
@@ -120,6 +140,21 @@ class User extends Authenticatable
     public function canManageOutletMaster(): bool
     {
         return in_array($this->role, [self::ROLE_ADMIN_PUSAT, self::ROLE_SUPERVISOR], true);
+    }
+
+    public function canViewOperationalOutletLists(): bool
+    {
+        return in_array($this->role, [self::ROLE_ADMIN_PUSAT, self::ROLE_SUPERVISOR, self::ROLE_SALES], true);
+    }
+
+    public function canViewSalesVisitModule(): bool
+    {
+        return in_array($this->role, [self::ROLE_SALES, self::ROLE_SUPERVISOR], true);
+    }
+
+    public function canViewSmdVisitModule(): bool
+    {
+        return in_array($this->role, [self::ROLE_SMD, self::ROLE_SUPERVISOR], true);
     }
 
     public function createdOutlets(): HasMany

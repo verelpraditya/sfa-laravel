@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Carbon;
 
 class Visit extends Model
 {
@@ -62,5 +63,14 @@ class Visit extends Model
     public function smdActivities(): HasMany
     {
         return $this->hasMany(SmdVisitActivity::class);
+    }
+
+    public function visitedAtForBranch(): ?Carbon
+    {
+        if (! $this->visited_at) {
+            return null;
+        }
+
+        return $this->visited_at->copy()->timezone($this->branch?->timezone ?? config('app.timezone'));
     }
 }

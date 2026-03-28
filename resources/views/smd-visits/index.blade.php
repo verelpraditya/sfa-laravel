@@ -64,7 +64,7 @@
                                     <td class="px-4 py-4 text-slate-600">{{ $visit->smdActivities->pluck('activity_type')->map(fn ($item) => str($item)->replace('_', ' ')->title())->implode(', ') }}</td>
                                     <td class="px-4 py-4 text-slate-600">Rp {{ number_format((float) $visit->smdDetail?->po_amount, 0, ',', '.') }}</td>
                                     <td class="px-4 py-4 text-slate-600">Rp {{ number_format((float) $visit->smdDetail?->payment_amount, 0, ',', '.') }}</td>
-                                    <td class="px-4 py-4 text-slate-600">{{ $visit->visited_at?->format('d M Y H:i') }}</td>
+                                    <td class="px-4 py-4 text-slate-600">{{ $visit->visitedAtForBranch()?->format('d M Y H:i') }}</td>
                                     <td class="px-4 py-4 text-slate-600">{{ $visit->user?->name }}</td>
                                 </tr>
                             @empty
@@ -80,7 +80,7 @@
                     @forelse ($visits as $visit)
                         <div class="rounded-[1.5rem] border border-slate-200 bg-slate-50 p-4">
                             <p class="font-semibold text-slate-900">{{ $visit->outlet?->name }}</p>
-                            <p class="mt-1 text-sm text-slate-500">{{ $visit->visited_at?->format('d M Y H:i') }}</p>
+                            <p class="mt-1 text-sm text-slate-500">{{ $visit->visitedAtForBranch()?->format('d M Y H:i') }}</p>
                             <p class="mt-3 text-sm text-slate-600">{{ $visit->smdActivities->pluck('activity_type')->map(fn ($item) => str($item)->replace('_', ' ')->title())->implode(', ') }}</p>
                         </div>
                     @empty

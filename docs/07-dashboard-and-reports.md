@@ -78,3 +78,11 @@
 - `NOO` pending official code report
 - Sales monetary recap
 - SMD activity recap
+
+## Current reporting implementation
+
+- Report module now provides role-aware views for:
+  - `sales`
+  - `smd`
+  - `outlets`
+- CSV export is available from the report page using the current date filters.

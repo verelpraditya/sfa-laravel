@@ -142,4 +142,39 @@ class OutletTest extends TestCase
             ->get(route('outlets.edit', $outlet))
             ->assertForbidden();
     }
+
+    public function test_sales_can_access_prospect_follow_up_list(): void
+    {
+        $branch = Branch::factory()->create();
+        $sales = User::factory()->create([
+            'branch_id' => $branch->id,
+            'role' => User::ROLE_SALES,
+        ]);
+        $prospect = Outlet::factory()->create([
+            'branch_id' => $branch->id,
+            'created_by' => $sales->id,
+            'name' => 'Prospek Follow Up',
+            'outlet_type' => 'prospek',
+            'outlet_status' => 'active',
+            'verification_status' => null,
+        ]);
+
+        $this->actingAs($sales)
+            ->get(route('outlet-lists.prospects'))
+            ->assertOk()
+            ->assertSee($prospect->name);
+    }
+
+    public function test_sales_cannot_access_noo_operational_list(): void
+    {
+        $branch = Branch::factory()->create();
+        $sales = User::factory()->create([
+            'branch_id' => $branch->id,
+            'role' => User::ROLE_SALES,
+        ]);
+
+        $this->actingAs($sales)
+            ->get(route('outlet-lists.noo'))
+            ->assertForbidden();
+    }
 }

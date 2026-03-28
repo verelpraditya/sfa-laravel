@@ -21,7 +21,7 @@ class SmdVisitController extends Controller
         $activity = $request->string('activity')->toString();
 
         $visits = Visit::query()
-            ->with(['outlet', 'smdDetail', 'smdActivities'])
+            ->with(['outlet', 'smdDetail', 'smdActivities', 'branch', 'user'])
             ->where('visit_type', 'smd')
             ->when(! $user->isAdminPusat(), fn ($query) => $query->where('branch_id', $user->branch_id))
             ->when($user->isSmd(), fn ($query) => $query->where('user_id', $user->id))

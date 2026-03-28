@@ -26,7 +26,11 @@
 - Done: SMD visit workflow foundation with multi-activity validation and history page
 - Done: supervisor verification screens and dashboard real aggregates
 - Done: revised outlet lifecycle with nullable verification for prospek and inactive outlet status
-- Next: export/report pages and deeper branch-scoped reporting details
+- Done: branch master with timezone support for local operational time display
+- Done: admin-only user master with role and branch assignment
+- Done: operational outlet lists for prospek, NOO, and inactive outlets
+- Done: basic report pages and CSV export foundation
+- Next: deeper branch-scoped reporting details and dashboard polish
 
 ## Demo Seed Accounts
 

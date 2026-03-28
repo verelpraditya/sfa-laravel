@@ -84,3 +84,8 @@ Prefer hosting that supports:
 6. Visit data and evidence are submitted.
 7. Supervisor verifies outlet and fills `official_kode` when needed.
 8. Dashboards aggregate visits, outlet growth, and branch performance.
+
+## Timezone Direction
+
+- Branches store timezone using IANA values such as `Asia/Jakarta` and `Asia/Makassar`.
+- Visit timestamps can be rendered according to branch timezone for branch-level operational views.

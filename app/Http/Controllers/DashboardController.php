@@ -110,7 +110,7 @@ class DashboardController extends Controller
             ->get();
 
         $recentVisits = (clone $visitQuery)
-            ->with(['outlet', 'user'])
+            ->with(['outlet', 'user', 'branch'])
             ->latest('visited_at')
             ->limit(5)
             ->get();

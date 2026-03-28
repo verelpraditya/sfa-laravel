@@ -46,6 +46,10 @@ Lightweight web-based SFA for multi-branch distributors, focused on outlet visit
 - SMD visit module foundation is now available with multi-activity input, conditional nominal/display requirements, and activity history.
 - Supervisor verification module and real dashboard aggregates are now available.
 - Outlet lifecycle now distinguishes `prospek` from verification, auto-verifies `pelanggan_lama` with official code, and supports `active/inactive` outlet status.
+- Branch master now includes timezone configuration so visit timestamps can follow local branch time.
+- Admin-only user master is now available for assigning role, branch, active status, and password.
+- Operational outlet lists are now available for prospek follow up, NOO without official kode, and inactive outlets.
+- Basic reporting and CSV export are now available for sales visits, SMD visits, and outlet growth.
 - Frontend assets build successfully and the default test suite passes.
 - Current shell still defaults to PHP `7.3.33`, so project commands should use PHP `8.2+` from Herd or an explicit PHP 8.2 binary.
 

@@ -20,7 +20,7 @@ class SalesVisitController extends Controller
         $condition = $request->string('condition')->toString();
 
         $visits = Visit::query()
-            ->with(['outlet', 'salesDetail'])
+            ->with(['outlet', 'salesDetail', 'branch', 'user'])
             ->where('visit_type', 'sales')
             ->when(! $user->isAdminPusat(), fn ($query) => $query->where('branch_id', $user->branch_id))
             ->when($user->isSales(), fn ($query) => $query->where('user_id', $user->id))

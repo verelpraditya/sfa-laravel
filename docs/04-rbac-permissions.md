@@ -53,3 +53,4 @@
 - Outlet module already scopes list and search results to the current branch for non-admin users.
 - Supervisor/admin verification routes now exist for reviewing pending outlets and assigning official codes.
 - Outlet master create/edit is restricted to `admin_pusat` and `supervisor`; `sales` and `smd` can still create outlets inline during visits only.
+- Branch and user master CRUD are restricted to `admin_pusat`.

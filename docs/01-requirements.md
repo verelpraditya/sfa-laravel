@@ -30,9 +30,16 @@ Build a web-based SFA for distributor operations with these priorities:
 ## Branch Rules
 
 - Every `sales`, `smd`, and `supervisor` belongs to one branch.
+- Every branch stores its own timezone, e.g. `Asia/Jakarta` or `Asia/Makassar`.
 - New outlets created during visits are automatically assigned to the creator's branch.
 - Non-admin users can only search and access outlets from their own branch.
 - `admin_pusat` can view all branches.
+
+## Operational Lists
+
+- `Prospek Follow Up` should show active prospects for sales/supervisor follow-up.
+- `NOO Belum Official Kode` should show NOO outlets still waiting for official code.
+- `Outlet Inactive` should show outlets marked inactive for monitoring and review.
 
 ## Outlet Rules
 

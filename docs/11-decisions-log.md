@@ -45,3 +45,7 @@
 - Converting `NOO` to `Pelanggan Lama` with `official_kode` now auto-verifies the outlet.
 - Supervisor can mark outlets `inactive` for stores that are closed or no longer ordering.
 - Supervisor dashboard should expose both branch-wide and personal activity views in the same account; the implementation now uses tabbed views.
+- Branch master now stores IANA timezone values so branch views can render visit times according to local branch time.
+- User master is implemented as an admin-only module for creating and updating internal accounts, roles, branches, and activation state.
+- Operational lists are implemented as dedicated filtered outlet views rather than asking users to rely on master outlet filters every time.
+- Reporting is implemented as a shared module with role-aware datasets and simple CSV export instead of introducing a heavy export package.

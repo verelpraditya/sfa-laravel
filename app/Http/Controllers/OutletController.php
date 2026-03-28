@@ -134,9 +134,80 @@ class OutletController extends Controller
         ]);
     }
 
+    public function prospects(Request $request): View
+    {
+        abort_unless($request->user()->canViewOperationalOutletLists(), 403);
+
+        return $this->renderOperationalList(
+            $request,
+            fn ($query) => $query->where('outlet_type', 'prospek')->where('outlet_status', 'active'),
+            'Prospek Follow Up',
+            'Daftar outlet prospek yang bisa ditindaklanjuti sales dan supervisor.',
+            'prospek',
+        );
+    }
+
+    public function noo(Request $request): View
+    {
+        abort_unless($request->user()->canVerifyOutlets(), 403);
+
+        return $this->renderOperationalList(
+            $request,
+            fn ($query) => $query->where('outlet_type', 'noo')->whereNull('official_kode'),
+            'NOO Belum Official Kode',
+            'Daftar NOO yang masih menunggu official kode dan tindak lanjut supervisor.',
+            'noo',
+        );
+    }
+
+    public function inactive(Request $request): View
+    {
+        abort_unless($request->user()->canVerifyOutlets(), 403);
+
+        return $this->renderOperationalList(
+            $request,
+            fn ($query) => $query->where('outlet_status', 'inactive'),
+            'Outlet Inactive',
+            'Daftar outlet yang ditandai tutup atau tidak order lagi.',
+            'inactive',
+        );
+    }
+
     private function baseQuery($user)
     {
         return Outlet::query()->when(! $user->isAdminPusat(), fn ($query) => $query->where('branch_id', $user->branch_id));
+    }
+
+    private function renderOperationalList(Request $request, callable $scope, string $title, string $description, string $variant): View
+    {
+        $user = $request->user();
+        $search = trim((string) $request->string('search'));
+
+        $outlets = $this->baseQuery($user)
+            ->with(['branch', 'creator', 'verifier'])
+            ->tap($scope)
+            ->when($search !== '', function ($query) use ($search) {
+                $query->where(function ($inner) use ($search) {
+                    $inner
+                        ->where('name', 'like', "%{$search}%")
+                        ->orWhere('official_kode', 'like', "%{$search}%")
+                        ->orWhere('district', 'like', "%{$search}%")
+                        ->orWhere('city', 'like', "%{$search}%");
+                });
+            })
+            ->latest()
+            ->paginate(10)
+            ->withQueryString();
+
+        return view('outlets.operational-list', [
+            'outlets' => $outlets,
+            'title' => $title,
+            'description' => $description,
+            'variant' => $variant,
+            'filters' => [
+                'search' => $search,
+            ],
+        ]);
     }
 
     private function ensureUserCanAccess($user, Outlet $outlet): void

@@ -10,6 +10,7 @@
 - Modern but safe for outdoor use by field teams
 - Rounded cards, soft borders, calm shadows
 - Clean spacing and legible typography
+- Primary palette uses `navy + sky` with light layered surfaces
 
 ## Typography
 
@@ -26,7 +27,7 @@
 
 ## Navigation Rules
 
-- Desktop: fixed or sticky sidebar
+- Desktop: sidebar navigation
 - Mobile: hamburger button with offcanvas menu
 
 ## List and Table Rules
@@ -63,3 +64,4 @@
 - The default welcome page has been replaced with a branded project landing screen.
 - The landing screen already reflects the agreed direction: light theme, rounded cards, Inter typography, and a mobile-friendly composition.
 - Breeze auth pages have been restyled to match the same modern, light, mobile-first direction.
+- App shell now uses a desktop sidebar and mobile offcanvas navigation with a navy/sky visual system.

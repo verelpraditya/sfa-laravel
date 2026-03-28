@@ -59,7 +59,7 @@
                                         <p class="font-semibold text-slate-900">{{ $visit->outlet?->name }}</p>
                                         <p class="mt-1 text-xs text-slate-500">{{ $visit->outlet?->district }}, {{ $visit->outlet?->city }}</p>
                                     </td>
-                                    <td class="px-4 py-4 text-slate-600">{{ $visit->visited_at?->format('d M Y H:i') }}</td>
+                                    <td class="px-4 py-4 text-slate-600">{{ $visit->visitedAtForBranch()?->format('d M Y H:i') }}</td>
                                     <td class="px-4 py-4">
                                         <span class="rounded-full px-3 py-1 text-xs font-semibold {{ $visit->outlet_condition === 'buka' ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700' }}">{{ ucfirst($visit->outlet_condition) }}</span>
                                     </td>
@@ -82,7 +82,7 @@
                             <div class="flex items-start justify-between gap-3">
                                 <div>
                                     <p class="font-semibold text-slate-900">{{ $visit->outlet?->name }}</p>
-                                    <p class="mt-1 text-sm text-slate-500">{{ $visit->visited_at?->format('d M Y H:i') }}</p>
+                                    <p class="mt-1 text-sm text-slate-500">{{ $visit->visitedAtForBranch()?->format('d M Y H:i') }}</p>
                                 </div>
                                 <span class="rounded-full px-3 py-1 text-xs font-semibold {{ $visit->outlet_condition === 'buka' ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700' }}">{{ ucfirst($visit->outlet_condition) }}</span>
                             </div>
