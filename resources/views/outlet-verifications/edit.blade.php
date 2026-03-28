@@ -17,12 +17,18 @@
             @endif
 
             <div class="grid gap-6 xl:grid-cols-[1fr_0.92fr]">
-                <section class="rounded-[1.75rem] border border-white/80 bg-white/90 p-5 shadow-sm shadow-slate-200/60 sm:p-6">
+                <section class="app-panel overflow-hidden p-0 sm:p-0">
+                    <div class="bg-[linear-gradient(135deg,#0f172a_0%,#1d4ed8_100%)] px-5 py-5 text-white sm:px-6">
+                        <p class="text-xs font-semibold uppercase tracking-[0.22em] text-sky-200/80">Verification Panel</p>
+                        <h3 class="mt-2 text-xl font-semibold">Finalisasi outlet jadi data resmi cabang</h3>
+                        <p class="mt-2 max-w-2xl text-sm leading-7 text-sky-100/85">Lengkapi kategori, ubah status outlet bila perlu, lalu isi official kode untuk menyelesaikan NOO menjadi pelanggan lama.</p>
+                    </div>
+                    <div class="p-5 sm:p-6">
                     <form method="POST" action="{{ route('outlet-verifications.update', $outlet) }}" class="space-y-6" x-data="{ outletType: '{{ old('outlet_type', $outlet->outlet_type) }}' }">
                         @csrf
                         @method('PUT')
 
-                        <div class="rounded-[1.5rem] border border-slate-200 bg-slate-50 p-5">
+                        <div class="app-soft-panel p-5">
                             <div class="grid gap-5 sm:grid-cols-2">
                                 <div>
                                     <x-input-label value="Nama outlet" />
@@ -50,7 +56,7 @@
                         <div class="grid gap-5 md:grid-cols-2">
                             <div>
                                 <x-input-label for="category" value="Kategori outlet" />
-                                <select id="category" name="category" class="mt-2 block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm shadow-slate-200/60 focus:border-brand-400 focus:ring-4 focus:ring-brand-100">
+                                <select id="category" name="category" class="mt-2 block w-full rounded-2xl border border-slate-200/90 bg-white px-4 py-3 text-sm text-slate-700 shadow-[0_10px_30px_-18px_rgba(15,23,42,0.35)] focus:border-sky-400 focus:ring-4 focus:ring-sky-100">
                                     @foreach (['salon' => 'Salon', 'toko' => 'Toko', 'barbershop' => 'Barbershop', 'lainnya' => 'Lainnya'] as $value => $label)
                                         <option value="{{ $value }}" @selected(old('category', $outlet->category) === $value)>{{ $label }}</option>
                                     @endforeach
@@ -60,7 +66,7 @@
 
                             <div>
                                 <x-input-label for="outlet_type" value="Jenis outlet" />
-                                <select id="outlet_type" name="outlet_type" x-model="outletType" class="mt-2 block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm shadow-slate-200/60 focus:border-brand-400 focus:ring-4 focus:ring-brand-100">
+                                <select id="outlet_type" name="outlet_type" x-model="outletType" class="mt-2 block w-full rounded-2xl border border-slate-200/90 bg-white px-4 py-3 text-sm text-slate-700 shadow-[0_10px_30px_-18px_rgba(15,23,42,0.35)] focus:border-sky-400 focus:ring-4 focus:ring-sky-100">
                                     <option value="prospek">Prospek</option>
                                     <option value="noo">NOO</option>
                                     <option value="pelanggan_lama">Pelanggan Lama</option>
@@ -70,7 +76,7 @@
 
                             <div>
                                 <x-input-label for="verification_status" value="Status verifikasi" />
-                                <select id="verification_status" name="verification_status" class="mt-2 block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm shadow-slate-200/60 focus:border-brand-400 focus:ring-4 focus:ring-brand-100">
+                                <select id="verification_status" name="verification_status" class="mt-2 block w-full rounded-2xl border border-slate-200/90 bg-white px-4 py-3 text-sm text-slate-700 shadow-[0_10px_30px_-18px_rgba(15,23,42,0.35)] focus:border-sky-400 focus:ring-4 focus:ring-sky-100">
                                     <option value="">Tidak Perlu</option>
                                     <option value="pending" @selected(old('verification_status', $outlet->verification_status) === 'pending')>Pending</option>
                                     <option value="verified" @selected(old('verification_status', $outlet->verification_status) === 'verified')>Verified</option>
@@ -80,7 +86,7 @@
 
                             <div>
                                 <x-input-label for="outlet_status" value="Status outlet" />
-                                <select id="outlet_status" name="outlet_status" class="mt-2 block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm shadow-slate-200/60 focus:border-brand-400 focus:ring-4 focus:ring-brand-100">
+                                <select id="outlet_status" name="outlet_status" class="mt-2 block w-full rounded-2xl border border-slate-200/90 bg-white px-4 py-3 text-sm text-slate-700 shadow-[0_10px_30px_-18px_rgba(15,23,42,0.35)] focus:border-sky-400 focus:ring-4 focus:ring-sky-100">
                                     <option value="active" @selected(old('outlet_status', $outlet->outlet_status) === 'active')>Active</option>
                                     <option value="inactive" @selected(old('outlet_status', $outlet->outlet_status) === 'inactive')>Inactive</option>
                                 </select>
@@ -95,7 +101,7 @@
 
                             <div class="md:col-span-2">
                                 <x-input-label for="verification_notes" value="Catatan verifikasi" />
-                                <textarea id="verification_notes" name="verification_notes" rows="4" class="mt-2 block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm shadow-slate-200/60 outline-none transition placeholder:text-slate-400 focus:border-brand-400 focus:ring-4 focus:ring-brand-100">{{ old('verification_notes') }}</textarea>
+                                <textarea id="verification_notes" name="verification_notes" rows="4" class="mt-2 block w-full rounded-2xl border border-slate-200/90 bg-white px-4 py-3 text-sm text-slate-700 shadow-[0_10px_30px_-18px_rgba(15,23,42,0.35)] outline-none transition placeholder:text-slate-400 focus:border-sky-400 focus:ring-4 focus:ring-sky-100">{{ old('verification_notes') }}</textarea>
                                 <x-input-error class="mt-2" :messages="$errors->get('verification_notes')" />
                             </div>
                         </div>
@@ -104,12 +110,13 @@
                             <x-primary-button>Simpan Verifikasi</x-primary-button>
                         </div>
                     </form>
+                    </div>
                 </section>
 
                 <section class="space-y-6">
-                    <div class="rounded-[1.75rem] border border-white/80 bg-white/90 p-5 shadow-sm shadow-slate-200/60">
+                    <div class="app-panel p-5">
                         <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Ringkasan Outlet</p>
-                        <div class="mt-4 space-y-3 rounded-[1.5rem] border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
+                        <div class="app-soft-panel mt-4 space-y-3 p-4 text-sm text-slate-600">
                             <p><span class="font-semibold text-slate-900">Dibuat oleh:</span> {{ $outlet->creator?->name ?? '-' }}</p>
                             <p><span class="font-semibold text-slate-900">Status outlet:</span> {{ $outlet->statusLabel() }}</p>
                             <p><span class="font-semibold text-slate-900">Status verifikasi:</span> {{ $outlet->verificationLabel() }}</p>
@@ -118,11 +125,11 @@
                         </div>
                     </div>
 
-                    <div class="rounded-[1.75rem] border border-white/80 bg-white/90 p-5 shadow-sm shadow-slate-200/60">
+                    <div class="app-panel p-5">
                         <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Riwayat Kunjungan Terkait</p>
                         <div class="mt-4 space-y-3">
                             @forelse ($recentVisits as $visit)
-                                <div class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
+                                <div class="app-soft-panel px-4 py-3 text-sm text-slate-600">
                                     <div class="flex items-center justify-between gap-3">
                                         <p class="font-semibold text-slate-900">{{ strtoupper($visit->visit_type) }} · {{ $visit->user?->name }}</p>
                                         <p class="text-xs text-slate-400">{{ $visit->visited_at?->format('d M Y H:i') }}</p>

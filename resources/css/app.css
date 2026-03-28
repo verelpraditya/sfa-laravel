@@ -25,7 +25,7 @@
 
 @layer components {
     .app-panel {
-        @apply rounded-[1.75rem] border border-white/80 bg-white/88 shadow-[0_22px_55px_-34px_rgba(15,23,42,0.32)];
+        @apply rounded-[1.75rem] border border-white/80 bg-white/90 shadow-[0_22px_55px_-34px_rgba(15,23,42,0.32)];
     }
 
     .app-soft-panel {

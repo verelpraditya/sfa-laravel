@@ -6,7 +6,7 @@
                 <h2 class="mt-2 text-3xl font-semibold leading-tight text-ink-950">Riwayat Kunjungan</h2>
                 <p class="mt-2 max-w-3xl text-sm leading-7 text-slate-500">Pantau kunjungan sales yang sudah masuk, status outlet buka atau tutup, dan nominal transaksi saat outlet buka.</p>
             </div>
-            <a href="{{ route('sales-visits.create') }}" class="inline-flex items-center justify-center rounded-2xl bg-ink-950 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-slate-900/15 transition hover:bg-slate-800">
+            <a href="{{ route('sales-visits.create') }}" class="inline-flex items-center justify-center rounded-2xl bg-[linear-gradient(135deg,#1d4ed8_0%,#0f172a_100%)] px-5 py-3 text-sm font-semibold text-white shadow-[0_20px_40px_-18px_rgba(29,78,216,0.75)] transition hover:-translate-y-0.5 hover:shadow-[0_24px_46px_-18px_rgba(29,78,216,0.9)]">
                 Input Kunjungan Sales
             </a>
         </div>
@@ -18,7 +18,7 @@
                 <div class="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700">{{ session('status') }}</div>
             @endif
 
-            <section class="rounded-[1.75rem] border border-white/80 bg-white/90 p-5 shadow-sm shadow-slate-200/60">
+            <section class="app-panel p-5">
                 <form method="GET" class="grid gap-3 md:grid-cols-4">
                     <div class="md:col-span-3">
                         <x-input-label for="search" value="Cari outlet / official kode" />
@@ -26,7 +26,7 @@
                     </div>
                     <div>
                         <x-input-label for="condition" value="Kondisi outlet" />
-                        <select id="condition" name="condition" class="mt-2 block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm shadow-slate-200/60 focus:border-brand-400 focus:ring-4 focus:ring-brand-100">
+                        <select id="condition" name="condition" class="mt-2 block w-full rounded-2xl border border-slate-200/90 bg-white px-4 py-3 text-sm text-slate-700 shadow-[0_10px_30px_-18px_rgba(15,23,42,0.35)] focus:border-sky-400 focus:ring-4 focus:ring-sky-100">
                             <option value="">Semua</option>
                             <option value="buka" @selected($filters['condition'] === 'buka')>Buka</option>
                             <option value="tutup" @selected($filters['condition'] === 'tutup')>Tutup</option>
@@ -34,12 +34,12 @@
                     </div>
                     <div class="md:col-span-4 flex flex-wrap gap-3">
                         <x-primary-button>Terapkan Filter</x-primary-button>
-                        <a href="{{ route('sales-visits.index') }}" class="inline-flex items-center rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 shadow-sm shadow-slate-200/60 transition hover:border-slate-300 hover:bg-slate-50">Reset</a>
+                        <a href="{{ route('sales-visits.index') }}" class="inline-flex items-center rounded-2xl border border-sky-200 bg-sky-50 px-5 py-3 text-sm font-semibold text-sky-900 shadow-sm shadow-sky-100/80 transition hover:border-sky-300 hover:bg-sky-100">Reset</a>
                     </div>
                 </form>
             </section>
 
-            <section class="rounded-[1.75rem] border border-white/80 bg-white/90 p-5 shadow-sm shadow-slate-200/60">
+            <section class="app-panel p-5">
                 <div class="hidden overflow-hidden rounded-[1.5rem] border border-slate-200 lg:block">
                     <table class="min-w-full divide-y divide-slate-200 text-sm">
                         <thead class="bg-slate-50 text-left text-slate-500">

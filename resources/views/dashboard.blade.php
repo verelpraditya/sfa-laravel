@@ -36,12 +36,12 @@
             x-init="initChart()"
         >
             @if ($user->isSupervisor())
-                <section class="rounded-[1.75rem] border border-white/80 bg-white/90 p-3 shadow-sm shadow-slate-200/60 sm:p-4">
-                    <div class="inline-flex w-full rounded-[1.25rem] bg-slate-100 p-1 sm:w-auto">
-                        <button type="button" @click="switchTab('branch')" :class="activeTab === 'branch' ? 'bg-white text-ink-950 shadow-sm' : 'text-slate-500'" class="rounded-[1rem] px-4 py-2 text-sm font-semibold transition">
+                <section class="app-panel p-3 sm:p-4">
+                    <div class="inline-flex w-full rounded-[1.25rem] bg-slate-100/90 p-1 sm:w-auto">
+                        <button type="button" @click="switchTab('branch')" :class="activeTab === 'branch' ? 'bg-[linear-gradient(135deg,#1d4ed8_0%,#0f172a_100%)] text-white shadow-[0_14px_34px_-18px_rgba(29,78,216,0.75)]' : 'text-slate-500'" class="rounded-[1rem] px-4 py-2 text-sm font-semibold transition">
                             Dashboard Cabang
                         </button>
-                        <button type="button" @click="switchTab('personal')" :class="activeTab === 'personal' ? 'bg-white text-ink-950 shadow-sm' : 'text-slate-500'" class="rounded-[1rem] px-4 py-2 text-sm font-semibold transition">
+                        <button type="button" @click="switchTab('personal')" :class="activeTab === 'personal' ? 'bg-[linear-gradient(135deg,#1d4ed8_0%,#0f172a_100%)] text-white shadow-[0_14px_34px_-18px_rgba(29,78,216,0.75)]' : 'text-slate-500'" class="rounded-[1rem] px-4 py-2 text-sm font-semibold transition">
                             Aktivitas Saya
                         </button>
                     </div>
@@ -50,7 +50,7 @@
 
             <section class="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
                 <template x-for="metric in current.metrics" :key="metric.label">
-                    <div class="rounded-[1.75rem] border border-white/80 bg-white/90 p-5 shadow-sm shadow-slate-200/60">
+                    <div class="app-panel relative p-5">
                         <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400" x-text="metric.label"></p>
                         <p class="mt-4 text-3xl font-semibold text-ink-950" x-text="metric.value"></p>
                         <p class="mt-2 text-sm text-slate-500" x-text="metric.hint"></p>
@@ -59,7 +59,7 @@
             </section>
 
             <section class="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
-                <div class="rounded-[1.75rem] border border-white/80 bg-white/90 p-5 shadow-sm shadow-slate-200/60">
+                <div class="app-panel p-5">
                     <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                         <div>
                             <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Trend Performance</p>
@@ -68,17 +68,17 @@
                         <p class="text-sm text-slate-500" x-text="current.chartHelper"></p>
                     </div>
 
-                    <div class="mt-6 rounded-[1.5rem] border border-slate-200 bg-slate-50 p-4">
+                    <div class="app-soft-panel mt-6 p-4">
                         <canvas id="dashboard-performance-chart" height="120"></canvas>
                     </div>
                 </div>
 
-                <div class="rounded-[1.75rem] border border-white/80 bg-white/90 p-5 shadow-sm shadow-slate-200/60">
+                <div class="app-panel p-5">
                     <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Aksi Berikutnya</p>
                     <div class="mt-4 space-y-3">
                         @foreach (['Supervisor bisa verifikasi outlet dan lengkapi official kode tanpa mengubah data visit.', 'Dashboard sekarang memakai agregasi real dari outlet dan visit yang ada di database.', 'Langkah berikutnya adalah merapikan laporan dan approval flow tambahan jika dibutuhkan.'] as $step)
-                            <div class="flex gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
-                                <div class="mt-1 h-2.5 w-2.5 rounded-full bg-brand-500"></div>
+                            <div class="app-soft-panel flex gap-3 px-4 py-3">
+                                <div class="mt-1 h-2.5 w-2.5 rounded-full bg-sky-500"></div>
                                 <p class="text-sm leading-6 text-slate-600">{{ $step }}</p>
                             </div>
                         @endforeach
@@ -87,23 +87,23 @@
             </section>
 
             <section class="grid gap-6 lg:grid-cols-2">
-                <div class="rounded-[1.75rem] border border-white/80 bg-white/90 p-5 shadow-sm shadow-slate-200/60">
+                <div class="app-panel p-5">
                     <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Role Scope</p>
-                    <div class="mt-4 rounded-[1.5rem] border border-slate-200 bg-slate-50 p-4 text-sm leading-7 text-slate-600">
+                    <div class="app-soft-panel mt-4 p-4 text-sm leading-7 text-slate-600">
                         <p><span class="font-semibold text-slate-900">Role:</span> {{ $user->roleLabel() }}</p>
                         <p><span class="font-semibold text-slate-900">Branch:</span> {{ $branchName }}</p>
                         <p><span class="font-semibold text-slate-900">Status:</span> {{ $user->is_active ? 'Aktif' : 'Nonaktif' }}</p>
                     </div>
                 </div>
 
-                <div class="rounded-[1.75rem] border border-white/80 bg-white/90 p-5 shadow-sm shadow-slate-200/60">
+                <div class="app-panel p-5">
                     <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Pending Outlet Terbaru</p>
                     <div class="mt-4 space-y-3 text-sm text-slate-600">
                         <template x-if="current.recentPendingOutlets.length === 0">
                             <div class="rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-4 py-5 text-center text-sm text-slate-500">Tidak ada outlet pending saat ini.</div>
                         </template>
                         <template x-for="item in current.recentPendingOutlets" :key="item.id">
-                            <div class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+                            <div class="app-soft-panel px-4 py-3">
                                 <p class="font-semibold text-slate-900" x-text="item.name"></p>
                                 <p class="mt-1 text-xs text-slate-500" x-text="`${item.district}, ${item.city} · ${formatType(item.outlet_type)}`"></p>
                             </div>
@@ -112,7 +112,7 @@
                 </div>
             </section>
 
-            <section class="rounded-[1.75rem] border border-white/80 bg-white/90 p-5 shadow-sm shadow-slate-200/60">
+            <section class="app-panel p-5">
                 <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                     <div>
                         <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Aktivitas Terbaru</p>
@@ -126,7 +126,7 @@
                         <div class="rounded-[1.5rem] border border-dashed border-slate-300 bg-slate-50 px-4 py-5 text-center text-sm text-slate-500">Belum ada aktivitas yang tercatat di scope ini.</div>
                     </template>
                     <template x-for="visit in current.recentVisits" :key="visit.id">
-                        <div class="rounded-[1.5rem] border border-slate-200 bg-slate-50 px-4 py-4 text-sm text-slate-600">
+                        <div class="app-soft-panel px-4 py-4 text-sm text-slate-600">
                             <div class="flex items-start justify-between gap-3">
                                 <div>
                                     <p class="font-semibold text-slate-900" x-text="visit.outlet?.name || '-' "></p>
