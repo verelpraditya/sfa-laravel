@@ -17,8 +17,9 @@ return new class extends Migration
             $table->string('city');
             $table->enum('category', ['salon', 'toko', 'barbershop', 'lainnya']);
             $table->enum('outlet_type', ['prospek', 'noo', 'pelanggan_lama']);
+            $table->enum('outlet_status', ['active', 'inactive'])->default('active');
             $table->string('official_kode')->nullable()->unique();
-            $table->enum('verification_status', ['pending', 'verified'])->default('pending');
+            $table->enum('verification_status', ['pending', 'verified'])->nullable();
             $table->foreignId('verified_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamp('verified_at')->nullable();
             $table->foreignId('created_by')->constrained('users')->cascadeOnDelete();
@@ -27,6 +28,7 @@ return new class extends Migration
 
             $table->index(['branch_id', 'name']);
             $table->index(['branch_id', 'outlet_type']);
+            $table->index(['branch_id', 'outlet_status']);
         });
     }
 

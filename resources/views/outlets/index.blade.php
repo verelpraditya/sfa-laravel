@@ -6,9 +6,11 @@
                 <h2 class="mt-2 text-3xl font-semibold leading-tight text-ink-950">Outlet Cabang</h2>
                 <p class="mt-2 max-w-3xl text-sm leading-7 text-slate-500">Kelola outlet yang sudah terdaftar, cek status verifikasi, dan siapkan data untuk autocomplete kunjungan tanpa reload.</p>
             </div>
-            <a href="{{ route('outlets.create') }}" class="inline-flex items-center justify-center rounded-2xl bg-ink-950 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-slate-900/15 transition hover:bg-slate-800">
-                Tambah Outlet
-            </a>
+            @if (auth()->user()->canManageOutletMaster())
+                <a href="{{ route('outlets.create') }}" class="inline-flex items-center justify-center rounded-2xl bg-ink-950 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-slate-900/15 transition hover:bg-slate-800">
+                    Tambah Outlet
+                </a>
+            @endif
         </div>
     </x-slot>
 
@@ -22,7 +24,7 @@
 
             <section class="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
                 <div class="rounded-[1.75rem] border border-white/80 bg-white/90 p-5 shadow-sm shadow-slate-200/60">
-                    <form method="GET" action="{{ route('outlets.index') }}" class="grid gap-3 md:grid-cols-4">
+                    <form method="GET" action="{{ route('outlets.index') }}" class="grid gap-3 md:grid-cols-5">
                         <div class="md:col-span-2">
                             <x-input-label for="search" value="Cari outlet" />
                             <x-text-input id="search" name="search" class="mt-2 block w-full" :value="$filters['search']" placeholder="Nama outlet, official kode, kecamatan, kota" />
@@ -44,7 +46,15 @@
                                 <option value="pelanggan_lama" @selected($filters['type'] === 'pelanggan_lama')>Pelanggan Lama</option>
                             </select>
                         </div>
-                        <div class="md:col-span-4 flex flex-wrap gap-3">
+                        <div>
+                            <x-input-label for="outlet_status" value="Status outlet" />
+                            <select id="outlet_status" name="outlet_status" class="mt-2 block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm shadow-slate-200/60 focus:border-brand-400 focus:ring-4 focus:ring-brand-100">
+                                <option value="">Semua</option>
+                                <option value="active" @selected($filters['outlet_status'] === 'active')>Active</option>
+                                <option value="inactive" @selected($filters['outlet_status'] === 'inactive')>Inactive</option>
+                            </select>
+                        </div>
+                        <div class="md:col-span-5 flex flex-wrap gap-3">
                             <x-primary-button>Terapkan Filter</x-primary-button>
                             <a href="{{ route('outlets.index') }}" class="inline-flex items-center rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 shadow-sm shadow-slate-200/60 transition hover:border-slate-300 hover:bg-slate-50">Reset</a>
                         </div>
@@ -95,6 +105,7 @@
                                 <th class="px-4 py-3 font-semibold">Cabang</th>
                                 <th class="px-4 py-3 font-semibold">Jenis</th>
                                 <th class="px-4 py-3 font-semibold">Official Kode</th>
+                                <th class="px-4 py-3 font-semibold">Status Outlet</th>
                                 <th class="px-4 py-3 font-semibold">Verifikasi</th>
                                 <th class="px-4 py-3 font-semibold">Aksi</th>
                             </tr>
@@ -110,17 +121,26 @@
                                     <td class="px-4 py-4 text-slate-600">{{ str($outlet->outlet_type)->replace('_', ' ')->title() }}</td>
                                     <td class="px-4 py-4 text-slate-600">{{ $outlet->official_kode ?: '-' }}</td>
                                     <td class="px-4 py-4">
-                                        <span class="rounded-full px-3 py-1 text-xs font-semibold {{ $outlet->verification_status === 'verified' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700' }}">
-                                            {{ ucfirst($outlet->verification_status) }}
+                                        <span class="rounded-full px-3 py-1 text-xs font-semibold {{ $outlet->outlet_status === 'inactive' ? 'bg-slate-200 text-slate-700' : 'bg-sky-50 text-sky-700' }}">
+                                            {{ $outlet->statusLabel() }}
                                         </span>
                                     </td>
                                     <td class="px-4 py-4">
-                                        <a href="{{ route('outlets.edit', $outlet) }}" class="inline-flex items-center rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-slate-300 hover:bg-slate-50">Edit</a>
+                                        <span class="rounded-full px-3 py-1 text-xs font-semibold {{ $outlet->verification_status === 'verified' ? 'bg-emerald-50 text-emerald-700' : ($outlet->verification_status === 'pending' ? 'bg-amber-50 text-amber-700' : 'bg-slate-100 text-slate-500') }}">
+                                            {{ $outlet->verificationLabel() }}
+                                        </span>
+                                    </td>
+                                    <td class="px-4 py-4">
+                                        @if (auth()->user()->canManageOutletMaster())
+                                            <a href="{{ route('outlets.edit', $outlet) }}" class="inline-flex items-center rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-slate-300 hover:bg-slate-50">Edit</a>
+                                        @else
+                                            <span class="text-xs font-semibold text-slate-400">View only</span>
+                                        @endif
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="6" class="px-4 py-8 text-center text-sm text-slate-500">Belum ada outlet sesuai filter saat ini.</td>
+                                    <td colspan="7" class="px-4 py-8 text-center text-sm text-slate-500">Belum ada outlet sesuai filter saat ini.</td>
                                 </tr>
                             @endforelse
                         </tbody>
@@ -135,7 +155,7 @@
                                     <p class="font-semibold text-slate-900">{{ $outlet->name }}</p>
                                     <p class="mt-1 text-sm text-slate-500">{{ $outlet->district }}, {{ $outlet->city }}</p>
                                 </div>
-                                <span class="rounded-full px-3 py-1 text-xs font-semibold {{ $outlet->verification_status === 'verified' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700' }}">{{ ucfirst($outlet->verification_status) }}</span>
+                                <span class="rounded-full px-3 py-1 text-xs font-semibold {{ $outlet->verification_status === 'verified' ? 'bg-emerald-50 text-emerald-700' : ($outlet->verification_status === 'pending' ? 'bg-amber-50 text-amber-700' : 'bg-slate-100 text-slate-500') }}">{{ $outlet->verificationLabel() }}</span>
                             </div>
                             <div class="mt-4 grid grid-cols-2 gap-3 text-sm text-slate-600">
                                 <div>
@@ -147,11 +167,19 @@
                                     <p class="mt-1">{{ str($outlet->outlet_type)->replace('_', ' ')->title() }}</p>
                                 </div>
                                 <div class="col-span-2">
+                                    <p class="text-xs uppercase tracking-[0.14em] text-slate-400">Status outlet</p>
+                                    <p class="mt-1">{{ $outlet->statusLabel() }}</p>
+                                </div>
+                                <div class="col-span-2">
                                     <p class="text-xs uppercase tracking-[0.14em] text-slate-400">Official Kode</p>
                                     <p class="mt-1">{{ $outlet->official_kode ?: '-' }}</p>
                                 </div>
                             </div>
-                            <a href="{{ route('outlets.edit', $outlet) }}" class="mt-4 inline-flex items-center rounded-2xl bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm shadow-slate-200/60">Edit Outlet</a>
+                            @if (auth()->user()->canManageOutletMaster())
+                                <a href="{{ route('outlets.edit', $outlet) }}" class="mt-4 inline-flex items-center rounded-2xl bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm shadow-slate-200/60">Edit Outlet</a>
+                            @else
+                                <p class="mt-4 text-xs font-semibold text-slate-400">View only</p>
+                            @endif
                         </div>
                     @empty
                         <div class="rounded-[1.5rem] border border-dashed border-slate-300 bg-slate-50 p-6 text-center text-sm text-slate-500">Belum ada outlet sesuai filter saat ini.</div>

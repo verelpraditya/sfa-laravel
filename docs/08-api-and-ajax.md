@@ -56,3 +56,4 @@
 
 - The codebase currently exposes outlet autocomplete at `GET /outlets/search` with route name `ajax.outlets.search`.
 - Response remains JSON and already respects branch scoping for non-admin users.
+- The same endpoint is now reused by the sales visit form for live outlet search.

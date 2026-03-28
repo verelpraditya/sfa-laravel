@@ -4,7 +4,11 @@ namespace Database\Seeders;
 
 use App\Models\Branch;
 use App\Models\Outlet;
+use App\Models\SalesVisitDetail;
+use App\Models\SmdVisitActivity;
+use App\Models\SmdVisitDetail;
 use App\Models\User;
+use App\Models\Visit;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -81,6 +85,7 @@ class DatabaseSeeder extends Seeder
                 'city' => 'Bandung',
                 'category' => 'salon',
                 'outlet_type' => 'pelanggan_lama',
+                'outlet_status' => 'active',
                 'official_kode' => 'OFF-BDG-001',
                 'verification_status' => 'verified',
             ],
@@ -90,8 +95,9 @@ class DatabaseSeeder extends Seeder
                 'city' => 'Bandung',
                 'category' => 'toko',
                 'outlet_type' => 'prospek',
+                'outlet_status' => 'active',
                 'official_kode' => null,
-                'verification_status' => 'pending',
+                'verification_status' => null,
             ],
             [
                 'name' => 'Barbershop Central',
@@ -99,6 +105,7 @@ class DatabaseSeeder extends Seeder
                 'city' => 'Bandung',
                 'category' => 'barbershop',
                 'outlet_type' => 'noo',
+                'outlet_status' => 'inactive',
                 'official_kode' => null,
                 'verification_status' => 'pending',
             ],
@@ -112,6 +119,7 @@ class DatabaseSeeder extends Seeder
                 'city' => $outletData['city'],
                 'category' => $outletData['category'],
                 'outlet_type' => $outletData['outlet_type'],
+                'outlet_status' => $outletData['outlet_status'],
                 'official_kode' => $outletData['official_kode'],
                 'verification_status' => $outletData['verification_status'],
                 'verified_by' => $outletData['verification_status'] === 'verified' ? $creator?->id : null,
@@ -119,6 +127,66 @@ class DatabaseSeeder extends Seeder
                 'created_by' => $creator?->id,
                 'updated_by' => $creator?->id,
             ]);
+        }
+
+        $sales = User::where('username', 'salesbdg')->first();
+        $mawar = Outlet::where('name', 'Salon Mawar Jaya')->first();
+
+        if ($sales && $mawar) {
+            $visit = Visit::updateOrCreate([
+                'branch_id' => $branch->id,
+                'outlet_id' => $mawar->id,
+                'user_id' => $sales->id,
+                'visit_type' => 'sales',
+                'visited_at' => now()->subDay(),
+            ], [
+                'outlet_condition' => 'buka',
+                'latitude' => -6.9175000,
+                'longitude' => 107.6191000,
+                'visit_photo_path' => 'seed/visits/sales-1.jpg',
+                'notes' => 'Seed visit untuk dashboard awal.',
+            ]);
+
+            SalesVisitDetail::updateOrCreate([
+                'visit_id' => $visit->id,
+            ], [
+                'order_amount' => 250000,
+                'receivable_amount' => 175000,
+            ]);
+        }
+
+        $smd = User::where('username', 'smdbdg')->first();
+        $sinar = Outlet::where('name', 'Toko Sinar Baru')->first();
+
+        if ($smd && $sinar) {
+            $visit = Visit::updateOrCreate([
+                'branch_id' => $branch->id,
+                'outlet_id' => $sinar->id,
+                'user_id' => $smd->id,
+                'visit_type' => 'smd',
+                'visited_at' => now()->subHours(6),
+            ], [
+                'outlet_condition' => null,
+                'latitude' => -6.9175000,
+                'longitude' => 107.6191000,
+                'visit_photo_path' => 'seed/visits/smd-1.jpg',
+                'notes' => 'Seed visit SMD awal.',
+            ]);
+
+            SmdVisitDetail::updateOrCreate([
+                'visit_id' => $visit->id,
+            ], [
+                'po_amount' => 180000,
+                'payment_amount' => null,
+                'display_photo_path' => 'seed/visits/display-1.jpg',
+            ]);
+
+            foreach (['ambil_po', 'merapikan_display'] as $activity) {
+                SmdVisitActivity::updateOrCreate([
+                    'visit_id' => $visit->id,
+                    'activity_type' => $activity,
+                ]);
+            }
         }
     }
 }

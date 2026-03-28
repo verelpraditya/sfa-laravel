@@ -25,11 +25,13 @@ class OutletTest extends TestCase
         $visibleOutlet = Outlet::factory()->create([
             'branch_id' => $branchA->id,
             'created_by' => $sales->id,
+            'name' => 'Outlet Cabang A',
         ]);
 
         $hiddenOutlet = Outlet::factory()->create([
             'branch_id' => $branchB->id,
             'created_by' => $sales->id,
+            'name' => 'Outlet Cabang B',
         ]);
 
         $response = $this->actingAs($sales)->get(route('outlets.index'));
@@ -74,9 +76,70 @@ class OutletTest extends TestCase
             'city' => 'Bandung',
             'category' => 'toko',
             'outlet_type' => 'pelanggan_lama',
-            'verification_status' => 'pending',
+            'outlet_status' => 'active',
+            'verification_status' => 'verified',
         ]);
 
         $response->assertSessionHasErrors('official_kode');
+    }
+
+    public function test_supervisor_can_create_prospect_outlet_without_verification_status(): void
+    {
+        $branch = Branch::factory()->create();
+        $supervisor = User::factory()->create([
+            'branch_id' => $branch->id,
+            'role' => User::ROLE_SUPERVISOR,
+        ]);
+
+        $response = $this->actingAs($supervisor)->post(route('outlets.store'), [
+            'name' => 'Outlet Prospek',
+            'address' => 'Jalan Prospek',
+            'district' => 'Cidadap',
+            'city' => 'Bandung',
+            'category' => 'toko',
+            'outlet_type' => 'prospek',
+            'outlet_status' => 'active',
+            'verification_status' => '',
+        ]);
+
+        $response->assertRedirect();
+        $this->assertDatabaseHas('outlets', [
+            'name' => 'Outlet Prospek',
+            'verification_status' => null,
+        ]);
+    }
+
+    public function test_sales_cannot_edit_outlet_master(): void
+    {
+        $branch = Branch::factory()->create();
+        $sales = User::factory()->create([
+            'branch_id' => $branch->id,
+            'role' => User::ROLE_SALES,
+        ]);
+        $outlet = Outlet::factory()->create([
+            'branch_id' => $branch->id,
+            'created_by' => $sales->id,
+        ]);
+
+        $this->actingAs($sales)
+            ->get(route('outlets.edit', $outlet))
+            ->assertForbidden();
+    }
+
+    public function test_smd_cannot_edit_outlet_master(): void
+    {
+        $branch = Branch::factory()->create();
+        $smd = User::factory()->create([
+            'branch_id' => $branch->id,
+            'role' => User::ROLE_SMD,
+        ]);
+        $outlet = Outlet::factory()->create([
+            'branch_id' => $branch->id,
+            'created_by' => $smd->id,
+        ]);
+
+        $this->actingAs($smd)
+            ->get(route('outlets.edit', $outlet))
+            ->assertForbidden();
     }
 }

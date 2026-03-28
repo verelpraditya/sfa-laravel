@@ -87,6 +87,41 @@ class User extends Authenticatable
         return $this->role === self::ROLE_ADMIN_PUSAT;
     }
 
+    public function isSales(): bool
+    {
+        return $this->role === self::ROLE_SALES;
+    }
+
+    public function isSupervisor(): bool
+    {
+        return $this->role === self::ROLE_SUPERVISOR;
+    }
+
+    public function isSmd(): bool
+    {
+        return $this->role === self::ROLE_SMD;
+    }
+
+    public function canCreateSalesVisit(): bool
+    {
+        return in_array($this->role, [self::ROLE_SALES, self::ROLE_SUPERVISOR], true);
+    }
+
+    public function canCreateSmdVisit(): bool
+    {
+        return in_array($this->role, [self::ROLE_SMD, self::ROLE_SUPERVISOR], true);
+    }
+
+    public function canVerifyOutlets(): bool
+    {
+        return in_array($this->role, [self::ROLE_ADMIN_PUSAT, self::ROLE_SUPERVISOR], true);
+    }
+
+    public function canManageOutletMaster(): bool
+    {
+        return in_array($this->role, [self::ROLE_ADMIN_PUSAT, self::ROLE_SUPERVISOR], true);
+    }
+
     public function createdOutlets(): HasMany
     {
         return $this->hasMany(Outlet::class, 'created_by');

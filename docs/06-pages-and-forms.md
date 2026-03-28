@@ -42,6 +42,13 @@
 - `GET /outlets/{outlet}/edit`
   - edit master outlet form
 
+## Outlet Verification Pages
+
+- `GET /outlet-verifications`
+  - pending/verified outlet review list
+- `GET /outlet-verifications/{outlet}/edit`
+  - verification form for status and official code
+
 ## Sales Visit Form
 
 ### Fields
@@ -69,6 +76,14 @@
 - visit proof photo required
 - `official_kode` required when `pelanggan_lama`
 - financial inputs only when `outlet_condition = buka`
+- new inline outlets default to `active`
+- new `prospek` outlets keep verification status empty/null
+
+### Implemented pages
+
+- `GET /sales-visits`
+- `GET /sales-visits/create`
+- `POST /sales-visits`
 
 ## SMD Visit Form
 
@@ -93,6 +108,13 @@
 - `po_amount` required if `ambil_po`
 - `payment_amount` required if `ambil_tagihan`
 - `display_photo` required if `merapikan_display`
+- new inline outlets default to `active`
+
+### Implemented pages
+
+- `GET /smd-visits`
+- `GET /smd-visits/create`
+- `POST /smd-visits`
 
 ## Supervisor Visit Entry
 

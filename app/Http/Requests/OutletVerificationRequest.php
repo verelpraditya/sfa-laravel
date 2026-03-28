@@ -2,34 +2,23 @@
 
 namespace App\Http\Requests;
 
-use App\Models\Branch;
 use App\Models\Outlet;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class OutletRequest extends FormRequest
+class OutletVerificationRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user() !== null;
+        return $this->user() !== null && $this->user()->canVerifyOutlets();
     }
 
     public function rules(): array
     {
-        /** @var Outlet|null $outlet */
+        /** @var Outlet $outlet */
         $outlet = $this->route('outlet');
 
         return [
-            'branch_id' => [
-                Rule::requiredIf($this->user()->isAdminPusat()),
-                'nullable',
-                'integer',
-                Rule::exists(Branch::class, 'id'),
-            ],
-            'name' => ['required', 'string', 'max:255'],
-            'address' => ['required', 'string'],
-            'district' => ['required', 'string', 'max:255'],
-            'city' => ['required', 'string', 'max:255'],
             'category' => ['required', Rule::in(['salon', 'toko', 'barbershop', 'lainnya'])],
             'outlet_type' => ['required', Rule::in(['prospek', 'noo', 'pelanggan_lama'])],
             'outlet_status' => ['required', Rule::in(['active', 'inactive'])],
@@ -38,19 +27,16 @@ class OutletRequest extends FormRequest
                 'nullable',
                 'string',
                 'max:100',
-                Rule::unique(Outlet::class, 'official_kode')->ignore($outlet?->id),
+                Rule::unique(Outlet::class, 'official_kode')->ignore($outlet->id),
             ],
             'verification_status' => ['nullable', Rule::in(['pending', 'verified'])],
+            'verification_notes' => ['nullable', 'string', 'max:1000'],
         ];
     }
 
-    public function validatedPayload(?Outlet $outlet = null): array
+    public function validatedPayload(Outlet $outlet): array
     {
         $payload = $this->safe()->only([
-            'name',
-            'address',
-            'district',
-            'city',
             'category',
             'outlet_type',
             'outlet_status',
@@ -60,15 +46,16 @@ class OutletRequest extends FormRequest
 
         $payload['verification_status'] = $payload['verification_status'] ?: null;
 
+        $payload['official_kode'] = $payload['official_kode'] ?? null;
+
         if ($payload['outlet_type'] === 'prospek') {
             $payload['verification_status'] = null;
+            $payload['official_kode'] = null;
         }
 
         if ($payload['outlet_type'] === 'noo' && $payload['verification_status'] === null) {
             $payload['verification_status'] = 'pending';
         }
-
-        $payload['official_kode'] = $payload['official_kode'] ?? null;
 
         if ($payload['outlet_type'] === 'pelanggan_lama' && ! blank($payload['official_kode'])) {
             $payload['verification_status'] = 'verified';
@@ -77,24 +64,15 @@ class OutletRequest extends FormRequest
         if (($payload['verification_status'] ?? null) === 'verified') {
             $payload['verified_by'] = $this->user()->id;
             $payload['verified_at'] = now();
-        } elseif ($outlet?->verification_status === 'verified' && ($payload['verification_status'] ?? null) !== 'verified') {
+        } elseif ($outlet->verification_status === 'verified' && ($payload['verification_status'] ?? null) !== 'verified') {
             $payload['verified_by'] = null;
             $payload['verified_at'] = null;
         }
 
-        if (($payload['outlet_type'] ?? null) !== 'pelanggan_lama') {
-            $payload['official_kode'] = $payload['official_kode'] ?: null;
+        if ($payload['outlet_type'] !== 'pelanggan_lama' && blank($payload['official_kode'])) {
+            $payload['official_kode'] = null;
         }
 
         return $payload;
-    }
-
-    public function resolvedBranchId(?Outlet $outlet = null): int
-    {
-        if (! $this->user()->isAdminPusat()) {
-            return (int) $this->user()->branch_id;
-        }
-
-        return (int) ($this->integer('branch_id') ?: $outlet?->branch_id);
     }
 }

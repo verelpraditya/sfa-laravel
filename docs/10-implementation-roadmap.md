@@ -22,7 +22,11 @@
 - Done: branch and role groundwork in user schema plus demo seed users
 - Done: core SFA schema migrations and role middleware groundwork
 - Done: branch-scoped outlet module and AJAX search foundation
-- Next: sales visit workflow and inline outlet creation during visit
+- Done: sales visit workflow foundation with inline outlet creation and history page
+- Done: SMD visit workflow foundation with multi-activity validation and history page
+- Done: supervisor verification screens and dashboard real aggregates
+- Done: revised outlet lifecycle with nullable verification for prospek and inactive outlet status
+- Next: export/report pages and deeper branch-scoped reporting details
 
 ## Demo Seed Accounts
 

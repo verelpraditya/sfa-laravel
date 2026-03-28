@@ -42,6 +42,10 @@ Lightweight web-based SFA for multi-branch distributors, focused on outlet visit
 - Core SFA schema for `outlets`, `visits`, sales details, SMD details, and audit logs is now in place.
 - Role middleware alias `role` is registered for route protection groundwork.
 - Outlet module foundation is now available with branch-scoped listing, create/edit flow, and AJAX autocomplete search.
+- Sales visit module foundation is now available with outlet autocomplete, inline new-outlet creation, GPS fields, photo upload, and sales visit history.
+- SMD visit module foundation is now available with multi-activity input, conditional nominal/display requirements, and activity history.
+- Supervisor verification module and real dashboard aggregates are now available.
+- Outlet lifecycle now distinguishes `prospek` from verification, auto-verifies `pelanggan_lama` with official code, and supports `active/inactive` outlet status.
 - Frontend assets build successfully and the default test suite passes.
 - Current shell still defaults to PHP `7.3.33`, so project commands should use PHP `8.2+` from Herd or an explicit PHP 8.2 binary.
 

@@ -40,8 +40,9 @@
 - `city`
 - `category` = `salon|toko|barbershop|lainnya`
 - `outlet_type` = `prospek|noo|pelanggan_lama`
+- `outlet_status` = `active|inactive`
 - `official_kode` nullable unique
-- `verification_status` = `pending|verified`
+- `verification_status` = `pending|verified` nullable
 - `verified_by` nullable
 - `verified_at` nullable
 - `created_by`
@@ -129,6 +130,7 @@
 - `official_kode` must be unique when present.
 - `username` must be unique.
 - `pelanggan_lama` requires `official_kode`.
+- `prospek` can keep `verification_status = null`.
 - `sales` can create only `sales` visits.
 - `smd` can create only `smd` visits.
 - `supervisor` can create both visit types, only for self.

@@ -18,6 +18,7 @@ class OutletController extends Controller
         $search = trim((string) $request->string('search'));
         $status = $request->string('status')->toString();
         $type = $request->string('type')->toString();
+        $outletStatus = $request->string('outlet_status')->toString();
 
         $outlets = $this->baseQuery($user)
             ->with(['branch', 'creator', 'verifier'])
@@ -32,6 +33,7 @@ class OutletController extends Controller
             })
             ->when($status !== '', fn ($query) => $query->where('verification_status', $status))
             ->when($type !== '', fn ($query) => $query->where('outlet_type', $type))
+            ->when($outletStatus !== '', fn ($query) => $query->where('outlet_status', $outletStatus))
             ->latest()
             ->paginate(10)
             ->withQueryString();
@@ -43,12 +45,15 @@ class OutletController extends Controller
                 'search' => $search,
                 'status' => $status,
                 'type' => $type,
+                'outlet_status' => $outletStatus,
             ],
         ]);
     }
 
     public function create(Request $request): View
     {
+        abort_unless($request->user()->canManageOutletMaster(), 403);
+
         return view('outlets.create', [
             'outlet' => new Outlet(),
             'branches' => Branch::orderBy('name')->get(),
@@ -58,6 +63,8 @@ class OutletController extends Controller
     public function store(OutletRequest $request): RedirectResponse
     {
         $user = $request->user();
+
+        abort_unless($user->canManageOutletMaster(), 403);
 
         $outlet = Outlet::create([
             ...$request->validatedPayload(),
@@ -134,6 +141,7 @@ class OutletController extends Controller
 
     private function ensureUserCanAccess($user, Outlet $outlet): void
     {
+        abort_unless($user->canManageOutletMaster(), 403);
         abort_if(! $user->isAdminPusat() && $user->branch_id !== $outlet->branch_id, 404);
     }
 }

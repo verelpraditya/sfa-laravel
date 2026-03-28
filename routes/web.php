@@ -2,7 +2,10 @@
 
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\OutletController;
+use App\Http\Controllers\OutletVerificationController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SalesVisitController;
+use App\Http\Controllers\SmdVisitController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -25,6 +28,24 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/outlets/search', [OutletController::class, 'search'])->name('ajax.outlets.search');
     Route::resource('outlets', OutletController::class)->except(['show', 'destroy']);
+
+    Route::middleware('role:admin_pusat,supervisor')->group(function () {
+        Route::get('/outlet-verifications', [OutletVerificationController::class, 'index'])->name('outlet-verifications.index');
+        Route::get('/outlet-verifications/{outlet}/edit', [OutletVerificationController::class, 'edit'])->name('outlet-verifications.edit');
+        Route::put('/outlet-verifications/{outlet}', [OutletVerificationController::class, 'update'])->name('outlet-verifications.update');
+    });
+
+    Route::middleware('role:sales,supervisor')->group(function () {
+        Route::get('/sales-visits', [SalesVisitController::class, 'index'])->name('sales-visits.index');
+        Route::get('/sales-visits/create', [SalesVisitController::class, 'create'])->name('sales-visits.create');
+        Route::post('/sales-visits', [SalesVisitController::class, 'store'])->name('sales-visits.store');
+    });
+
+    Route::middleware('role:smd,supervisor')->group(function () {
+        Route::get('/smd-visits', [SmdVisitController::class, 'index'])->name('smd-visits.index');
+        Route::get('/smd-visits/create', [SmdVisitController::class, 'create'])->name('smd-visits.create');
+        Route::post('/smd-visits', [SmdVisitController::class, 'store'])->name('smd-visits.store');
+    });
 });
 
 require __DIR__.'/auth.php';

@@ -56,9 +56,12 @@ Build a web-based SFA for distributor operations with these priorities:
   - `pelanggan_lama`
 - `official_kode` is the official store code term used in the app.
 - If `outlet_type = pelanggan_lama`, `official_kode` is required.
-- If `outlet_type = prospek`, outlet enters prospect follow-up list.
+- If `outlet_type = prospek`, outlet enters prospect follow-up list and does not require verification status.
 - If `outlet_type = noo`, supervisor later fills `official_kode` when available.
 - Sales can change outlet status from `prospek` to `noo` on later visits.
+- Outlet operational status is separate from type:
+  - `active`
+  - `inactive`
 - Outlet search should support branch-scoped autocomplete by `name` and `official_kode`.
 
 ## Sales Visit Requirements
@@ -85,6 +88,10 @@ Sales can only access the sales visit form.
 - If `kondisi_outlet = tutup`:
   - order and receivable inputs are hidden or disabled
 
+## Current Implementation Note
+
+- Sales visit form now exists with branch-scoped outlet autocomplete and inline new-outlet creation.
+
 ## SMD Visit Requirements
 
 SMD can only access the SMD visit form.
@@ -107,6 +114,11 @@ SMD can only access the SMD visit form.
 - If `ambil_po` is selected, `nominal_po` is required.
 - If `ambil_tagihan` is selected, `nominal_pembayaran` is required.
 - If `merapikan_display` is selected, `foto_display` is required.
+
+## Current Implementation Note
+
+- SMD visit form now exists with multiple activity selection, conditional validation, and outlet autocomplete.
+- `Prospek` no longer appears as pending verification by default.
 
 ## Supervisor Rules
 

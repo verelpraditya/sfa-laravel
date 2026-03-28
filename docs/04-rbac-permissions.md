@@ -14,7 +14,7 @@
 | Manage users | Yes | No | No | No |
 | View all outlets | Yes | No | No | No |
 | View branch outlets | Yes | Yes | Yes | Yes |
-| Manage branch outlets | Yes | Yes | Yes | Yes |
+| Manage branch outlets | Yes | Yes | No | No |
 | Create outlet during visit | Yes | Yes | Yes | Yes |
 | Verify outlet | Yes | Yes | No | No |
 | Fill `official_kode` | Yes | Yes | No | No |
@@ -51,3 +51,5 @@
 - `role` middleware alias is available for route protection.
 - Workspace routes exist for `admin_pusat`, `supervisor`, `sales`, and `smd` as access groundwork.
 - Outlet module already scopes list and search results to the current branch for non-admin users.
+- Supervisor/admin verification routes now exist for reviewing pending outlets and assigning official codes.
+- Outlet master create/edit is restricted to `admin_pusat` and `supervisor`; `sales` and `smd` can still create outlets inline during visits only.

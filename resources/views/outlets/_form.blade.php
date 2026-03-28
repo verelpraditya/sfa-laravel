@@ -67,16 +67,26 @@
                     <x-input-error class="mt-2" :messages="$errors->get('outlet_type')" />
                 </div>
 
-                <div x-show="outletType === 'pelanggan_lama'" x-transition>
+                <div x-cloak x-show="outletType === 'pelanggan_lama'" x-transition>
                     <x-input-label for="official_kode" value="Official kode" />
                     <x-text-input id="official_kode" name="official_kode" class="mt-2 block w-full" :value="old('official_kode', $outlet->official_kode)" placeholder="Mis. OFF-001" />
                     <x-input-error class="mt-2" :messages="$errors->get('official_kode')" />
                 </div>
 
                 <div>
+                    <x-input-label for="outlet_status" value="Status outlet" />
+                    <select id="outlet_status" name="outlet_status" class="mt-2 block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm shadow-slate-200/60 focus:border-brand-400 focus:ring-4 focus:ring-brand-100">
+                        <option value="active" @selected(old('outlet_status', $outlet->outlet_status ?: 'active') === 'active')>Active</option>
+                        <option value="inactive" @selected(old('outlet_status', $outlet->outlet_status) === 'inactive')>Inactive</option>
+                    </select>
+                    <x-input-error class="mt-2" :messages="$errors->get('outlet_status')" />
+                </div>
+
+                <div>
                     <x-input-label for="verification_status" value="Status verifikasi" />
                     <select id="verification_status" name="verification_status" class="mt-2 block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm shadow-slate-200/60 focus:border-brand-400 focus:ring-4 focus:ring-brand-100">
-                        <option value="pending" @selected(old('verification_status', $outlet->verification_status ?: 'pending') === 'pending')>Pending</option>
+                        <option value="">Tidak Perlu</option>
+                        <option value="pending" @selected(old('verification_status', $outlet->verification_status) === 'pending')>Pending</option>
                         <option value="verified" @selected(old('verification_status', $outlet->verification_status) === 'verified')>Verified</option>
                     </select>
                     <x-input-error class="mt-2" :messages="$errors->get('verification_status')" />
@@ -86,7 +96,7 @@
 
         <div class="rounded-[1.5rem] border border-slate-200 bg-brand-50/60 p-5 text-sm leading-7 text-slate-600">
             <p class="font-semibold text-ink-950">Catatan rule bisnis</p>
-            <p class="mt-2">`Pelanggan Lama` wajib punya `official_kode`. Untuk `Prospek` dan `NOO`, field official kode tetap bisa kosong sampai diverifikasi supervisor.</p>
+            <p class="mt-2">`Prospek` tidak perlu verifikasi dan tidak masuk daftar pending. `NOO` masuk pending sampai supervisor melengkapi `official_kode`. `Pelanggan Lama` wajib punya `official_kode` dan akan otomatis verified.</p>
         </div>
     </section>
 </div>

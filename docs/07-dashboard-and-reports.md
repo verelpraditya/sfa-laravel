@@ -12,6 +12,12 @@
 - Desktop favors tables for dense data.
 - Mobile favors cards for readability.
 
+## Current Implementation Note
+
+- Dashboard cards and trend chart now pull real aggregates from `outlets` and `visits` based on role scope.
+- Pending verification metrics exclude `prospek` outlets.
+- Dashboard also tracks inactive outlets.
+
 ## Charts
 
 - Library: `Chart.js`
@@ -38,6 +44,14 @@
 - Prospect follow-up list
 - `NOO` pending `official_kode`
 - Personal activity section
+
+### Current implementation
+
+- Supervisor dashboard now has two views in one account:
+  - `Dashboard Cabang`
+  - `Aktivitas Saya`
+- `Dashboard Cabang` shows branch-scoped aggregates and recent team activity.
+- `Aktivitas Saya` shows only visits performed by the supervisor user.
 
 ## Sales Dashboard
 

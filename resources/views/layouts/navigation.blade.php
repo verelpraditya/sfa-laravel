@@ -17,6 +17,17 @@
             <x-nav-link :href="route('outlets.index')" :active="request()->routeIs('outlets.*')">
                 {{ __('Outlet') }}
             </x-nav-link>
+            @if (auth()->user()->canVerifyOutlets())
+                <x-nav-link :href="route('outlet-verifications.index')" :active="request()->routeIs('outlet-verifications.*')">
+                    {{ __('Verifikasi Outlet') }}
+                </x-nav-link>
+            @endif
+            <x-nav-link :href="route('sales-visits.index')" :active="request()->routeIs('sales-visits.*')">
+                {{ __('Kunjungan Sales') }}
+            </x-nav-link>
+            <x-nav-link :href="route('smd-visits.index')" :active="request()->routeIs('smd-visits.*')">
+                {{ __('Kunjungan SMD') }}
+            </x-nav-link>
             <x-nav-link :href="route('profile.edit')" :active="request()->routeIs('profile.*')">
                 {{ __('Profil') }}
             </x-nav-link>
@@ -49,6 +60,17 @@
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('outlets.index')" :active="request()->routeIs('outlets.*')">
                 {{ __('Outlet') }}
+            </x-responsive-nav-link>
+            @if (auth()->user()->canVerifyOutlets())
+                <x-responsive-nav-link :href="route('outlet-verifications.index')" :active="request()->routeIs('outlet-verifications.*')">
+                    {{ __('Verifikasi Outlet') }}
+                </x-responsive-nav-link>
+            @endif
+            <x-responsive-nav-link :href="route('sales-visits.index')" :active="request()->routeIs('sales-visits.*')">
+                {{ __('Kunjungan Sales') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('smd-visits.index')" :active="request()->routeIs('smd-visits.*')">
+                {{ __('Kunjungan SMD') }}
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('profile.edit')" :active="request()->routeIs('profile.*')">
                 {{ __('Profil') }}

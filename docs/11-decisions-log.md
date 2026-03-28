@@ -36,3 +36,12 @@
 - A reusable `role` middleware alias was registered to support route-level access control.
 - Outlet module was implemented as a dedicated master-data feature, not only as inline visit data.
 - Outlet autocomplete currently uses a branch-scoped JSON endpoint and is already wired into the outlet module UI preview.
+- Sales visit implementation reuses the same outlet autocomplete endpoint and supports inline new-outlet creation when no outlet is found.
+- Sales visit form currently stores proof photo on the `public` disk and timestamps visits at submit time.
+- SMD visit form reuses the same outlet selection pattern but supports multiple activities and conditional file/nominal requirements.
+- Dashboard no longer uses placeholder numbers; it now reads real aggregates from the database by role scope.
+- Outlet verification is implemented as a dedicated supervisor/admin module instead of overloading the standard outlet edit flow.
+- `Prospek` outlets should not become pending verification items; they now use nullable verification status.
+- Converting `NOO` to `Pelanggan Lama` with `official_kode` now auto-verifies the outlet.
+- Supervisor can mark outlets `inactive` for stores that are closed or no longer ordering.
+- Supervisor dashboard should expose both branch-wide and personal activity views in the same account; the implementation now uses tabbed views.
