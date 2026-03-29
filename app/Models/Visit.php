@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Str;
 
 class Visit extends Model
 {
@@ -72,5 +73,24 @@ class Visit extends Model
         }
 
         return $this->visited_at->copy()->timezone($this->branch?->timezone ?? config('app.timezone'));
+    }
+
+    public function salesAmount(): float
+    {
+        return (float) ($this->visit_type === 'sales'
+            ? ($this->salesDetail?->order_amount ?? 0)
+            : ($this->smdDetail?->po_amount ?? 0));
+    }
+
+    public function collectionAmount(): float
+    {
+        return (float) ($this->visit_type === 'sales'
+            ? ($this->salesDetail?->receivable_amount ?? 0)
+            : ($this->smdDetail?->payment_amount ?? 0));
+    }
+
+    public function typeLabel(): string
+    {
+        return Str::upper($this->visit_type);
     }
 }

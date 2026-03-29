@@ -49,3 +49,7 @@
 - User master is implemented as an admin-only module for creating and updating internal accounts, roles, branches, and activation state.
 - Operational lists are implemented as dedicated filtered outlet views rather than asking users to rely on master outlet filters every time.
 - Reporting is implemented as a shared module with role-aware datasets and simple CSV export instead of introducing a heavy export package.
+- Project roadmap is now treated as three main phases: Phase 1 core workflow foundation, Phase 2 monitoring/reporting/data quality, and Phase 3 integration/automation/scale.
+- Phase 2 begins with richer reporting filters and aging-focused monitoring instead of new core CRUD flows.
+- Dashboard visit monitoring should show only today's latest 10 records; full history belongs in a dedicated `History Kunjungan` module with detail page and role-based scope.
+- Dashboard KPI `Sales Amount Hari Ini` combines sales order and SMD PO, while `Collection Hari Ini` combines sales receivable input and SMD payment collection input.

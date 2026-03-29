@@ -13,6 +13,7 @@
 - Sales visit form
 - SMD visit form
 - Visit history
+- Visit detail
 - Prospect list
 - NOO list
 - Reports

@@ -17,6 +17,11 @@
 - Dashboard cards and trend chart now pull real aggregates from `outlets` and `visits` based on role scope.
 - Pending verification metrics exclude `prospek` outlets.
 - Dashboard also tracks inactive outlets.
+- Phase 2 dashboard refinement adds deeper role-based operational metrics, with emphasis on visit tim hari ini, sales amount hari ini, collection hari ini, jumlah PO hari ini, and monitoring kunjungan.
+- Dashboard trend chart now compares `Kunjungan` and `Collection` in one chart using dual axes, where `Collection` combines sales receivable input and SMD payment collection input.
+- `Sales Amount Hari Ini` on supervisor/admin combines sales order and SMD PO for the same day.
+- Dashboard visit table is limited to today's latest 10 visits in the current role scope.
+- Full visit history is moved to a dedicated `History Kunjungan` page with detail view.
 
 ## Charts
 

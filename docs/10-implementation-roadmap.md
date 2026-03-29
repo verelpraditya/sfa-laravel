@@ -4,7 +4,7 @@
 - Last updated: 2026-03-28
 - Purpose: Phased plan for building the MVP.
 
-## Phase 1: Foundation
+## Phase 1: Core Workflow Foundation
 
 - Finalize environment target and Laravel version
 - Scaffold Laravel app
@@ -30,7 +30,23 @@
 - Done: admin-only user master with role and branch assignment
 - Done: operational outlet lists for prospek, NOO, and inactive outlets
 - Done: basic report pages and CSV export foundation
-- Next: deeper branch-scoped reporting details and dashboard polish
+- Phase 1 status: functionally complete
+
+## Phase 2: Monitoring, Reporting, and Data Quality
+
+- Dashboard refinement per role
+- Branch/user-aware reporting filters
+- Follow-up and aging indicators for prospek and NOO
+- Better monitoring for inactive outlets and pending verification
+- Data quality support and duplicate handling assistance
+
+## Phase 3: Integration, Automation, and Scale
+
+- Import from Accurate export file
+- Merge and deduplicate outlet data
+- Advanced audit trail and follow-up workflow
+- Performance improvements and storage hardening
+- Additional automation and reminder support
 
 ## Demo Seed Accounts
 
@@ -38,32 +54,3 @@
 - `supervisorbdg` / `password`
 - `salesbdg` / `password`
 - `smdbdg` / `password`
-
-## Phase 2: Access and Master Data
-
-- Branch management
-- User management
-- Role and branch scoping
-- Outlet master and verification status
-
-## Phase 3: Visit Workflows
-
-- Outlet autocomplete
-- Sales visit flow
-- SMD visit flow
-- Evidence upload
-- Prospect and NOO behavior
-
-## Phase 4: Verification and Monitoring
-
-- Supervisor outlet verification
-- `official_kode` workflow
-- Dashboards by role
-- Basic reports and export
-
-## Phase 5: Data Growth and Optimization
-
-- Duplicate outlet assistance
-- Import from Accurate export file
-- Performance improvements
-- Additional audit and reporting enhancements

@@ -9,6 +9,7 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SalesVisitController;
 use App\Http\Controllers\SmdVisitController;
 use App\Http\Controllers\UserManagementController;
+use App\Http\Controllers\VisitHistoryController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -30,6 +31,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
     Route::get('/reports/export', [ReportController::class, 'export'])->name('reports.export');
+    Route::get('/visit-history', [VisitHistoryController::class, 'index'])->name('visit-history.index');
+    Route::get('/visit-history/{visit}', [VisitHistoryController::class, 'show'])->name('visit-history.show');
 
     Route::middleware('role:admin_pusat')->group(function () {
         Route::resource('branches', BranchController::class)->except(['show', 'destroy']);

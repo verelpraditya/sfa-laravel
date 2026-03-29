@@ -23,6 +23,7 @@
             <x-nav-link :href="route('users.index')" :active="request()->routeIs('users.*')">User</x-nav-link>
         @endif
         <x-nav-link :href="route('outlets.index')" :active="request()->routeIs('outlets.*')">Outlet</x-nav-link>
+        <x-nav-link :href="route('visit-history.index')" :active="request()->routeIs('visit-history.*')">History Kunjungan</x-nav-link>
         <x-nav-link :href="route('reports.index')" :active="request()->routeIs('reports.*')">Laporan</x-nav-link>
         @if ($user->canVerifyOutlets())
             <x-nav-link :href="route('outlet-verifications.index')" :active="request()->routeIs('outlet-verifications.*')">Verifikasi Outlet</x-nav-link>
@@ -96,6 +97,7 @@
                     <x-responsive-nav-link :href="route('users.index')" :active="request()->routeIs('users.*')">User</x-responsive-nav-link>
                 @endif
                 <x-responsive-nav-link :href="route('outlets.index')" :active="request()->routeIs('outlets.*')">Outlet</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('visit-history.index')" :active="request()->routeIs('visit-history.*')">History Kunjungan</x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('reports.index')" :active="request()->routeIs('reports.*')">Laporan</x-responsive-nav-link>
                 @if ($user->canVerifyOutlets())
                     <x-responsive-nav-link :href="route('outlet-verifications.index')" :active="request()->routeIs('outlet-verifications.*')">Verifikasi Outlet</x-responsive-nav-link>

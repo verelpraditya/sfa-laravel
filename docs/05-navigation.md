@@ -27,6 +27,7 @@
 - `Dashboard Cabang`
 - `Aktivitas Saya`
 - `Input Kunjungan`
+- `History Kunjungan`
 - `Outlet`
 - `Verifikasi Outlet`
 - `Daftar Prospek`
@@ -38,6 +39,7 @@
 
 - `Dashboard Saya`
 - `Input Kunjungan`
+- `History Kunjungan`
 - `Riwayat Kunjungan`
 - `Outlet Cabang`
 - `Prospek Saya`
@@ -46,6 +48,7 @@
 
 - `Dashboard Saya`
 - `Input Kunjungan`
+- `History Kunjungan`
 - `Riwayat Kunjungan`
 - `Outlet Cabang`
 - `Aktivitas Saya`
