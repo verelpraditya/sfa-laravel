@@ -133,6 +133,30 @@ class DashboardController extends Controller
             ->limit(5)
             ->get();
 
+        $topCustomers = (clone $visitQuery)
+            ->where('visits.visit_type', 'sales')
+            ->join('sales_visit_details', 'sales_visit_details.visit_id', '=', 'visits.id')
+            ->join('outlets', 'outlets.id', '=', 'visits.outlet_id')
+            ->where('sales_visit_details.order_amount', '>', 0)
+            ->groupBy('outlets.id', 'outlets.name')
+            ->selectRaw('outlets.id, outlets.name, COUNT(visits.id) as total_orders, MAX(visits.visited_at) as last_order_at, COALESCE(SUM(sales_visit_details.order_amount), 0) as total_amount')
+            ->orderByDesc('total_orders')
+            ->orderByDesc('total_amount')
+            ->limit(5)
+            ->get();
+
+        $staleCustomers = (clone $visitQuery)
+            ->where('visits.visit_type', 'sales')
+            ->join('sales_visit_details', 'sales_visit_details.visit_id', '=', 'visits.id')
+            ->join('outlets', 'outlets.id', '=', 'visits.outlet_id')
+            ->where('sales_visit_details.order_amount', '>', 0)
+            ->groupBy('outlets.id', 'outlets.name')
+            ->selectRaw('outlets.id, outlets.name, MAX(visits.visited_at) as last_order_at, COUNT(visits.id) as total_orders, COALESCE(SUM(sales_visit_details.order_amount), 0) as total_amount')
+            ->havingRaw('MAX(visits.visited_at) <= ?', [now()->subDays(30)->endOfDay()])
+            ->orderBy('last_order_at')
+            ->limit(5)
+            ->get();
+
         $outletComposition = [
             'prospek' => (clone $outletQuery)->where('outlet_type', 'prospek')->count(),
             'noo' => (clone $outletQuery)->where('outlet_type', 'noo')->count(),
@@ -178,7 +202,7 @@ class DashboardController extends Controller
             ->get();
 
         $recentVisits = (clone $visitQuery)
-            ->with(['outlet', 'user', 'branch'])
+            ->with(['outlet', 'user', 'branch', 'salesDetail', 'smdDetail'])
             ->where('visited_at', '>=', $today)
             ->latest('visited_at')
             ->limit(10)
@@ -233,6 +257,8 @@ class DashboardController extends Controller
             'recentPendingOutlets' => $recentPendingOutlets,
             'recentVisits' => $recentVisits,
             'topPerformers' => $topPerformers,
+            'topCustomers' => $topCustomers,
+            'staleCustomers' => $staleCustomers,
             'outletComposition' => $outletComposition,
         ];
     }

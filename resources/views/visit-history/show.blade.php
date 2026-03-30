@@ -2,67 +2,110 @@
     <x-slot name="header">
         <div class="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
             <div>
-                <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">History Kunjungan</p>
-                <h2 class="mt-2 text-3xl font-semibold leading-tight text-ink-950">Detail Kunjungan</h2>
-                <p class="mt-2 text-sm text-slate-500">{{ $visit->typeLabel() }} · {{ $visit->outlet?->name }} · {{ $visit->visitedAtForBranch()?->format('d M Y H:i') }}</p>
+                <div class="flex items-center gap-2">
+                    <span class="app-chip">History Kunjungan</span>
+                    <span class="app-chip">{{ $visit->typeLabel() }}</span>
+                </div>
+                <h2 class="mt-4 text-3xl font-semibold leading-tight text-ink-950">Detail Kunjungan</h2>
             </div>
-            <a href="{{ route('visit-history.index') }}" class="inline-flex items-center rounded-2xl border border-sky-200 bg-sky-50 px-5 py-3 text-sm font-semibold text-sky-900 shadow-sm shadow-sky-100/80 transition hover:border-sky-300 hover:bg-sky-100">Kembali ke History</a>
+            <a href="{{ route('visit-history.index') }}" class="app-glass-button justify-center">Kembali ke History</a>
         </div>
     </x-slot>
 
     <div class="py-6 sm:py-7">
         <div class="mx-auto max-w-7xl space-y-6 px-4 sm:px-6 lg:px-8">
-            <section class="app-panel p-5">
-                <div class="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
-                    <div class="app-soft-panel p-5">
-                        <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Informasi Kunjungan</p>
-                        <div class="mt-4 grid gap-4 sm:grid-cols-2 text-sm text-slate-600">
-                            <div><p class="text-[11px] uppercase tracking-[0.14em] text-slate-400">User</p><p class="mt-1 font-semibold text-slate-900">{{ $visit->user?->name }}</p></div>
-                            <div><p class="text-[11px] uppercase tracking-[0.14em] text-slate-400">Cabang</p><p class="mt-1 font-semibold text-slate-900">{{ $visit->branch?->name }}</p></div>
-                            <div><p class="text-[11px] uppercase tracking-[0.14em] text-slate-400">Outlet</p><p class="mt-1 font-semibold text-slate-900">{{ $visit->outlet?->name }}</p></div>
-                            <div><p class="text-[11px] uppercase tracking-[0.14em] text-slate-400">Tipe</p><p class="mt-1 font-semibold text-slate-900">{{ $visit->typeLabel() }}</p></div>
-                            <div><p class="text-[11px] uppercase tracking-[0.14em] text-slate-400">Kondisi</p><p class="mt-1 font-semibold text-slate-900">{{ $visit->outlet_condition ?: '-' }}</p></div>
-                            <div><p class="text-[11px] uppercase tracking-[0.14em] text-slate-400">Waktu</p><p class="mt-1 font-semibold text-slate-900">{{ $visit->visitedAtForBranch()?->format('d M Y H:i') }}</p></div>
-                            <div><p class="text-[11px] uppercase tracking-[0.14em] text-slate-400">Latitude</p><p class="mt-1 font-semibold text-slate-900">{{ $visit->latitude }}</p></div>
-                            <div><p class="text-[11px] uppercase tracking-[0.14em] text-slate-400">Longitude</p><p class="mt-1 font-semibold text-slate-900">{{ $visit->longitude }}</p></div>
+            <section class="app-panel app-animate-enter overflow-hidden p-5 sm:p-6">
+                <div class="grid gap-4 xl:grid-cols-[1.1fr_0.9fr]">
+                    <div class="relative overflow-hidden rounded-[1.9rem] bg-[linear-gradient(135deg,#0f172a_0%,#1d4ed8_100%)] p-5 text-white shadow-[0_24px_60px_-28px_rgba(29,78,216,0.7)]">
+                        <div class="absolute -right-8 top-0 h-28 w-28 rounded-full bg-cyan-300/20 blur-3xl"></div>
+                        <p class="text-xs font-semibold uppercase tracking-[0.2em] text-sky-100/80">Visit Snapshot</p>
+                        <h3 class="mt-3 text-2xl font-semibold">{{ $visit->outlet?->name }}</h3>
+                        <p class="mt-2 text-sm text-sky-100/85">{{ $visit->user?->name }} · {{ $visit->branch?->name }}</p>
+                        <div class="mt-5 flex flex-wrap gap-2 text-xs font-semibold">
+                            <span class="rounded-full bg-white/12 px-3 py-1.5 text-white">{{ $visit->typeLabel() }}</span>
+                            <span class="rounded-full bg-white/12 px-3 py-1.5 text-white">{{ $visit->visitedAtForBranch()?->format('d M Y H:i') }}</span>
+                            <span class="rounded-full bg-white/12 px-3 py-1.5 text-white">{{ $visit->outlet_condition ?: 'Tanpa kondisi' }}</span>
                         </div>
                     </div>
 
-                    <div class="app-soft-panel p-5">
-                        <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Nilai Kunjungan</p>
-                        <div class="mt-4 grid gap-4 sm:grid-cols-2 text-sm text-slate-600">
-                            <div><p class="text-[11px] uppercase tracking-[0.14em] text-slate-400">Sales Amount</p><p class="mt-1 text-2xl font-semibold text-slate-900">Rp {{ number_format($visit->salesAmount(), 0, ',', '.') }}</p></div>
-                            <div><p class="text-[11px] uppercase tracking-[0.14em] text-slate-400">Collection</p><p class="mt-1 text-2xl font-semibold text-slate-900">Rp {{ number_format($visit->collectionAmount(), 0, ',', '.') }}</p></div>
+                    <div class="grid gap-3 sm:grid-cols-2">
+                        <div class="app-kpi">
+                            <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">Sales Amount</p>
+                            <p class="mt-3 text-2xl font-semibold text-ink-950">Rp {{ number_format($visit->salesAmount(), 0, ',', '.') }}</p>
                         </div>
-
-                        @if ($visit->visit_type === 'smd')
-                            <div class="mt-5 border-t border-slate-200 pt-4 text-sm text-slate-600">
-                                <p class="text-[11px] uppercase tracking-[0.14em] text-slate-400">Aktivitas SMD</p>
-                                <p class="mt-2 font-semibold text-slate-900">{{ $visit->smdActivities->pluck('activity_type')->map(fn ($item) => str($item)->replace('_', ' ')->title())->implode(', ') ?: '-' }}</p>
-                            </div>
-                        @endif
+                        <div class="app-kpi">
+                            <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">Collection</p>
+                            <p class="mt-3 text-2xl font-semibold text-ink-950">Rp {{ number_format($visit->collectionAmount(), 0, ',', '.') }}</p>
+                        </div>
+                        <div class="app-kpi">
+                            <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">Latitude</p>
+                            <p class="mt-3 text-sm font-semibold text-ink-950">{{ $visit->latitude }}</p>
+                        </div>
+                        <div class="app-kpi">
+                            <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">Longitude</p>
+                            <p class="mt-3 text-sm font-semibold text-ink-950">{{ $visit->longitude }}</p>
+                        </div>
                     </div>
                 </div>
             </section>
 
-            <section class="app-panel p-5">
-                <div class="grid gap-6 lg:grid-cols-[0.8fr_1.2fr]">
-                    <div class="app-soft-panel p-5">
-                        <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Foto Bukti</p>
-                        <img src="{{ asset('storage/'.$visit->visit_photo_path) }}" alt="Foto bukti kunjungan" class="mt-4 w-full rounded-[1.25rem] border border-slate-200 object-cover">
-                    </div>
+            <section class="grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
+                <div class="space-y-6">
+                    <section class="app-panel app-animate-enter p-5 sm:p-6">
+                        <div class="flex items-center justify-between gap-3">
+                            <div>
+                                <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Informasi Kunjungan</p>
+                                <h3 class="mt-2 text-xl font-semibold text-ink-950">Data utama</h3>
+                            </div>
+                        </div>
 
-                    <div class="app-soft-panel p-5">
-                        <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Catatan</p>
-                        <p class="mt-4 text-sm leading-7 text-slate-600">{{ $visit->notes ?: 'Tidak ada catatan tambahan.' }}</p>
+                        <div class="mt-5 grid gap-3 sm:grid-cols-2 text-sm text-slate-600">
+                            <div class="app-soft-panel px-4 py-4"><p class="text-[11px] uppercase tracking-[0.14em] text-slate-400">User</p><p class="mt-1 font-semibold text-slate-900">{{ $visit->user?->name }}</p></div>
+                            <div class="app-soft-panel px-4 py-4"><p class="text-[11px] uppercase tracking-[0.14em] text-slate-400">Cabang</p><p class="mt-1 font-semibold text-slate-900">{{ $visit->branch?->name }}</p></div>
+                            <div class="app-soft-panel px-4 py-4"><p class="text-[11px] uppercase tracking-[0.14em] text-slate-400">Outlet</p><p class="mt-1 font-semibold text-slate-900">{{ $visit->outlet?->name }}</p></div>
+                            <div class="app-soft-panel px-4 py-4"><p class="text-[11px] uppercase tracking-[0.14em] text-slate-400">Tipe</p><p class="mt-1 font-semibold text-slate-900">{{ $visit->typeLabel() }}</p></div>
+                            <div class="app-soft-panel px-4 py-4"><p class="text-[11px] uppercase tracking-[0.14em] text-slate-400">Kondisi</p><p class="mt-1 font-semibold text-slate-900">{{ $visit->outlet_condition ?: '-' }}</p></div>
+                            <div class="app-soft-panel px-4 py-4"><p class="text-[11px] uppercase tracking-[0.14em] text-slate-400">Waktu</p><p class="mt-1 font-semibold text-slate-900">{{ $visit->visitedAtForBranch()?->format('d M Y H:i') }}</p></div>
+                        </div>
 
-                        @if ($visit->visit_type === 'smd' && $visit->smdDetail?->display_photo_path)
-                            <div class="mt-6 border-t border-slate-200 pt-5">
-                                <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Foto Display</p>
-                                <img src="{{ asset('storage/'.$visit->smdDetail->display_photo_path) }}" alt="Foto display" class="mt-4 w-full rounded-[1.25rem] border border-slate-200 object-cover">
+                        @if ($visit->visit_type === 'smd')
+                            <div class="mt-5 app-soft-panel px-4 py-4 text-sm text-slate-600">
+                                <p class="text-[11px] uppercase tracking-[0.14em] text-slate-400">Aktivitas SMD</p>
+                                <div class="mt-3 flex flex-wrap gap-2">
+                                    @forelse ($visit->smdActivities as $activity)
+                                        <span class="inline-flex rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-sm">{{ str($activity->activity_type)->replace('_', ' ')->title() }}</span>
+                                    @empty
+                                        <span class="text-sm text-slate-500">-</span>
+                                    @endforelse
+                                </div>
                             </div>
                         @endif
-                    </div>
+                    </section>
+
+                    <section class="app-panel app-animate-enter p-5 sm:p-6">
+                        <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Catatan</p>
+                        <div class="mt-4 app-soft-panel px-4 py-4">
+                            <p class="text-sm leading-7 text-slate-600">{{ $visit->notes ?: 'Tidak ada catatan tambahan.' }}</p>
+                        </div>
+                    </section>
+                </div>
+
+                <div class="space-y-6">
+                    <section class="app-panel app-animate-enter p-5 sm:p-6">
+                        <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Foto Bukti</p>
+                        <div class="mt-4 overflow-hidden rounded-[1.5rem] border border-slate-200 bg-slate-50">
+                            <img src="{{ asset('storage/'.$visit->visit_photo_path) }}" alt="Foto bukti kunjungan" class="w-full object-cover">
+                        </div>
+                    </section>
+
+                    @if ($visit->visit_type === 'smd' && $visit->smdDetail?->display_photo_path)
+                        <section class="app-panel app-animate-enter p-5 sm:p-6">
+                            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Foto Display</p>
+                            <div class="mt-4 overflow-hidden rounded-[1.5rem] border border-slate-200 bg-slate-50">
+                                <img src="{{ asset('storage/'.$visit->smdDetail->display_photo_path) }}" alt="Foto display" class="w-full object-cover">
+                            </div>
+                        </section>
+                    @endif
                 </div>
             </section>
         </div>
