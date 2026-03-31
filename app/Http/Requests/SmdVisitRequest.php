@@ -46,6 +46,65 @@ class SmdVisitRequest extends FormRequest
         ];
     }
 
+    public function messages(): array
+    {
+        return [
+            'new_outlet_name.required' => 'Nama outlet baru wajib diisi.',
+            'new_outlet_address.required' => 'Alamat outlet baru wajib diisi.',
+            'new_outlet_district.required' => 'Kecamatan outlet baru wajib diisi.',
+            'new_outlet_city.required' => 'Kota outlet baru wajib diisi.',
+            'new_outlet_category.required' => 'Kategori outlet baru wajib dipilih.',
+            'new_outlet_category.in' => 'Kategori outlet baru tidak valid.',
+            'new_outlet_type.required' => 'Jenis outlet baru wajib dipilih.',
+            'new_outlet_type.in' => 'Jenis outlet baru tidak valid.',
+            'new_outlet_official_kode.required' => 'Official kode wajib diisi untuk pelanggan lama.',
+            'new_outlet_official_kode.unique' => 'Official kode sudah dipakai outlet lain.',
+            'activities.required' => 'Pilih minimal satu aktivitas SMD.',
+            'activities.array' => 'Aktivitas SMD tidak valid.',
+            'activities.min' => 'Pilih minimal satu aktivitas SMD.',
+            'activities.*.in' => 'Ada aktivitas SMD yang tidak valid.',
+            'po_amount.numeric' => 'Nominal PO harus berupa angka.',
+            'po_amount.min' => 'Nominal PO tidak boleh kurang dari 0.',
+            'payment_amount.numeric' => 'Nominal pembayaran harus berupa angka.',
+            'payment_amount.min' => 'Nominal pembayaran tidak boleh kurang dari 0.',
+            'display_photo.image' => 'Foto display harus berupa gambar.',
+            'display_photo.mimes' => 'Foto display harus berformat JPG, JPEG, PNG, atau WEBP.',
+            'display_photo.max' => 'Ukuran foto display maksimal 3 MB.',
+            'latitude.required' => 'Lokasi kunjungan wajib diambil.',
+            'latitude.numeric' => 'Latitude tidak valid.',
+            'latitude.between' => 'Latitude tidak valid.',
+            'longitude.required' => 'Lokasi kunjungan wajib diambil.',
+            'longitude.numeric' => 'Longitude tidak valid.',
+            'longitude.between' => 'Longitude tidak valid.',
+            'visit_photo.required' => 'Foto bukti kunjungan wajib diambil.',
+            'visit_photo.image' => 'File bukti kunjungan harus berupa gambar.',
+            'visit_photo.mimes' => 'Foto bukti kunjungan harus berformat JPG, JPEG, PNG, atau WEBP.',
+            'visit_photo.max' => 'Ukuran foto bukti kunjungan maksimal 3 MB.',
+            'notes.max' => 'Catatan maksimal 1000 karakter.',
+        ];
+    }
+
+    public function attributes(): array
+    {
+        return [
+            'new_outlet_name' => 'nama outlet baru',
+            'new_outlet_address' => 'alamat outlet baru',
+            'new_outlet_district' => 'kecamatan outlet baru',
+            'new_outlet_city' => 'kota outlet baru',
+            'new_outlet_category' => 'kategori outlet baru',
+            'new_outlet_type' => 'jenis outlet baru',
+            'new_outlet_official_kode' => 'official kode',
+            'activities' => 'aktivitas SMD',
+            'po_amount' => 'nominal PO',
+            'payment_amount' => 'nominal pembayaran',
+            'display_photo' => 'foto display',
+            'latitude' => 'latitude',
+            'longitude' => 'longitude',
+            'visit_photo' => 'foto bukti kunjungan',
+            'notes' => 'catatan',
+        ];
+    }
+
     public function withValidator($validator): void
     {
         $validator->after(function ($validator): void {

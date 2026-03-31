@@ -12,7 +12,10 @@
 
     $navItems[] = ['label' => 'Outlet', 'route' => route('outlets.index'), 'active' => request()->routeIs('outlets.*'), 'icon' => 'outlet'];
     $navItems[] = ['label' => 'History Kunjungan', 'route' => route('visit-history.index'), 'active' => request()->routeIs('visit-history.*'), 'icon' => 'history'];
-    $navItems[] = ['label' => 'Laporan', 'route' => route('reports.index'), 'active' => request()->routeIs('reports.*'), 'icon' => 'report'];
+
+    if ($user->canViewReports()) {
+        $navItems[] = ['label' => 'Laporan', 'route' => route('reports.index'), 'active' => request()->routeIs('reports.*'), 'icon' => 'report'];
+    }
 
     if ($user->canVerifyOutlets()) {
         $navItems[] = ['label' => 'Verifikasi Outlet', 'route' => route('outlet-verifications.index'), 'active' => request()->routeIs('outlet-verifications.*'), 'icon' => 'shield'];
@@ -80,16 +83,6 @@
                     {{ $user->is_active ? 'Online' : 'Paused' }}
                 </span>
             </div>
-            <div class="mt-4 grid grid-cols-2 gap-3 text-sm">
-                <div class="rounded-2xl border border-white/8 bg-black/12 px-3 py-3">
-                    <p class="text-[11px] uppercase tracking-[0.18em] text-slate-500">Role</p>
-                    <p class="mt-2 font-semibold text-white">{{ $user->roleLabel() }}</p>
-                </div>
-                <div class="rounded-2xl border border-white/8 bg-black/12 px-3 py-3">
-                    <p class="text-[11px] uppercase tracking-[0.18em] text-slate-500">Focus</p>
-                    <p class="mt-2 font-semibold text-white">Field Ready</p>
-                </div>
-            </div>
         </div>
 
         <div class="relative mt-8 flex items-center justify-between px-1">
@@ -108,16 +101,6 @@
                 </x-nav-link>
             @endforeach
         </nav>
-
-        <div class="relative mt-6 rounded-[1.8rem] border border-white/10 bg-white/7 p-4 backdrop-blur">
-            <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Quick Pulse</p>
-            <p class="mt-2 text-sm leading-6 text-slate-300">Pantau dashboard, lanjutkan kunjungan, lalu cek laporan harian tanpa pindah konteks terlalu jauh.</p>
-            <div class="mt-4 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-sky-200/70">
-                <span class="app-status-dot bg-emerald-400 shadow-[0_0_16px_rgba(74,222,128,0.8)]"></span>
-                Live workspace
-            </div>
-        </div>
-
         <form method="POST" action="{{ route('logout') }}" class="relative mt-6">
             @csrf
             <button class="inline-flex w-full items-center justify-center rounded-[1.35rem] border border-white/12 bg-white/10 px-4 py-3 text-sm font-semibold text-slate-100 transition duration-200 hover:-translate-y-0.5 hover:border-sky-300/20 hover:bg-white/14 hover:text-white">

@@ -45,6 +45,59 @@ class SalesVisitRequest extends FormRequest
         ];
     }
 
+    public function messages(): array
+    {
+        return [
+            'new_outlet_name.required' => 'Nama outlet baru wajib diisi.',
+            'new_outlet_address.required' => 'Alamat outlet baru wajib diisi.',
+            'new_outlet_district.required' => 'Kecamatan outlet baru wajib diisi.',
+            'new_outlet_city.required' => 'Kota outlet baru wajib diisi.',
+            'new_outlet_category.required' => 'Kategori outlet baru wajib dipilih.',
+            'new_outlet_category.in' => 'Kategori outlet baru tidak valid.',
+            'new_outlet_type.required' => 'Jenis outlet baru wajib dipilih.',
+            'new_outlet_type.in' => 'Jenis outlet baru tidak valid.',
+            'new_outlet_official_kode.required' => 'Official kode wajib diisi untuk pelanggan lama.',
+            'new_outlet_official_kode.unique' => 'Official kode sudah dipakai outlet lain.',
+            'outlet_condition.required' => 'Pilih kondisi outlet terlebih dahulu.',
+            'outlet_condition.in' => 'Kondisi outlet tidak valid.',
+            'order_amount.numeric' => 'Nominal order harus berupa angka.',
+            'order_amount.min' => 'Nominal order tidak boleh kurang dari 0.',
+            'receivable_amount.numeric' => 'Total tagihan harus berupa angka.',
+            'receivable_amount.min' => 'Total tagihan tidak boleh kurang dari 0.',
+            'latitude.required' => 'Lokasi kunjungan wajib diambil.',
+            'latitude.numeric' => 'Latitude tidak valid.',
+            'latitude.between' => 'Latitude tidak valid.',
+            'longitude.required' => 'Lokasi kunjungan wajib diambil.',
+            'longitude.numeric' => 'Longitude tidak valid.',
+            'longitude.between' => 'Longitude tidak valid.',
+            'visit_photo.required' => 'Foto bukti kunjungan wajib diambil.',
+            'visit_photo.image' => 'File bukti kunjungan harus berupa gambar.',
+            'visit_photo.mimes' => 'Foto bukti kunjungan harus berformat JPG, JPEG, PNG, atau WEBP.',
+            'visit_photo.max' => 'Ukuran foto bukti kunjungan maksimal 3 MB.',
+            'notes.max' => 'Catatan maksimal 1000 karakter.',
+        ];
+    }
+
+    public function attributes(): array
+    {
+        return [
+            'new_outlet_name' => 'nama outlet baru',
+            'new_outlet_address' => 'alamat outlet baru',
+            'new_outlet_district' => 'kecamatan outlet baru',
+            'new_outlet_city' => 'kota outlet baru',
+            'new_outlet_category' => 'kategori outlet baru',
+            'new_outlet_type' => 'jenis outlet baru',
+            'new_outlet_official_kode' => 'official kode',
+            'outlet_condition' => 'kondisi outlet',
+            'order_amount' => 'nominal order',
+            'receivable_amount' => 'total tagihan',
+            'latitude' => 'latitude',
+            'longitude' => 'longitude',
+            'visit_photo' => 'foto bukti kunjungan',
+            'notes' => 'catatan',
+        ];
+    }
+
     public function withValidator($validator): void
     {
         $validator->after(function ($validator): void {

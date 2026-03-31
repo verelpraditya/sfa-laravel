@@ -10,6 +10,7 @@ use App\Models\Visit;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class SmdVisitController extends Controller
@@ -85,9 +86,17 @@ class SmdVisitController extends Controller
                 ]);
             }
 
-            $visitPhoto = $request->file('visit_photo')->store('visits/smd', 'public');
+            $visitPhoto = $request->file('visit_photo')->storeAs(
+                'visits/smd',
+                $this->buildPhotoFilename($user->username, $outlet->name, $request->file('visit_photo')->extension()),
+                'public',
+            );
             $displayPhoto = $request->hasFile('display_photo')
-                ? $request->file('display_photo')->store('visits/smd/display', 'public')
+                ? $request->file('display_photo')->storeAs(
+                    'visits/smd/display',
+                    $this->buildPhotoFilename($user->username, $outlet->name.'-display', $request->file('display_photo')->extension()),
+                    'public',
+                )
                 : null;
 
             $visit = Visit::create([
@@ -121,5 +130,14 @@ class SmdVisitController extends Controller
         });
 
         return redirect()->route('smd-visits.index')->with('status', 'Kunjungan SMD berhasil disimpan untuk outlet '.$visit->outlet->name.'.');
+    }
+
+    private function buildPhotoFilename(string $username, string $outletName, string $extension): string
+    {
+        $timestamp = now()->format('Ymd_His');
+        $safeOutletName = Str::slug($outletName, '-');
+        $safeUsername = Str::slug($username, '-');
+
+        return sprintf('%s_%s_%s.%s', $safeUsername, $safeOutletName, $timestamp, strtolower($extension));
     }
 }

@@ -12,6 +12,17 @@
 
     <div class="py-4 sm:py-6">
         <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+            @if ($errors->any())
+                <div class="mb-6 rounded-[1.6rem] border border-rose-200 bg-rose-50 px-4 py-4 text-sm text-rose-700 shadow-sm">
+                    <p class="font-semibold">Form belum bisa disimpan. Periksa field yang masih bermasalah.</p>
+                    <ul class="mt-2 list-disc space-y-1 pl-5">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
             <form method="POST" action="{{ route('sales-visits.store') }}" enctype="multipart/form-data" class="space-y-6" x-data="salesVisitForm()" x-init="init()">
                 @csrf
 
@@ -69,6 +80,9 @@
                                     <input id="outlet-search" x-model="query" @input.debounce.300ms="searchOutlets" type="text" placeholder="Ketik nama outlet / kode..." class="w-full border-0 bg-transparent text-sm text-slate-700 placeholder:text-slate-400 focus:outline-none">
                                 </div>
                                 <input type="hidden" name="outlet_id" :value="selectedOutlet?.id || ''">
+                                <input type="hidden" name="selected_outlet_name" :value="selectedOutlet?.name || ''">
+                                <input type="hidden" name="selected_outlet_district" :value="selectedOutlet?.district || ''">
+                                <input type="hidden" name="selected_outlet_city" :value="selectedOutlet?.city || ''">
 
                                 <div class="mt-3 space-y-2 rounded-[1.4rem] border border-slate-200 bg-white p-2 shadow-sm" x-show="loading || results.length > 0 || (query.length > 0 && !selectedOutlet)">
                                     <template x-for="item in results" :key="item.id">
@@ -117,10 +131,10 @@
                                     <div>
                                         <x-input-label for="new_outlet_category" value="Kategori outlet" />
                                         <select id="new_outlet_category" name="new_outlet_category" class="mt-2 block w-full rounded-2xl border border-slate-200/90 bg-white px-4 py-3 text-sm text-slate-700 shadow-[0_10px_30px_-18px_rgba(15,23,42,0.35)] focus:border-sky-400 focus:ring-4 focus:ring-sky-100">
-                                            <option value="salon">Salon</option>
-                                            <option value="toko">Toko</option>
-                                            <option value="barbershop">Barbershop</option>
-                                            <option value="lainnya">Lainnya</option>
+                                            <option value="salon" @selected(old('new_outlet_category', 'salon') === 'salon')>Salon</option>
+                                            <option value="toko" @selected(old('new_outlet_category') === 'toko')>Toko</option>
+                                            <option value="barbershop" @selected(old('new_outlet_category') === 'barbershop')>Barbershop</option>
+                                            <option value="lainnya" @selected(old('new_outlet_category') === 'lainnya')>Lainnya</option>
                                         </select>
                                         <x-input-error class="mt-2" :messages="$errors->get('new_outlet_category')" />
                                     </div>
@@ -247,16 +261,20 @@
                                     <x-input-label for="visit_photo" value="Foto bukti kunjungan" />
                                     <label for="visit_photo" class="mt-2 flex cursor-pointer items-center justify-between gap-4 rounded-[1.4rem] border border-dashed border-slate-300 bg-white px-4 py-4 text-sm text-slate-500 transition hover:border-sky-300 hover:bg-sky-50/50">
                                         <span>
-                                            <span class="block font-semibold text-slate-800">Pilih foto kunjungan</span>
-                                            <span class="mt-1 block text-xs text-slate-500">Format JPG, PNG, atau WEBP hingga 3MB.</span>
+                                            <span class="block font-semibold text-slate-800">Ambil foto kunjungan</span>
+                                            <span class="mt-1 block text-xs text-slate-500">Gunakan foto bukti kunjungan yang jelas.</span>
                                         </span>
-                                        <span class="rounded-full bg-sky-50 px-3 py-1.5 text-xs font-semibold text-sky-700">Upload</span>
+                                        <span class="rounded-full bg-sky-50 px-3 py-1.5 text-xs font-semibold text-sky-700">Kamera</span>
                                     </label>
-                                    <input id="visit_photo" name="visit_photo" type="file" accept="image/*" @change="previewPhoto($event)" class="sr-only">
+                                    <input id="visit_photo" name="visit_photo" type="file" accept="image/*" capture="environment" @change="handleVisitPhoto($event)" class="sr-only">
                                     <x-input-error class="mt-2" :messages="$errors->get('visit_photo')" />
 
                                     <div x-show="photoName" class="mt-4 rounded-[1.4rem] border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600">
                                         File dipilih: <span class="font-semibold text-slate-900" x-text="photoName"></span>
+                                    </div>
+                                    <div x-show="photoStatus" x-cloak class="mt-3 rounded-[1.2rem] border border-sky-100 bg-sky-50 px-4 py-3 text-xs font-medium text-sky-700" x-text="photoStatus"></div>
+                                    <div x-show="photoPreviewUrl" x-cloak class="mt-4 overflow-hidden rounded-[1.4rem] border border-slate-200 bg-white">
+                                        <img :src="photoPreviewUrl" alt="Preview foto kunjungan" class="h-56 w-full object-cover">
                                     </div>
                                 </div>
 
@@ -305,16 +323,18 @@
         <script>
             function salesVisitForm() {
                 return {
-                    query: '',
+                    query: @js(old('selected_outlet_name', '')),
                     results: [],
                     loading: false,
                     creatingNewOutlet: {{ old('new_outlet_name') ? 'true' : 'false' }},
-                    selectedOutlet: null,
+                    selectedOutlet: @js(old('outlet_id') ? ['id' => (int) old('outlet_id'), 'name' => old('selected_outlet_name'), 'district' => old('selected_outlet_district'), 'city' => old('selected_outlet_city')] : null),
                     newOutletType: '{{ old('new_outlet_type', 'prospek') }}',
                     outletCondition: '{{ old('outlet_condition', 'buka') }}',
                     latitude: '{{ old('latitude') }}',
                     longitude: '{{ old('longitude') }}',
                     photoName: '',
+                    photoStatus: '',
+                    photoPreviewUrl: null,
                     orderAmountRaw: '{{ old('order_amount') }}',
                     receivableAmountRaw: '{{ old('receivable_amount') }}',
                     orderAmountDisplay: '',
@@ -322,6 +342,10 @@
                     init() {
                         this.orderAmountDisplay = this.formatRupiah(this.orderAmountRaw);
                         this.receivableAmountDisplay = this.formatRupiah(this.receivableAmountRaw);
+
+                        if (this.selectedOutlet && ! this.query) {
+                            this.query = this.selectedOutlet.name || '';
+                        }
                     },
                     formatRupiah(value) {
                         const digits = String(value || '').replace(/\D/g, '');
@@ -409,8 +433,114 @@
                         this.latitude = '-6.9175000';
                         this.longitude = '107.6191000';
                     },
-                    previewPhoto(event) {
-                        this.photoName = event.target.files?.[0]?.name || '';
+                    async handleVisitPhoto(event) {
+                        const input = event.target;
+                        const file = input.files?.[0];
+
+                        if (! file) {
+                            this.photoName = '';
+                            this.photoStatus = '';
+                            this.photoPreviewUrl = null;
+                            return;
+                        }
+
+                        this.photoStatus = 'Memproses foto...';
+
+                        try {
+                            const compressed = await this.compressImage(file, {
+                                maxWidth: 1600,
+                                maxHeight: 1600,
+                                quality: 0.82,
+                            });
+
+                            const transfer = new DataTransfer();
+                            transfer.items.add(compressed);
+                            input.files = transfer.files;
+                            this.photoName = compressed.name;
+                            this.photoStatus = `Foto siap diupload (${this.formatFileSize(compressed.size)})`;
+                            this.setPreviewUrl(compressed, 'visit');
+                        } catch (error) {
+                            this.photoName = file.name;
+                            this.photoStatus = 'Foto asli akan diupload.';
+                            this.setPreviewUrl(file, 'visit');
+                        }
+                    },
+                    compressImage(file, options = {}) {
+                        const maxWidth = options.maxWidth || 1600;
+                        const maxHeight = options.maxHeight || 1600;
+                        const quality = options.quality || 0.82;
+
+                        return new Promise((resolve, reject) => {
+                            if (! file.type.startsWith('image/')) {
+                                reject(new Error('Unsupported file type.'));
+                                return;
+                            }
+
+                            const reader = new FileReader();
+
+                            reader.onerror = () => reject(new Error('Failed to read file.'));
+                            reader.onload = () => {
+                                const image = new Image();
+
+                                image.onerror = () => reject(new Error('Failed to load image.'));
+                                image.onload = () => {
+                                    let { width, height } = image;
+                                    const ratio = Math.min(maxWidth / width, maxHeight / height, 1);
+
+                                    width = Math.round(width * ratio);
+                                    height = Math.round(height * ratio);
+
+                                    const canvas = document.createElement('canvas');
+                                    canvas.width = width;
+                                    canvas.height = height;
+
+                                    const context = canvas.getContext('2d');
+
+                                    if (! context) {
+                                        reject(new Error('Canvas unavailable.'));
+                                        return;
+                                    }
+
+                                    context.drawImage(image, 0, 0, width, height);
+                                    canvas.toBlob((blob) => {
+                                        if (! blob) {
+                                            reject(new Error('Compression failed.'));
+                                            return;
+                                        }
+
+                                        const originalName = file.name.replace(/\.[^.]+$/, '');
+                                        const compressedFile = new File([blob], `${originalName}.jpg`, {
+                                            type: 'image/jpeg',
+                                            lastModified: Date.now(),
+                                        });
+
+                                        resolve(compressedFile.size < file.size ? compressedFile : file);
+                                    }, 'image/jpeg', quality);
+                                };
+
+                                image.src = reader.result;
+                            };
+
+                            reader.readAsDataURL(file);
+                        });
+                    },
+                    formatFileSize(size) {
+                        if (size < 1024) {
+                            return `${size} B`;
+                        }
+
+                        if (size < 1048576) {
+                            return `${(size / 1024).toFixed(0)} KB`;
+                        }
+
+                        return `${(size / 1048576).toFixed(2)} MB`;
+                    },
+                    setPreviewUrl(file) {
+                        if (this.photoPreviewUrl) {
+                            URL.revokeObjectURL(this.photoPreviewUrl);
+                        }
+
+                        this.photoPreviewUrl = URL.createObjectURL(file);
                     },
                 }
             }

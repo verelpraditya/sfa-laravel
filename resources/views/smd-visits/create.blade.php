@@ -10,6 +10,17 @@
 
     <div class="py-4 sm:py-6">
         <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+            @if ($errors->any())
+                <div class="mb-6 rounded-[1.6rem] border border-rose-200 bg-rose-50 px-4 py-4 text-sm text-rose-700 shadow-sm">
+                    <p class="font-semibold">Form belum bisa disimpan. Periksa field yang masih bermasalah.</p>
+                    <ul class="mt-2 list-disc space-y-1 pl-5">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
             <form method="POST" action="{{ route('smd-visits.store') }}" enctype="multipart/form-data" class="space-y-6" x-data="smdVisitForm()" x-init="init()">
                 @csrf
 
@@ -67,6 +78,9 @@
                                     <input id="outlet-search" x-model="query" @input.debounce.300ms="searchOutlets" type="text" placeholder="Ketik nama outlet / kode..." class="w-full border-0 bg-transparent text-sm text-slate-700 placeholder:text-slate-400 focus:outline-none">
                                 </div>
                                 <input type="hidden" name="outlet_id" :value="selectedOutlet?.id || ''">
+                                <input type="hidden" name="selected_outlet_name" :value="selectedOutlet?.name || ''">
+                                <input type="hidden" name="selected_outlet_district" :value="selectedOutlet?.district || ''">
+                                <input type="hidden" name="selected_outlet_city" :value="selectedOutlet?.city || ''">
 
                                 <div class="mt-3 space-y-2 rounded-[1.4rem] border border-slate-200 bg-white p-2 shadow-sm" x-show="loading || results.length > 0 || (query.length > 0 && !selectedOutlet)">
                                     <template x-for="item in results" :key="item.id">
@@ -115,10 +129,10 @@
                                     <div>
                                         <x-input-label for="new_outlet_category" value="Kategori outlet" />
                                         <select id="new_outlet_category" name="new_outlet_category" class="mt-2 block w-full rounded-2xl border border-slate-200/90 bg-white px-4 py-3 text-sm text-slate-700 shadow-[0_10px_30px_-18px_rgba(15,23,42,0.35)] focus:border-sky-400 focus:ring-4 focus:ring-sky-100">
-                                            <option value="salon">Salon</option>
-                                            <option value="toko">Toko</option>
-                                            <option value="barbershop">Barbershop</option>
-                                            <option value="lainnya">Lainnya</option>
+                                            <option value="salon" @selected(old('new_outlet_category', 'salon') === 'salon')>Salon</option>
+                                            <option value="toko" @selected(old('new_outlet_category') === 'toko')>Toko</option>
+                                            <option value="barbershop" @selected(old('new_outlet_category') === 'barbershop')>Barbershop</option>
+                                            <option value="lainnya" @selected(old('new_outlet_category') === 'lainnya')>Lainnya</option>
                                         </select>
                                         <x-input-error class="mt-2" :messages="$errors->get('new_outlet_category')" />
                                     </div>
@@ -206,15 +220,19 @@
                                     <x-input-label for="display_photo" value="Foto display" />
                                     <label for="display_photo" class="mt-2 flex cursor-pointer items-center justify-between gap-4 rounded-[1.4rem] border border-dashed border-slate-300 bg-white px-4 py-4 text-sm text-slate-500 transition hover:border-sky-300 hover:bg-sky-50/50">
                                         <span>
-                                            <span class="block font-semibold text-slate-800">Pilih foto display</span>
-                                            <span class="mt-1 block text-xs text-slate-500">Upload hanya jika aktivitas merapikan display dipilih.</span>
+                                            <span class="block font-semibold text-slate-800">Ambil foto display</span>
+                                            <span class="mt-1 block text-xs text-slate-500">Gunakan foto display yang jelas.</span>
                                         </span>
-                                        <span class="rounded-full bg-sky-50 px-3 py-1.5 text-xs font-semibold text-sky-700">Upload</span>
+                                        <span class="rounded-full bg-sky-50 px-3 py-1.5 text-xs font-semibold text-sky-700">Kamera</span>
                                     </label>
-                                    <input id="display_photo" name="display_photo" type="file" accept="image/*" @change="previewDisplayPhoto($event)" class="sr-only">
+                                    <input id="display_photo" name="display_photo" type="file" accept="image/*" capture="environment" @change="handleDisplayPhoto($event)" class="sr-only">
                                     <x-input-error class="mt-2" :messages="$errors->get('display_photo')" />
                                     <div x-show="displayPhotoName" class="mt-3 rounded-[1.4rem] border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600">
                                         File dipilih: <span class="font-semibold text-slate-900" x-text="displayPhotoName"></span>
+                                    </div>
+                                    <div x-show="displayPhotoStatus" x-cloak class="mt-3 rounded-[1.2rem] border border-sky-100 bg-sky-50 px-4 py-3 text-xs font-medium text-sky-700" x-text="displayPhotoStatus"></div>
+                                    <div x-show="displayPhotoPreviewUrl" x-cloak class="mt-4 overflow-hidden rounded-[1.4rem] border border-slate-200 bg-white">
+                                        <img :src="displayPhotoPreviewUrl" alt="Preview foto display" class="h-56 w-full object-cover">
                                     </div>
                                 </div>
                             </div>
@@ -258,15 +276,19 @@
                                     <x-input-label for="visit_photo" value="Foto bukti kunjungan" />
                                     <label for="visit_photo" class="mt-2 flex cursor-pointer items-center justify-between gap-4 rounded-[1.4rem] border border-dashed border-slate-300 bg-white px-4 py-4 text-sm text-slate-500 transition hover:border-sky-300 hover:bg-sky-50/50">
                                         <span>
-                                            <span class="block font-semibold text-slate-800">Pilih foto kunjungan</span>
-                                            <span class="mt-1 block text-xs text-slate-500">Format JPG, PNG, atau WEBP hingga 3MB.</span>
+                                            <span class="block font-semibold text-slate-800">Ambil foto kunjungan</span>
+                                            <span class="mt-1 block text-xs text-slate-500">Gunakan foto bukti kunjungan yang jelas.</span>
                                         </span>
-                                        <span class="rounded-full bg-sky-50 px-3 py-1.5 text-xs font-semibold text-sky-700">Upload</span>
+                                        <span class="rounded-full bg-sky-50 px-3 py-1.5 text-xs font-semibold text-sky-700">Kamera</span>
                                     </label>
-                                    <input id="visit_photo" name="visit_photo" type="file" accept="image/*" @change="previewVisitPhoto($event)" class="sr-only">
+                                    <input id="visit_photo" name="visit_photo" type="file" accept="image/*" capture="environment" @change="handleVisitPhoto($event)" class="sr-only">
                                     <x-input-error class="mt-2" :messages="$errors->get('visit_photo')" />
                                     <div x-show="visitPhotoName" class="mt-3 rounded-[1.4rem] border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600">
                                         File dipilih: <span class="font-semibold text-slate-900" x-text="visitPhotoName"></span>
+                                    </div>
+                                    <div x-show="visitPhotoStatus" x-cloak class="mt-3 rounded-[1.2rem] border border-sky-100 bg-sky-50 px-4 py-3 text-xs font-medium text-sky-700" x-text="visitPhotoStatus"></div>
+                                    <div x-show="visitPhotoPreviewUrl" x-cloak class="mt-4 overflow-hidden rounded-[1.4rem] border border-slate-200 bg-white">
+                                        <img :src="visitPhotoPreviewUrl" alt="Preview foto kunjungan" class="h-56 w-full object-cover">
                                     </div>
                                 </div>
 
@@ -315,17 +337,21 @@
         <script>
             function smdVisitForm() {
                 return {
-                    query: '',
+                    query: @js(old('selected_outlet_name', '')),
                     results: [],
                     loading: false,
                     creatingNewOutlet: {{ old('new_outlet_name') ? 'true' : 'false' }},
-                    selectedOutlet: null,
+                    selectedOutlet: @js(old('outlet_id') ? ['id' => (int) old('outlet_id'), 'name' => old('selected_outlet_name'), 'district' => old('selected_outlet_district'), 'city' => old('selected_outlet_city')] : null),
                     newOutletType: '{{ old('new_outlet_type', 'prospek') }}',
                     activities: @json(old('activities', [])),
                     latitude: '{{ old('latitude') }}',
                     longitude: '{{ old('longitude') }}',
                     visitPhotoName: '',
+                    visitPhotoStatus: '',
+                    visitPhotoPreviewUrl: null,
                     displayPhotoName: '',
+                    displayPhotoStatus: '',
+                    displayPhotoPreviewUrl: null,
                     poAmountRaw: '{{ old('po_amount') }}',
                     paymentAmountRaw: '{{ old('payment_amount') }}',
                     poAmountDisplay: '',
@@ -333,6 +359,10 @@
                     init() {
                         this.poAmountDisplay = this.formatRupiah(this.poAmountRaw);
                         this.paymentAmountDisplay = this.formatRupiah(this.paymentAmountRaw);
+
+                        if (this.selectedOutlet && ! this.query) {
+                            this.query = this.selectedOutlet.name || '';
+                        }
                     },
                     formatRupiah(value) {
                         const digits = String(value || '').replace(/\D/g, '');
@@ -410,11 +440,152 @@
                         this.latitude = '-6.9175000';
                         this.longitude = '107.6191000';
                     },
-                    previewVisitPhoto(event) {
-                        this.visitPhotoName = event.target.files?.[0]?.name || '';
+                    async handleVisitPhoto(event) {
+                        await this.handleCompressedUpload(event, 'visit');
                     },
-                    previewDisplayPhoto(event) {
-                        this.displayPhotoName = event.target.files?.[0]?.name || '';
+                    async handleDisplayPhoto(event) {
+                        await this.handleCompressedUpload(event, 'display');
+                    },
+                    async handleCompressedUpload(event, kind) {
+                        const input = event.target;
+                        const file = input.files?.[0];
+
+                        if (! file) {
+                            if (kind === 'visit') {
+                                this.visitPhotoName = '';
+                                this.visitPhotoStatus = '';
+                                this.visitPhotoPreviewUrl = null;
+                            } else {
+                                this.displayPhotoName = '';
+                                this.displayPhotoStatus = '';
+                                this.displayPhotoPreviewUrl = null;
+                            }
+                            return;
+                        }
+
+                        if (kind === 'visit') {
+                            this.visitPhotoStatus = 'Memproses foto...';
+                        } else {
+                            this.displayPhotoStatus = 'Memproses foto...';
+                        }
+
+                        try {
+                            const compressed = await this.compressImage(file, {
+                                maxWidth: 1600,
+                                maxHeight: 1600,
+                                quality: 0.82,
+                            });
+
+                            const transfer = new DataTransfer();
+                            transfer.items.add(compressed);
+                            input.files = transfer.files;
+
+                            if (kind === 'visit') {
+                                this.visitPhotoName = compressed.name;
+                                this.visitPhotoStatus = `Foto siap diupload (${this.formatFileSize(compressed.size)})`;
+                                this.setPreviewUrl(compressed, 'visit');
+                            } else {
+                                this.displayPhotoName = compressed.name;
+                                this.displayPhotoStatus = `Foto siap diupload (${this.formatFileSize(compressed.size)})`;
+                                this.setPreviewUrl(compressed, 'display');
+                            }
+                        } catch (error) {
+                            if (kind === 'visit') {
+                                this.visitPhotoName = file.name;
+                                this.visitPhotoStatus = 'Foto asli akan diupload.';
+                                this.setPreviewUrl(file, 'visit');
+                            } else {
+                                this.displayPhotoName = file.name;
+                                this.displayPhotoStatus = 'Foto asli akan diupload.';
+                                this.setPreviewUrl(file, 'display');
+                            }
+                        }
+                    },
+                    compressImage(file, options = {}) {
+                        const maxWidth = options.maxWidth || 1600;
+                        const maxHeight = options.maxHeight || 1600;
+                        const quality = options.quality || 0.82;
+
+                        return new Promise((resolve, reject) => {
+                            if (! file.type.startsWith('image/')) {
+                                reject(new Error('Unsupported file type.'));
+                                return;
+                            }
+
+                            const reader = new FileReader();
+
+                            reader.onerror = () => reject(new Error('Failed to read file.'));
+                            reader.onload = () => {
+                                const image = new Image();
+
+                                image.onerror = () => reject(new Error('Failed to load image.'));
+                                image.onload = () => {
+                                    let { width, height } = image;
+                                    const ratio = Math.min(maxWidth / width, maxHeight / height, 1);
+
+                                    width = Math.round(width * ratio);
+                                    height = Math.round(height * ratio);
+
+                                    const canvas = document.createElement('canvas');
+                                    canvas.width = width;
+                                    canvas.height = height;
+
+                                    const context = canvas.getContext('2d');
+
+                                    if (! context) {
+                                        reject(new Error('Canvas unavailable.'));
+                                        return;
+                                    }
+
+                                    context.drawImage(image, 0, 0, width, height);
+                                    canvas.toBlob((blob) => {
+                                        if (! blob) {
+                                            reject(new Error('Compression failed.'));
+                                            return;
+                                        }
+
+                                        const originalName = file.name.replace(/\.[^.]+$/, '');
+                                        const compressedFile = new File([blob], `${originalName}.jpg`, {
+                                            type: 'image/jpeg',
+                                            lastModified: Date.now(),
+                                        });
+
+                                        resolve(compressedFile.size < file.size ? compressedFile : file);
+                                    }, 'image/jpeg', quality);
+                                };
+
+                                image.src = reader.result;
+                            };
+
+                            reader.readAsDataURL(file);
+                        });
+                    },
+                    formatFileSize(size) {
+                        if (size < 1024) {
+                            return `${size} B`;
+                        }
+
+                        if (size < 1048576) {
+                            return `${(size / 1024).toFixed(0)} KB`;
+                        }
+
+                        return `${(size / 1048576).toFixed(2)} MB`;
+                    },
+                    setPreviewUrl(file, kind) {
+                        const currentUrl = kind === 'visit' ? this.visitPhotoPreviewUrl : this.displayPhotoPreviewUrl;
+
+                        if (currentUrl) {
+                            URL.revokeObjectURL(currentUrl);
+                        }
+
+                        const nextUrl = URL.createObjectURL(file);
+
+                        if (kind === 'visit') {
+                            this.visitPhotoPreviewUrl = nextUrl;
+                            return;
+                        }
+
+                        this.displayPhotoPreviewUrl = nextUrl;
                     },
                 }
             }

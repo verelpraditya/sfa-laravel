@@ -9,6 +9,7 @@ use App\Models\Visit;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class SalesVisitController extends Controller
@@ -87,7 +88,11 @@ class SalesVisitController extends Controller
                 ]);
             }
 
-            $storedPhoto = $request->file('visit_photo')->store('visits/sales', 'public');
+            $storedPhoto = $request->file('visit_photo')->storeAs(
+                'visits/sales',
+                $this->buildPhotoFilename($user->username, $outlet->name, $request->file('visit_photo')->extension()),
+                'public',
+            );
 
             $visit = Visit::create([
                 'branch_id' => $user->branch_id,
@@ -112,5 +117,14 @@ class SalesVisitController extends Controller
         });
 
         return redirect()->route('sales-visits.index')->with('status', 'Kunjungan sales berhasil disimpan untuk outlet '.$visit->outlet->name.'.');
+    }
+
+    private function buildPhotoFilename(string $username, string $outletName, string $extension): string
+    {
+        $timestamp = now()->format('Ymd_His');
+        $safeOutletName = Str::slug($outletName, '-');
+        $safeUsername = Str::slug($username, '-');
+
+        return sprintf('%s_%s_%s.%s', $safeUsername, $safeOutletName, $timestamp, strtolower($extension));
     }
 }

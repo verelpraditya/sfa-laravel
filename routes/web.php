@@ -12,9 +12,7 @@ use App\Http\Controllers\UserManagementController;
 use App\Http\Controllers\VisitHistoryController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::redirect('/', '/login');
 
 Route::get('/dashboard', DashboardController::class)->middleware(['auth'])->name('dashboard');
 
@@ -29,10 +27,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
-    Route::get('/reports/export', [ReportController::class, 'export'])->name('reports.export');
     Route::get('/visit-history', [VisitHistoryController::class, 'index'])->name('visit-history.index');
     Route::get('/visit-history/{visit}', [VisitHistoryController::class, 'show'])->name('visit-history.show');
+
+    Route::middleware('role:admin_pusat,supervisor')->group(function () {
+        Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+        Route::get('/reports/export', [ReportController::class, 'export'])->name('reports.export');
+    });
 
     Route::middleware('role:admin_pusat')->group(function () {
         Route::resource('branches', BranchController::class)->except(['show', 'destroy']);

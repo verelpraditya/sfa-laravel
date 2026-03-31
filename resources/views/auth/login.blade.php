@@ -1,11 +1,12 @@
 <x-guest-layout>
     <div class="space-y-6" x-data="{ showPassword: false }">
-        <div class="space-y-2">
-            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Welcome back</p>
-            <h2 class="text-3xl font-semibold text-ink-950">Masuk ke workspace kamu</h2>
-            <p class="text-sm leading-6 text-slate-500">
-                Gunakan username yang sudah dibuat admin. Setelah login kamu akan langsung diarahkan ke dashboard sesuai role.
-            </p>
+        <div class="space-y-3">
+            <div class="flex items-center gap-2">
+                <span class="app-chip">Login</span>
+                <span class="app-chip">Secure Access</span>
+            </div>
+            <h2 class="text-3xl font-semibold text-ink-950">Masuk ke dashboard</h2>
+            <p class="text-sm leading-6 text-slate-500">Masukkan username dan password untuk masuk ke workspace sesuai role kamu.</p>
         </div>
 
         <x-auth-session-status class="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700" :status="session('status')" />
@@ -13,7 +14,7 @@
         <form method="POST" action="{{ route('login') }}" class="space-y-5">
             @csrf
 
-            <div>
+            <div class="app-soft-panel p-4 sm:p-5">
                 <x-input-label for="username" :value="__('Username')" />
                 <x-text-input
                     id="username"
@@ -29,7 +30,7 @@
                 <x-input-error :messages="$errors->get('username')" class="mt-2" />
             </div>
 
-            <div>
+            <div class="app-soft-panel p-4 sm:p-5">
                 <div class="flex items-center justify-between">
                     <x-input-label for="password" :value="__('Password')" />
 
@@ -54,7 +55,7 @@
                     <button
                         type="button"
                         @click="showPassword = !showPassword"
-                        class="absolute inset-y-0 right-3 my-auto rounded-full px-3 py-1 text-xs font-semibold text-slate-500 transition hover:bg-slate-100 hover:text-slate-700"
+                        class="absolute inset-y-0 right-3 my-auto rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-semibold text-slate-500 shadow-sm transition hover:bg-slate-50 hover:text-slate-700"
                     >
                         <span x-text="showPassword ? 'Hide' : 'Show'"></span>
                     </button>
@@ -77,7 +78,7 @@
                 </x-primary-button>
 
                 <div class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-xs leading-6 text-slate-500">
-                    Demo akun awal: `adminpusat`, `supervisorbdg`, `salesbdg`, `smdbdg` dengan password default `password`.
+                    Pastikan login menggunakan akun operasional yang sudah dibuat admin. Jika ada kendala akses, hubungi admin pusat atau supervisor terkait.
                 </div>
             </div>
         </form>

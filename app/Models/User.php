@@ -157,6 +157,11 @@ class User extends Authenticatable
         return in_array($this->role, [self::ROLE_SMD, self::ROLE_SUPERVISOR], true);
     }
 
+    public function canViewReports(): bool
+    {
+        return in_array($this->role, [self::ROLE_ADMIN_PUSAT, self::ROLE_SUPERVISOR], true);
+    }
+
     public function createdOutlets(): HasMany
     {
         return $this->hasMany(Outlet::class, 'created_by');
