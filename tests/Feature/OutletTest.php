@@ -75,15 +75,13 @@ class OutletTest extends TestCase
             'district' => 'Coblong',
             'city' => 'Bandung',
             'category' => 'toko',
-            'outlet_type' => 'pelanggan_lama',
             'outlet_status' => 'active',
-            'verification_status' => 'verified',
         ]);
 
         $response->assertSessionHasErrors('official_kode');
     }
 
-    public function test_supervisor_can_create_prospect_outlet_without_verification_status(): void
+    public function test_supervisor_can_create_prospect_outlet_without_official_kode(): void
     {
         $branch = Branch::factory()->create();
         $supervisor = User::factory()->create([
@@ -97,15 +95,13 @@ class OutletTest extends TestCase
             'district' => 'Cidadap',
             'city' => 'Bandung',
             'category' => 'toko',
-            'outlet_type' => 'prospek',
-            'outlet_status' => 'active',
-            'verification_status' => '',
+            'outlet_status' => 'prospek',
         ]);
 
         $response->assertRedirect();
         $this->assertDatabaseHas('outlets', [
             'name' => 'Outlet Prospek',
-            'verification_status' => null,
+            'outlet_status' => 'prospek',
         ]);
     }
 
@@ -154,9 +150,7 @@ class OutletTest extends TestCase
             'branch_id' => $branch->id,
             'created_by' => $sales->id,
             'name' => 'Prospek Follow Up',
-            'outlet_type' => 'prospek',
-            'outlet_status' => 'active',
-            'verification_status' => null,
+            'outlet_status' => 'prospek',
         ]);
 
         $this->actingAs($sales)

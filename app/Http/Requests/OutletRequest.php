@@ -31,16 +31,14 @@ class OutletRequest extends FormRequest
             'district' => ['required', 'string', 'max:255'],
             'city' => ['required', 'string', 'max:255'],
             'category' => ['required', Rule::in(['salon', 'toko', 'barbershop', 'lainnya'])],
-            'outlet_type' => ['required', Rule::in(['prospek', 'noo', 'pelanggan_lama'])],
-            'outlet_status' => ['required', Rule::in(['active', 'inactive'])],
+            'outlet_status' => ['required', Rule::in(['prospek', 'pending', 'active', 'inactive'])],
             'official_kode' => [
-                Rule::requiredIf($this->input('outlet_type') === 'pelanggan_lama'),
+                Rule::requiredIf($this->input('outlet_status') === 'active'),
                 'nullable',
                 'string',
                 'max:100',
                 Rule::unique(Outlet::class, 'official_kode')->ignore($outlet?->id),
             ],
-            'verification_status' => ['nullable', Rule::in(['pending', 'verified'])],
         ];
     }
 
@@ -52,37 +50,21 @@ class OutletRequest extends FormRequest
             'district',
             'city',
             'category',
-            'outlet_type',
             'outlet_status',
             'official_kode',
-            'verification_status',
         ]);
-
-        $payload['verification_status'] = $payload['verification_status'] ?: null;
-
-        if ($payload['outlet_type'] === 'prospek') {
-            $payload['verification_status'] = null;
-        }
-
-        if ($payload['outlet_type'] === 'noo' && $payload['verification_status'] === null) {
-            $payload['verification_status'] = 'pending';
-        }
 
         $payload['official_kode'] = $payload['official_kode'] ?? null;
 
-        if ($payload['outlet_type'] === 'pelanggan_lama' && ! blank($payload['official_kode'])) {
-            $payload['verification_status'] = 'verified';
-        }
-
-        if (($payload['verification_status'] ?? null) === 'verified') {
+        if ($payload['outlet_status'] === 'active' && ! blank($payload['official_kode'])) {
             $payload['verified_by'] = $this->user()->id;
             $payload['verified_at'] = now();
-        } elseif ($outlet?->verification_status === 'verified' && ($payload['verification_status'] ?? null) !== 'verified') {
+        } elseif ($outlet?->verified_by && $payload['outlet_status'] !== 'active') {
             $payload['verified_by'] = null;
             $payload['verified_at'] = null;
         }
 
-        if (($payload['outlet_type'] ?? null) !== 'pelanggan_lama') {
+        if ($payload['outlet_status'] !== 'active') {
             $payload['official_kode'] = $payload['official_kode'] ?: null;
         }
 

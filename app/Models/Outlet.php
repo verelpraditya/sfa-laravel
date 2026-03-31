@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Str;
 
 class Outlet extends Model
 {
@@ -19,10 +18,8 @@ class Outlet extends Model
         'district',
         'city',
         'category',
-        'outlet_type',
         'outlet_status',
         'official_kode',
-        'verification_status',
         'verified_by',
         'verified_at',
         'created_by',
@@ -56,18 +53,14 @@ class Outlet extends Model
         return $this->hasMany(Visit::class);
     }
 
-    public function typeLabel(): string
-    {
-        return Str::of($this->outlet_type)->replace('_', ' ')->title()->toString();
-    }
-
     public function statusLabel(): string
     {
-        return $this->outlet_status === 'inactive' ? 'Inactive' : 'Active';
-    }
-
-    public function verificationLabel(): string
-    {
-        return $this->verification_status ? Str::ucfirst($this->verification_status) : 'Tidak Perlu';
+        return match ($this->outlet_status) {
+            'prospek' => 'Prospek',
+            'pending' => 'Pending',
+            'active' => 'Aktif',
+            'inactive' => 'Inactive',
+            default => '-'
+        };
     }
 }

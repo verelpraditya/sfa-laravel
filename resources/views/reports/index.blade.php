@@ -171,9 +171,8 @@
                                 <tr>
                                     <th class="px-4 py-3.5 font-semibold">Dibuat</th>
                                     <th class="px-4 py-3.5 font-semibold">Outlet</th>
-                                    <th class="px-4 py-3.5 font-semibold">Jenis</th>
+                                    <th class="px-4 py-3.5 font-semibold">Official Kode</th>
                                     <th class="px-4 py-3.5 font-semibold">Status</th>
-                                    <th class="px-4 py-3.5 font-semibold">Verifikasi</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-slate-100 bg-white/90">
@@ -181,12 +180,11 @@
                                     <tr class="transition duration-200 hover:bg-sky-50/60">
                                         <td class="px-4 py-4 text-slate-600">{{ $row->created_at?->format('d M Y H:i') }}</td>
                                         <td class="px-4 py-4 text-slate-900">{{ $row->name }}</td>
-                                        <td class="px-4 py-4 text-slate-600">{{ $row->typeLabel() }}</td>
+                                        <td class="px-4 py-4 text-slate-600">{{ $row->official_kode ?: '-' }}</td>
                                         <td class="px-4 py-4 text-slate-600">{{ $row->statusLabel() }}</td>
-                                        <td class="px-4 py-4 text-slate-600">{{ $row->verificationLabel() }}</td>
                                     </tr>
                                 @empty
-                                    <tr><td colspan="5" class="px-4 py-10 text-center text-sm text-slate-500">Belum ada data laporan.</td></tr>
+                                    <tr><td colspan="4" class="px-4 py-10 text-center text-sm text-slate-500">Belum ada data laporan.</td></tr>
                                 @endforelse
                             </tbody>
                         </table>
@@ -202,16 +200,16 @@
                                         <p class="font-semibold text-slate-900">{{ $row->name }}</p>
                                         <p class="mt-1 text-xs text-slate-500">{{ $row->created_at?->format('d M Y H:i') }}</p>
                                     </div>
-                                    <span class="inline-flex rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-sm">{{ $row->typeLabel() }}</span>
+                                    <span class="inline-flex rounded-full px-3 py-1.5 text-xs font-semibold shadow-sm {{ $row->outlet_status === 'prospek' ? 'bg-violet-50 text-violet-700' : ($row->outlet_status === 'pending' ? 'bg-amber-50 text-amber-700' : ($row->outlet_status === 'active' ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-700')) }}">{{ $row->statusLabel() }}</span>
                                 </div>
                                 <div class="mt-4 grid grid-cols-2 gap-3">
                                     <div class="rounded-2xl bg-white px-3 py-3 shadow-sm">
-                                        <p class="text-[11px] uppercase tracking-[0.14em] text-slate-400">Status</p>
-                                        <p class="mt-1 font-semibold text-slate-900">{{ $row->statusLabel() }}</p>
+                                        <p class="text-[11px] uppercase tracking-[0.14em] text-slate-400">Official Kode</p>
+                                        <p class="mt-1 font-semibold text-slate-900">{{ $row->official_kode ?: '-' }}</p>
                                     </div>
                                     <div class="rounded-2xl bg-white px-3 py-3 shadow-sm">
-                                        <p class="text-[11px] uppercase tracking-[0.14em] text-slate-400">Verifikasi</p>
-                                        <p class="mt-1 font-semibold text-slate-900">{{ $row->verificationLabel() }}</p>
+                                        <p class="text-[11px] uppercase tracking-[0.14em] text-slate-400">Status</p>
+                                        <p class="mt-1 font-semibold text-slate-900">{{ $row->statusLabel() }}</p>
                                     </div>
                                 </div>
                             @elseif ($activeType === 'smd')

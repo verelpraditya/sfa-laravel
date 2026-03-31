@@ -61,6 +61,8 @@ class SalesVisitController extends Controller
             $outlet = $request->existingOutlet();
 
             if (! $outlet) {
+                $initialStatus = $this->mapInitialOutletStatus($request->string('new_outlet_type')->toString());
+
                 $outlet = Outlet::create([
                     'branch_id' => $user->branch_id,
                     'name' => $request->string('new_outlet_name')->toString(),
@@ -68,22 +70,11 @@ class SalesVisitController extends Controller
                     'district' => $request->string('new_outlet_district')->toString(),
                     'city' => $request->string('new_outlet_city')->toString(),
                     'category' => $request->string('new_outlet_category')->toString(),
-                    'outlet_type' => $request->string('new_outlet_type')->toString(),
-                    'outlet_status' => 'active',
+                    'outlet_status' => $initialStatus,
                     'official_kode' => $request->string('new_outlet_official_kode')->toString() ?: null,
-                    'verification_status' => match ($request->string('new_outlet_type')->toString()) {
-                        'pelanggan_lama' => 'verified',
-                        'noo' => 'pending',
-                        default => null,
-                    },
-                    'verified_by' => $request->string('new_outlet_type')->toString() === 'pelanggan_lama' ? $user->id : null,
-                    'verified_at' => $request->string('new_outlet_type')->toString() === 'pelanggan_lama' ? now() : null,
+                    'verified_by' => $initialStatus === 'active' ? $user->id : null,
+                    'verified_at' => $initialStatus === 'active' ? now() : null,
                     'created_by' => $user->id,
-                    'updated_by' => $user->id,
-                ]);
-            } elseif ($request->filled('existing_outlet_type') && $request->string('existing_outlet_type')->toString() !== $outlet->outlet_type) {
-                $outlet->update([
-                    'outlet_type' => $request->string('existing_outlet_type')->toString(),
                     'updated_by' => $user->id,
                 ]);
             }
@@ -126,5 +117,14 @@ class SalesVisitController extends Controller
         $safeUsername = Str::slug($username, '-');
 
         return sprintf('%s_%s_%s.%s', $safeUsername, $safeOutletName, $timestamp, strtolower($extension));
+    }
+
+    private function mapInitialOutletStatus(string $selection): string
+    {
+        return match ($selection) {
+            'noo' => 'pending',
+            'pelanggan_lama' => 'active',
+            default => 'prospek',
+        };
     }
 }

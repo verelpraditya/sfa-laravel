@@ -16,8 +16,7 @@ class OutletFactory extends Factory
 
     public function definition(): array
     {
-        $type = fake()->randomElement(['prospek', 'noo', 'pelanggan_lama']);
-        $verified = fake()->boolean(35);
+        $status = fake()->randomElement(['prospek', 'pending', 'active', 'inactive']);
 
         return [
             'branch_id' => Branch::factory(),
@@ -26,12 +25,10 @@ class OutletFactory extends Factory
             'district' => fake()->citySuffix(),
             'city' => fake()->city(),
             'category' => fake()->randomElement(['salon', 'toko', 'barbershop', 'lainnya']),
-            'outlet_type' => $type,
-            'outlet_status' => fake()->boolean(15) ? 'inactive' : 'active',
-            'official_kode' => $type === 'pelanggan_lama' ? strtoupper(fake()->unique()->bothify('OFF-####')) : null,
-            'verification_status' => $type === 'prospek' ? null : ($verified ? 'verified' : 'pending'),
-            'verified_by' => $type !== 'prospek' && $verified ? User::factory() : null,
-            'verified_at' => $type !== 'prospek' && $verified ? now() : null,
+            'outlet_status' => $status,
+            'official_kode' => $status === 'active' ? strtoupper(fake()->unique()->bothify('OFF-####')) : null,
+            'verified_by' => $status === 'active' ? User::factory() : null,
+            'verified_at' => $status === 'active' ? now() : null,
             'created_by' => User::factory(),
             'updated_by' => null,
         ];

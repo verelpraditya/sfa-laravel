@@ -118,14 +118,16 @@ class ReportController extends Controller
         return view('reports.index', [
             'activeType' => 'outlets',
             'title' => 'Laporan Outlet',
-            'description' => 'Rekap pertumbuhan outlet, prospek, NOO, dan status aktif/inaktif.',
+            'description' => 'Rekap pertumbuhan outlet berdasarkan status prospek, pending, aktif, dan inactive.',
             'filters' => compact('from', 'to', 'branchId', 'userId'),
             'summary' => [
                 ['label' => 'Outlet Baru', 'value' => (clone $summaryQuery)->count()],
-                ['label' => 'Prospek', 'value' => (clone $summaryQuery)->where('outlet_type', 'prospek')->count()],
+                ['label' => 'Prospek', 'value' => (clone $summaryQuery)->where('outlet_status', 'prospek')->count()],
+                ['label' => 'Pending', 'value' => (clone $summaryQuery)->where('outlet_status', 'pending')->count()],
+                ['label' => 'Aktif', 'value' => (clone $summaryQuery)->where('outlet_status', 'active')->count()],
                 ['label' => 'Inactive', 'value' => (clone $summaryQuery)->where('outlet_status', 'inactive')->count()],
-                ['label' => 'Prospek > 7 Hari', 'value' => (clone $summaryQuery)->where('outlet_type', 'prospek')->where('created_at', '<=', now()->subDays(7))->count()],
-                ['label' => 'NOO > 7 Hari', 'value' => (clone $summaryQuery)->where('outlet_type', 'noo')->whereNull('official_kode')->where('created_at', '<=', now()->subDays(7))->count()],
+                ['label' => 'Prospek > 7 Hari', 'value' => (clone $summaryQuery)->where('outlet_status', 'prospek')->where('created_at', '<=', now()->subDays(7))->count()],
+                ['label' => 'Pending > 7 Hari', 'value' => (clone $summaryQuery)->where('outlet_status', 'pending')->where('created_at', '<=', now()->subDays(7))->count()],
             ],
             'rows' => $outlets,
             'branches' => $this->availableBranches($user),
@@ -169,13 +171,11 @@ class ReportController extends Controller
             $outlet->created_at?->format('Y-m-d H:i'),
             $outlet->branch?->name,
             $outlet->name,
-            $outlet->typeLabel(),
             $outlet->official_kode,
             $outlet->statusLabel(),
-            $outlet->verificationLabel(),
         ]);
 
-        return ['report-outlets.csv', ['Dibuat', 'Cabang', 'Outlet', 'Jenis', 'Official Kode', 'Status Outlet', 'Verifikasi'], $rows];
+        return ['report-outlets.csv', ['Dibuat', 'Cabang', 'Outlet', 'Official Kode', 'Status Outlet'], $rows];
     }
 
     private function salesQuery($user, string $from, string $to, int $branchId = 0, int $userId = 0): Builder

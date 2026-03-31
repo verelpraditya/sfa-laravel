@@ -90,12 +90,11 @@ class DashboardController extends Controller
         $weekDates = collect(range(6, 0))->map(fn ($daysAgo) => CarbonImmutable::today()->subDays($daysAgo));
 
         $totalVisitsToday = (clone $visitQuery)->where('visited_at', '>=', $today)->count();
-        $pendingOutlets = (clone $outletQuery)->where('verification_status', 'pending')->where('outlet_type', '!=', 'prospek')->count();
-        $prospects = (clone $outletQuery)->where('outlet_type', 'prospek')->count();
-        $nooWithoutCode = (clone $outletQuery)->where('outlet_type', 'noo')->whereNull('official_kode')->count();
+        $pendingOutlets = (clone $outletQuery)->where('outlet_status', 'pending')->count();
+        $prospects = (clone $outletQuery)->where('outlet_status', 'prospek')->count();
         $inactiveOutlets = (clone $outletQuery)->where('outlet_status', 'inactive')->count();
-        $oldProspects = (clone $outletQuery)->where('outlet_type', 'prospek')->where('created_at', '<=', now()->subDays(7))->count();
-        $oldNoo = (clone $outletQuery)->where('outlet_type', 'noo')->whereNull('official_kode')->where('created_at', '<=', now()->subDays(7))->count();
+        $oldProspects = (clone $outletQuery)->where('outlet_status', 'prospek')->where('created_at', '<=', now()->subDays(7))->count();
+        $oldPending = (clone $outletQuery)->where('outlet_status', 'pending')->where('created_at', '<=', now()->subDays(7))->count();
         $salesVisitsToday = (clone $visitQuery)->where('visit_type', 'sales')->where('visited_at', '>=', $today)->count();
         $smdVisitsToday = (clone $visitQuery)->where('visit_type', 'smd')->where('visited_at', '>=', $today)->count();
         $openVisits = (clone $visitQuery)->where('visits.outlet_condition', 'buka')->count();
@@ -158,9 +157,9 @@ class DashboardController extends Controller
             ->get();
 
         $outletComposition = [
-            'prospek' => (clone $outletQuery)->where('outlet_type', 'prospek')->count(),
-            'noo' => (clone $outletQuery)->where('outlet_type', 'noo')->count(),
-            'pelanggan_lama' => (clone $outletQuery)->where('outlet_type', 'pelanggan_lama')->count(),
+            'prospek' => (clone $outletQuery)->where('outlet_status', 'prospek')->count(),
+            'pending' => (clone $outletQuery)->where('outlet_status', 'pending')->count(),
+            'active' => (clone $outletQuery)->where('outlet_status', 'active')->count(),
         ];
 
         $chartSource = (clone $visitQuery)
@@ -195,8 +194,7 @@ class DashboardController extends Controller
 
         $recentPendingOutlets = (clone $outletQuery)
             ->with(['branch'])
-            ->where('verification_status', 'pending')
-            ->where('outlet_type', '!=', 'prospek')
+            ->where('outlet_status', 'pending')
             ->latest()
             ->limit(5)
             ->get();
@@ -227,21 +225,21 @@ class DashboardController extends Controller
                 ['label' => 'Visit Tim Hari Ini', 'value' => $salesVisitsToday + $smdVisitsToday, 'hint' => 'Seluruh visit sales dan SMD hari ini'],
                 ['label' => 'Sales Amount Hari Ini', 'value' => 'Rp '.number_format($salesAmountToday, 0, ',', '.'), 'hint' => 'Gabungan order sales dan PO SMD hari ini'],
                 ['label' => 'Collection Hari Ini', 'value' => 'Rp '.number_format($collectionToday, 0, ',', '.'), 'hint' => 'Gabungan collection sales dan SMD hari ini'],
-                ['label' => 'Outlet Pending', 'value' => $pendingOutlets, 'hint' => 'Masih menunggu verifikasi atau official kode'],
+                ['label' => 'Outlet Pending', 'value' => $pendingOutlets, 'hint' => 'Masih menunggu official kode supervisor'],
             ],
             default => [
                 ['label' => 'Visit Tim Hari Ini', 'value' => $salesVisitsToday + $smdVisitsToday, 'hint' => 'Total visit sales dan SMD hari ini'],
                 ['label' => 'Sales Amount Hari Ini', 'value' => 'Rp '.number_format($salesAmountToday, 0, ',', '.'), 'hint' => 'Gabungan order sales dan PO SMD hari ini'],
                 ['label' => 'Collection Hari Ini', 'value' => 'Rp '.number_format($collectionToday, 0, ',', '.'), 'hint' => 'Gabungan collection sales dan SMD hari ini'],
-                ['label' => 'Outlet Pending', 'value' => $pendingOutlets, 'hint' => 'Masih menunggu verifikasi atau official kode'],
+                ['label' => 'Outlet Pending', 'value' => $pendingOutlets, 'hint' => 'Masih menunggu official kode supervisor'],
             ],
         };
 
         $highlights = [
-            ['label' => 'Outlet Pending', 'value' => $pendingOutlets, 'hint' => 'Masih menunggu verifikasi atau official kode'],
+            ['label' => 'Outlet Pending', 'value' => $pendingOutlets, 'hint' => 'Masih menunggu official kode supervisor'],
             ['label' => 'Prospek Follow Up', 'value' => $prospects, 'hint' => 'Potensi outlet yang bisa di-follow up'],
             ['label' => 'Prospek > 7 Hari', 'value' => $oldProspects, 'hint' => 'Perlu follow up ulang'],
-            ['label' => 'NOO > 7 Hari', 'value' => $oldNoo, 'hint' => 'Perlu official kode segera'],
+            ['label' => 'Pending > 7 Hari', 'value' => $oldPending, 'hint' => 'Perlu official kode segera'],
             ['label' => 'Outlet Inactive', 'value' => $inactiveOutlets, 'hint' => 'Outlet tutup atau tidak order lagi'],
             ['label' => 'Outlet Buka/Tutup', 'value' => $openVisits.' / '.$closedVisits, 'hint' => 'Kondisi operasional dari kunjungan'],
         ];

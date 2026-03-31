@@ -21,7 +21,6 @@ class SalesVisitRequest extends FormRequest
 
         return [
             'outlet_id' => ['nullable', 'integer'],
-            'existing_outlet_type' => ['nullable', Rule::in(['prospek', 'noo', 'pelanggan_lama'])],
             'new_outlet_name' => [Rule::requiredIf($creatingNewOutlet), 'nullable', 'string', 'max:255'],
             'new_outlet_address' => [Rule::requiredIf($creatingNewOutlet), 'nullable', 'string'],
             'new_outlet_district' => [Rule::requiredIf($creatingNewOutlet), 'nullable', 'string', 'max:255'],
@@ -111,10 +110,6 @@ class SalesVisitRequest extends FormRequest
                 }
 
                 $this->existingOutlet = $outlet;
-            }
-
-            if ($this->input('existing_outlet_type') === 'pelanggan_lama' && blank($this->existingOutlet?->official_kode)) {
-                $validator->errors()->add('existing_outlet_type', 'Perubahan ke Pelanggan Lama harus dilakukan supervisor saat official kode sudah tersedia.');
             }
 
             if ($this->input('outlet_condition') === 'tutup' && ($this->filled('order_amount') || $this->filled('receivable_amount'))) {

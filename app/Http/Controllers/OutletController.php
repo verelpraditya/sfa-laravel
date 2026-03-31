@@ -16,8 +16,6 @@ class OutletController extends Controller
     {
         $user = $request->user();
         $search = trim((string) $request->string('search'));
-        $status = $request->string('status')->toString();
-        $type = $request->string('type')->toString();
         $outletStatus = $request->string('outlet_status')->toString();
 
         $outlets = $this->baseQuery($user)
@@ -31,8 +29,6 @@ class OutletController extends Controller
                         ->orWhere('city', 'like', "%{$search}%");
                 });
             })
-            ->when($status !== '', fn ($query) => $query->where('verification_status', $status))
-            ->when($type !== '', fn ($query) => $query->where('outlet_type', $type))
             ->when($outletStatus !== '', fn ($query) => $query->where('outlet_status', $outletStatus))
             ->latest()
             ->paginate(10)
@@ -43,8 +39,6 @@ class OutletController extends Controller
             'branches' => Branch::orderBy('name')->get(),
             'filters' => [
                 'search' => $search,
-                'status' => $status,
-                'type' => $type,
                 'outlet_status' => $outletStatus,
             ],
         ]);
@@ -108,7 +102,7 @@ class OutletController extends Controller
         }
 
         $outlets = $this->baseQuery($request->user())
-            ->select(['id', 'branch_id', 'name', 'official_kode', 'district', 'city', 'category', 'outlet_type', 'verification_status'])
+            ->select(['id', 'branch_id', 'name', 'official_kode', 'district', 'city', 'category', 'outlet_status'])
             ->where(function ($inner) use ($query) {
                 $inner
                     ->where('name', 'like', "%{$query}%")
@@ -127,8 +121,7 @@ class OutletController extends Controller
                 'district' => $outlet->district,
                 'city' => $outlet->city,
                 'category' => $outlet->category,
-                'outlet_type' => $outlet->outlet_type,
-                'verification_status' => $outlet->verification_status,
+                'outlet_status' => $outlet->outlet_status,
                 'branch' => $outlet->branch?->name,
             ]),
         ]);
@@ -140,7 +133,7 @@ class OutletController extends Controller
 
         return $this->renderOperationalList(
             $request,
-            fn ($query) => $query->where('outlet_type', 'prospek')->where('outlet_status', 'active'),
+            fn ($query) => $query->where('outlet_status', 'prospek'),
             'Prospek Follow Up',
             'Daftar outlet prospek yang bisa ditindaklanjuti sales dan supervisor.',
             'prospek',
@@ -153,10 +146,10 @@ class OutletController extends Controller
 
         return $this->renderOperationalList(
             $request,
-            fn ($query) => $query->where('outlet_type', 'noo')->whereNull('official_kode'),
-            'NOO Belum Official Kode',
-            'Daftar NOO yang masih menunggu official kode dan tindak lanjut supervisor.',
-            'noo',
+            fn ($query) => $query->where('outlet_status', 'pending'),
+            'Outlet Pending Official Kode',
+            'Daftar outlet pending yang masih menunggu official kode dan tindak lanjut supervisor.',
+            'pending',
         );
     }
 

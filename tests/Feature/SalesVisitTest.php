@@ -79,7 +79,7 @@ class SalesVisitTest extends TestCase
         $this->assertDatabaseHas('outlets', [
             'branch_id' => $branch->id,
             'name' => 'Outlet Prospek Baru',
-            'outlet_type' => 'prospek',
+            'outlet_status' => 'prospek',
         ]);
         $this->assertDatabaseHas('visits', [
             'visit_type' => 'sales',

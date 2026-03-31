@@ -29,7 +29,6 @@
                             <tr>
                                 <th class="px-4 py-3 font-semibold">Outlet</th>
                                 <th class="px-4 py-3 font-semibold">Cabang</th>
-                                <th class="px-4 py-3 font-semibold">Jenis</th>
                                 <th class="px-4 py-3 font-semibold">Official Kode</th>
                                 <th class="px-4 py-3 font-semibold">Status</th>
                                 <th class="px-4 py-3 font-semibold">Aksi</th>
@@ -43,10 +42,9 @@
                                         <p class="mt-1 text-xs text-slate-500">{{ $outlet->district }}, {{ $outlet->city }}</p>
                                     </td>
                                     <td class="px-4 py-4 text-slate-600">{{ $outlet->branch?->name }}</td>
-                                    <td class="px-4 py-4 text-slate-600">{{ $outlet->typeLabel() }}</td>
                                     <td class="px-4 py-4 text-slate-600">{{ $outlet->official_kode ?: '-' }}</td>
                                     <td class="px-4 py-4">
-                                        <span class="rounded-full px-3 py-1 text-xs font-semibold {{ $outlet->outlet_status === 'inactive' ? 'bg-slate-100 text-slate-600' : 'bg-sky-50 text-sky-700' }}">{{ $outlet->statusLabel() }}</span>
+                                        <span class="rounded-full px-3 py-1 text-xs font-semibold {{ $outlet->outlet_status === 'prospek' ? 'bg-violet-50 text-violet-700' : ($outlet->outlet_status === 'pending' ? 'bg-amber-50 text-amber-700' : ($outlet->outlet_status === 'active' ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-600')) }}">{{ $outlet->statusLabel() }}</span>
                                     </td>
                                     <td class="px-4 py-4">
                                         @if (auth()->user()->canVerifyOutlets())
@@ -60,7 +58,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="6" class="px-4 py-8 text-center text-sm text-slate-500">Belum ada data untuk daftar ini.</td>
+                                    <td colspan="5" class="px-4 py-8 text-center text-sm text-slate-500">Belum ada data untuk daftar ini.</td>
                                 </tr>
                             @endforelse
                         </tbody>
@@ -75,16 +73,12 @@
                                     <p class="font-semibold text-slate-900">{{ $outlet->name }}</p>
                                     <p class="mt-1 text-sm text-slate-500">{{ $outlet->district }}, {{ $outlet->city }}</p>
                                 </div>
-                                <span class="rounded-full px-3 py-1 text-xs font-semibold {{ $outlet->outlet_status === 'inactive' ? 'bg-slate-100 text-slate-600' : 'bg-sky-50 text-sky-700' }}">{{ $outlet->statusLabel() }}</span>
+                                <span class="rounded-full px-3 py-1 text-xs font-semibold {{ $outlet->outlet_status === 'prospek' ? 'bg-violet-50 text-violet-700' : ($outlet->outlet_status === 'pending' ? 'bg-amber-50 text-amber-700' : ($outlet->outlet_status === 'active' ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-600')) }}">{{ $outlet->statusLabel() }}</span>
                             </div>
                             <div class="mt-4 grid grid-cols-2 gap-3 text-sm text-slate-600">
                                 <div>
                                     <p class="text-xs uppercase tracking-[0.14em] text-slate-400">Cabang</p>
                                     <p class="mt-1">{{ $outlet->branch?->name }}</p>
-                                </div>
-                                <div>
-                                    <p class="text-xs uppercase tracking-[0.14em] text-slate-400">Jenis</p>
-                                    <p class="mt-1">{{ $outlet->typeLabel() }}</p>
                                 </div>
                                 <div class="col-span-2">
                                     <p class="text-xs uppercase tracking-[0.14em] text-slate-400">Official Kode</p>

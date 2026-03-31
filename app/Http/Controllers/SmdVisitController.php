@@ -62,7 +62,7 @@ class SmdVisitController extends Controller
             $outlet = $request->existingOutlet();
 
             if (! $outlet) {
-                $newType = $request->string('new_outlet_type')->toString();
+                $initialStatus = $this->mapInitialOutletStatus($request->string('new_outlet_type')->toString());
 
                 $outlet = Outlet::create([
                     'branch_id' => $user->branch_id,
@@ -71,16 +71,10 @@ class SmdVisitController extends Controller
                     'district' => $request->string('new_outlet_district')->toString(),
                     'city' => $request->string('new_outlet_city')->toString(),
                     'category' => $request->string('new_outlet_category')->toString(),
-                    'outlet_type' => $newType,
-                    'outlet_status' => 'active',
+                    'outlet_status' => $initialStatus,
                     'official_kode' => $request->string('new_outlet_official_kode')->toString() ?: null,
-                    'verification_status' => match ($newType) {
-                        'pelanggan_lama' => 'verified',
-                        'noo' => 'pending',
-                        default => null,
-                    },
-                    'verified_by' => $newType === 'pelanggan_lama' ? $user->id : null,
-                    'verified_at' => $newType === 'pelanggan_lama' ? now() : null,
+                    'verified_by' => $initialStatus === 'active' ? $user->id : null,
+                    'verified_at' => $initialStatus === 'active' ? now() : null,
                     'created_by' => $user->id,
                     'updated_by' => $user->id,
                 ]);
@@ -139,5 +133,14 @@ class SmdVisitController extends Controller
         $safeUsername = Str::slug($username, '-');
 
         return sprintf('%s_%s_%s.%s', $safeUsername, $safeOutletName, $timestamp, strtolower($extension));
+    }
+
+    private function mapInitialOutletStatus(string $selection): string
+    {
+        return match ($selection) {
+            'noo' => 'pending',
+            'pelanggan_lama' => 'active',
+            default => 'prospek',
+        };
     }
 }

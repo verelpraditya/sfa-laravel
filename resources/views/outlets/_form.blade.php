@@ -44,7 +44,7 @@
         </div>
     </section>
 
-    <section class="space-y-6" x-data="{ outletType: '{{ old('outlet_type', $outlet->outlet_type ?: 'prospek') }}' }">
+    <section class="space-y-6" x-data="{ outletStatus: '{{ old('outlet_status', $outlet->outlet_status ?: 'prospek') }}' }">
         <div class="app-soft-panel p-5">
             <div class="grid gap-5">
                 <div>
@@ -58,45 +58,27 @@
                 </div>
 
                 <div>
-                    <x-input-label for="outlet_type" value="Jenis outlet" />
-                    <select id="outlet_type" name="outlet_type" x-model="outletType" class="mt-2 block w-full rounded-2xl border border-slate-200/90 bg-white px-4 py-3 text-sm text-slate-700 shadow-[0_10px_30px_-18px_rgba(15,23,42,0.35)] focus:border-sky-400 focus:ring-4 focus:ring-sky-100">
-                        <option value="prospek">Prospek</option>
-                        <option value="noo">NOO</option>
-                        <option value="pelanggan_lama">Pelanggan Lama</option>
-                    </select>
-                    <x-input-error class="mt-2" :messages="$errors->get('outlet_type')" />
-                </div>
-
-                <div x-cloak x-show="outletType === 'pelanggan_lama'" x-transition>
-                    <x-input-label for="official_kode" value="Official kode" />
-                    <x-text-input id="official_kode" name="official_kode" class="mt-2 block w-full" :value="old('official_kode', $outlet->official_kode)" placeholder="Mis. OFF-001" />
-                    <x-input-error class="mt-2" :messages="$errors->get('official_kode')" />
-                </div>
-
-                <div>
                     <x-input-label for="outlet_status" value="Status outlet" />
-                    <select id="outlet_status" name="outlet_status" class="mt-2 block w-full rounded-2xl border border-slate-200/90 bg-white px-4 py-3 text-sm text-slate-700 shadow-[0_10px_30px_-18px_rgba(15,23,42,0.35)] focus:border-sky-400 focus:ring-4 focus:ring-sky-100">
-                        <option value="active" @selected(old('outlet_status', $outlet->outlet_status ?: 'active') === 'active')>Active</option>
+                    <select id="outlet_status" name="outlet_status" x-model="outletStatus" class="mt-2 block w-full rounded-2xl border border-slate-200/90 bg-white px-4 py-3 text-sm text-slate-700 shadow-[0_10px_30px_-18px_rgba(15,23,42,0.35)] focus:border-sky-400 focus:ring-4 focus:ring-sky-100">
+                        <option value="prospek" @selected(old('outlet_status', $outlet->outlet_status ?: 'prospek') === 'prospek')>Prospek</option>
+                        <option value="pending" @selected(old('outlet_status', $outlet->outlet_status) === 'pending')>Pending</option>
+                        <option value="active" @selected(old('outlet_status', $outlet->outlet_status) === 'active')>Aktif</option>
                         <option value="inactive" @selected(old('outlet_status', $outlet->outlet_status) === 'inactive')>Inactive</option>
                     </select>
                     <x-input-error class="mt-2" :messages="$errors->get('outlet_status')" />
                 </div>
 
-                <div>
-                    <x-input-label for="verification_status" value="Status verifikasi" />
-                    <select id="verification_status" name="verification_status" class="mt-2 block w-full rounded-2xl border border-slate-200/90 bg-white px-4 py-3 text-sm text-slate-700 shadow-[0_10px_30px_-18px_rgba(15,23,42,0.35)] focus:border-sky-400 focus:ring-4 focus:ring-sky-100">
-                        <option value="">Tidak Perlu</option>
-                        <option value="pending" @selected(old('verification_status', $outlet->verification_status) === 'pending')>Pending</option>
-                        <option value="verified" @selected(old('verification_status', $outlet->verification_status) === 'verified')>Verified</option>
-                    </select>
-                    <x-input-error class="mt-2" :messages="$errors->get('verification_status')" />
+                <div x-cloak x-show="outletStatus === 'active'" x-transition>
+                    <x-input-label for="official_kode" value="Official kode" />
+                    <x-text-input id="official_kode" name="official_kode" class="mt-2 block w-full" :value="old('official_kode', $outlet->official_kode)" placeholder="Mis. OFF-001" />
+                    <x-input-error class="mt-2" :messages="$errors->get('official_kode')" />
                 </div>
             </div>
         </div>
 
         <div class="app-soft-panel p-5 text-sm leading-7 text-slate-600">
             <p class="font-semibold text-ink-950">Catatan rule bisnis</p>
-            <p class="mt-2">`Prospek` tidak perlu verifikasi dan tidak masuk daftar pending. `NOO` masuk pending sampai supervisor melengkapi `official_kode`. `Pelanggan Lama` wajib punya `official_kode` dan akan otomatis verified.</p>
+            <p class="mt-2">Gunakan `Prospek` untuk outlet yang masih tahap follow up, `Pending` untuk outlet yang masih menunggu official kode, `Aktif` untuk outlet yang sudah resmi aktif, dan `Inactive` untuk outlet yang sudah tidak berjalan.</p>
         </div>
     </section>
 </div>

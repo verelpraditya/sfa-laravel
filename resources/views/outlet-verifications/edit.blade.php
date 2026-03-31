@@ -20,11 +20,11 @@
                 <section class="app-panel overflow-hidden p-0 sm:p-0">
                     <div class="bg-[linear-gradient(135deg,#0f172a_0%,#1d4ed8_100%)] px-5 py-5 text-white sm:px-6">
                         <p class="text-xs font-semibold uppercase tracking-[0.22em] text-sky-200/80">Verification Panel</p>
-                        <h3 class="mt-2 text-xl font-semibold">Finalisasi outlet jadi data resmi cabang</h3>
-                        <p class="mt-2 max-w-2xl text-sm leading-7 text-sky-100/85">Lengkapi kategori, ubah status outlet bila perlu, lalu isi official kode untuk menyelesaikan NOO menjadi pelanggan lama.</p>
+                        <h3 class="mt-2 text-xl font-semibold">Aktifkan outlet pending</h3>
+                        <p class="mt-2 max-w-2xl text-sm leading-7 text-sky-100/85">Isi official kode untuk mengaktifkan outlet. Data customer di halaman ini hanya ditampilkan sebagai referensi.</p>
                     </div>
                     <div class="p-5 sm:p-6">
-                    <form method="POST" action="{{ route('outlet-verifications.update', $outlet) }}" class="space-y-6" x-data="{ outletType: '{{ old('outlet_type', $outlet->outlet_type) }}' }">
+                    <form method="POST" action="{{ route('outlet-verifications.update', $outlet) }}" class="space-y-6">
                         @csrf
                         @method('PUT')
 
@@ -55,45 +55,16 @@
 
                         <div class="grid gap-5 md:grid-cols-2">
                             <div>
-                                <x-input-label for="category" value="Kategori outlet" />
-                                <select id="category" name="category" class="mt-2 block w-full rounded-2xl border border-slate-200/90 bg-white px-4 py-3 text-sm text-slate-700 shadow-[0_10px_30px_-18px_rgba(15,23,42,0.35)] focus:border-sky-400 focus:ring-4 focus:ring-sky-100">
-                                    @foreach (['salon' => 'Salon', 'toko' => 'Toko', 'barbershop' => 'Barbershop', 'lainnya' => 'Lainnya'] as $value => $label)
-                                        <option value="{{ $value }}" @selected(old('category', $outlet->category) === $value)>{{ $label }}</option>
-                                    @endforeach
-                                </select>
-                                <x-input-error class="mt-2" :messages="$errors->get('category')" />
+                                <x-input-label value="Kategori outlet" />
+                                <div class="mt-2 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700">{{ ucfirst($outlet->category) }}</div>
                             </div>
 
                             <div>
-                                <x-input-label for="outlet_type" value="Jenis outlet" />
-                                <select id="outlet_type" name="outlet_type" x-model="outletType" class="mt-2 block w-full rounded-2xl border border-slate-200/90 bg-white px-4 py-3 text-sm text-slate-700 shadow-[0_10px_30px_-18px_rgba(15,23,42,0.35)] focus:border-sky-400 focus:ring-4 focus:ring-sky-100">
-                                    <option value="prospek">Prospek</option>
-                                    <option value="noo">NOO</option>
-                                    <option value="pelanggan_lama">Pelanggan Lama</option>
-                                </select>
-                                <x-input-error class="mt-2" :messages="$errors->get('outlet_type')" />
+                                <x-input-label value="Status outlet" />
+                                <div class="mt-2 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-700">{{ $outlet->statusLabel() }}</div>
                             </div>
 
-                            <div>
-                                <x-input-label for="verification_status" value="Status verifikasi" />
-                                <select id="verification_status" name="verification_status" class="mt-2 block w-full rounded-2xl border border-slate-200/90 bg-white px-4 py-3 text-sm text-slate-700 shadow-[0_10px_30px_-18px_rgba(15,23,42,0.35)] focus:border-sky-400 focus:ring-4 focus:ring-sky-100">
-                                    <option value="">Tidak Perlu</option>
-                                    <option value="pending" @selected(old('verification_status', $outlet->verification_status) === 'pending')>Pending</option>
-                                    <option value="verified" @selected(old('verification_status', $outlet->verification_status) === 'verified')>Verified</option>
-                                </select>
-                                <x-input-error class="mt-2" :messages="$errors->get('verification_status')" />
-                            </div>
-
-                            <div>
-                                <x-input-label for="outlet_status" value="Status outlet" />
-                                <select id="outlet_status" name="outlet_status" class="mt-2 block w-full rounded-2xl border border-slate-200/90 bg-white px-4 py-3 text-sm text-slate-700 shadow-[0_10px_30px_-18px_rgba(15,23,42,0.35)] focus:border-sky-400 focus:ring-4 focus:ring-sky-100">
-                                    <option value="active" @selected(old('outlet_status', $outlet->outlet_status) === 'active')>Active</option>
-                                    <option value="inactive" @selected(old('outlet_status', $outlet->outlet_status) === 'inactive')>Inactive</option>
-                                </select>
-                                <x-input-error class="mt-2" :messages="$errors->get('outlet_status')" />
-                            </div>
-
-                            <div class="md:col-span-2" x-cloak x-show="['noo', 'pelanggan_lama'].includes(outletType)" x-transition>
+                            <div class="md:col-span-2">
                                 <x-input-label for="official_kode" value="Official kode" />
                                 <x-text-input id="official_kode" name="official_kode" class="mt-2 block w-full" :value="old('official_kode', $outlet->official_kode)" placeholder="Mis. OFF-BDG-010" />
                                 <x-input-error class="mt-2" :messages="$errors->get('official_kode')" />
@@ -119,7 +90,7 @@
                         <div class="app-soft-panel mt-4 space-y-3 p-4 text-sm text-slate-600">
                             <p><span class="font-semibold text-slate-900">Dibuat oleh:</span> {{ $outlet->creator?->name ?? '-' }}</p>
                             <p><span class="font-semibold text-slate-900">Status outlet:</span> {{ $outlet->statusLabel() }}</p>
-                            <p><span class="font-semibold text-slate-900">Status verifikasi:</span> {{ $outlet->verificationLabel() }}</p>
+                            <p><span class="font-semibold text-slate-900">Official Kode:</span> {{ $outlet->official_kode ?: '-' }}</p>
                             <p><span class="font-semibold text-slate-900">Verifier terakhir:</span> {{ $outlet->verifier?->name ?? '-' }}</p>
                             <p><span class="font-semibold text-slate-900">Verified at:</span> {{ $outlet->verified_at?->format('d M Y H:i') ?? '-' }}</p>
                         </div>

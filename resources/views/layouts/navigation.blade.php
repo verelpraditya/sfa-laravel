@@ -19,7 +19,6 @@
 
     if ($user->canVerifyOutlets()) {
         $navItems[] = ['label' => 'Verifikasi Outlet', 'route' => route('outlet-verifications.index'), 'active' => request()->routeIs('outlet-verifications.*'), 'icon' => 'shield'];
-        $navItems[] = ['label' => 'Daftar NOO', 'route' => route('outlet-lists.noo'), 'active' => request()->routeIs('outlet-lists.noo'), 'icon' => 'spark'];
         $navItems[] = ['label' => 'Outlet Inactive', 'route' => route('outlet-lists.inactive'), 'active' => request()->routeIs('outlet-lists.inactive'), 'icon' => 'pause'];
     }
 

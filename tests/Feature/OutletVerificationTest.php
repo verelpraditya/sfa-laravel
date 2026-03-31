@@ -12,7 +12,7 @@ class OutletVerificationTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_noo_becomes_verified_automatically_when_changed_to_pelanggan_lama_with_official_kode(): void
+    public function test_pending_outlet_becomes_active_when_official_kode_is_filled(): void
     {
         $branch = Branch::factory()->create();
         $supervisor = User::factory()->create([
@@ -23,26 +23,22 @@ class OutletVerificationTest extends TestCase
         $outlet = Outlet::factory()->create([
             'branch_id' => $branch->id,
             'created_by' => $supervisor->id,
-            'outlet_type' => 'noo',
-            'verification_status' => 'pending',
+            'outlet_status' => 'pending',
             'official_kode' => null,
         ]);
 
         $response = $this->actingAs($supervisor)->put(route('outlet-verifications.update', $outlet), [
             'category' => 'toko',
-            'outlet_type' => 'pelanggan_lama',
             'outlet_status' => 'active',
             'official_kode' => 'OFF-NEW-001',
-            'verification_status' => 'pending',
             'verification_notes' => 'Kode resmi sudah masuk.',
         ]);
 
         $response->assertRedirect(route('outlet-verifications.edit', $outlet));
         $this->assertDatabaseHas('outlets', [
             'id' => $outlet->id,
-            'outlet_type' => 'pelanggan_lama',
+            'outlet_status' => 'active',
             'official_kode' => 'OFF-NEW-001',
-            'verification_status' => 'verified',
         ]);
         $this->assertDatabaseHas('outlet_verification_logs', [
             'outlet_id' => $outlet->id,
@@ -61,18 +57,14 @@ class OutletVerificationTest extends TestCase
         $outlet = Outlet::factory()->create([
             'branch_id' => $branch->id,
             'created_by' => $supervisor->id,
-            'outlet_type' => 'pelanggan_lama',
             'official_kode' => 'OFF-OLD-001',
-            'verification_status' => 'verified',
             'outlet_status' => 'active',
         ]);
 
         $response = $this->actingAs($supervisor)->put(route('outlet-verifications.update', $outlet), [
             'category' => 'toko',
-            'outlet_type' => 'pelanggan_lama',
             'outlet_status' => 'inactive',
             'official_kode' => 'OFF-OLD-001',
-            'verification_status' => 'verified',
         ]);
 
         $response->assertRedirect(route('outlet-verifications.edit', $outlet));

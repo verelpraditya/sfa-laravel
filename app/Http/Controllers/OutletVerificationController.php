@@ -17,13 +17,10 @@ class OutletVerificationController extends Controller
     {
         $user = $request->user();
         $search = trim((string) $request->string('search'));
-        $status = $request->string('status')->toString();
-        $type = $request->string('type')->toString();
-        $outletStatus = $request->string('outlet_status')->toString();
 
         $outlets = $this->baseQuery($user)
             ->with(['branch', 'creator', 'verifier'])
-            ->when($type === '', fn ($query) => $query->where('outlet_type', '!=', 'prospek'))
+            ->where('outlet_status', 'pending')
             ->when($search !== '', function ($query) use ($search) {
                 $query->where(function ($inner) use ($search) {
                     $inner
@@ -33,10 +30,6 @@ class OutletVerificationController extends Controller
                         ->orWhere('city', 'like', "%{$search}%");
                 });
             })
-            ->when($status !== '', fn ($query) => $query->where('verification_status', $status))
-            ->when($type !== '', fn ($query) => $query->where('outlet_type', $type))
-            ->when($outletStatus !== '', fn ($query) => $query->where('outlet_status', $outletStatus))
-            ->orderByRaw("verification_status = 'pending' desc")
             ->latest('updated_at')
             ->paginate(12)
             ->withQueryString();
@@ -45,9 +38,6 @@ class OutletVerificationController extends Controller
             'outlets' => $outlets,
             'filters' => [
                 'search' => $search,
-                'status' => $status,
-                'type' => $type,
-                'outlet_status' => $outletStatus,
             ],
         ]);
     }
@@ -55,6 +45,7 @@ class OutletVerificationController extends Controller
     public function edit(Request $request, Outlet $outlet): View
     {
         $this->ensureUserCanAccess($request->user(), $outlet);
+        abort_unless($outlet->outlet_status === 'pending', 404);
 
         $recentVisits = Visit::query()
             ->with('user:id,name,role')
@@ -73,29 +64,30 @@ class OutletVerificationController extends Controller
     public function update(OutletVerificationRequest $request, Outlet $outlet): RedirectResponse
     {
         $this->ensureUserCanAccess($request->user(), $outlet);
+        abort_unless($outlet->outlet_status === 'pending', 404);
 
         DB::transaction(function () use ($request, $outlet): void {
-            $oldType = $outlet->outlet_type;
+            $oldStatus = $outlet->outlet_status;
 
             $outlet->update([
                 ...$request->validatedPayload($outlet),
                 'updated_by' => $request->user()->id,
             ]);
 
-            if ($oldType !== $outlet->outlet_type) {
+            if ($oldStatus !== $outlet->outlet_status) {
                 DB::table('outlet_status_histories')->insert([
                     'outlet_id' => $outlet->id,
-                    'old_outlet_type' => $oldType,
-                    'new_outlet_type' => $outlet->outlet_type,
+                    'old_outlet_type' => $oldStatus,
+                    'new_outlet_type' => $outlet->outlet_status,
                     'changed_by' => $request->user()->id,
-                    'notes' => $request->string('verification_notes')->toString() ?: 'Status diperbarui saat verifikasi outlet.',
+                    'notes' => $request->string('verification_notes')->toString() ?: 'Status outlet diperbarui saat review outlet.',
                     'created_at' => now(),
                 ]);
             }
 
             DB::table('outlet_verification_logs')->insert([
                 'outlet_id' => $outlet->id,
-                'verification_status' => $outlet->verification_status ?: 'not_required',
+                'verification_status' => $outlet->outlet_status,
                 'official_kode' => $outlet->official_kode,
                 'verified_by' => $request->user()->id,
                 'notes' => $request->string('verification_notes')->toString() ?: null,
@@ -103,7 +95,7 @@ class OutletVerificationController extends Controller
             ]);
         });
 
-        return redirect()->route('outlet-verifications.edit', $outlet)->with('status', 'Verifikasi outlet berhasil diperbarui.');
+        return redirect()->route('outlet-verifications.index')->with('status', 'Official kode berhasil disimpan dan outlet sudah aktif.');
     }
 
     private function baseQuery($user)
