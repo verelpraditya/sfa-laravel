@@ -6,11 +6,14 @@ use App\Http\Requests\SalesVisitRequest;
 use App\Models\Outlet;
 use App\Models\SalesVisitDetail;
 use App\Models\Visit;
+use App\Models\VisitSubmission;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
+use Throwable;
 
 class SalesVisitController extends Controller
 {
@@ -56,56 +59,78 @@ class SalesVisitController extends Controller
     public function store(SalesVisitRequest $request): RedirectResponse
     {
         $user = $request->user();
+        $submissionToken = $request->string('submission_token')->toString() ?: (string) Str::uuid();
 
-        $visit = DB::transaction(function () use ($request, $user) {
-            $outlet = $request->existingOutlet();
+        $submissionState = $this->beginSubmission($submissionToken, $user->id, 'sales');
 
-            if (! $outlet) {
-                $initialStatus = $this->mapInitialOutletStatus($request->string('new_outlet_type')->toString());
+        if ($submissionState['status'] === 'duplicate') {
+            return redirect()->route('sales-visits.index')->with('status', 'Kunjungan sales berhasil disimpan untuk outlet '.$submissionState['visit']->outlet->name.'.');
+        }
 
-                $outlet = Outlet::create([
+        if ($submissionState['status'] === 'pending') {
+            return redirect()->route('sales-visits.index')->with('status', 'Kunjungan sales sedang diproses. Silakan cek daftar kunjungan dalam beberapa saat.');
+        }
+
+        try {
+            $visit = DB::transaction(function () use ($request, $user, $submissionToken) {
+                $outlet = $request->existingOutlet();
+
+                if (! $outlet) {
+                    $initialStatus = $this->mapInitialOutletStatus($request->string('new_outlet_type')->toString());
+
+                    $outlet = Outlet::create([
+                        'branch_id' => $user->branch_id,
+                        'name' => $request->string('new_outlet_name')->toString(),
+                        'address' => $request->string('new_outlet_address')->toString(),
+                        'district' => $request->string('new_outlet_district')->toString(),
+                        'city' => $request->string('new_outlet_city')->toString(),
+                        'category' => $request->string('new_outlet_category')->toString(),
+                        'outlet_status' => $initialStatus,
+                        'official_kode' => $request->string('new_outlet_official_kode')->toString() ?: null,
+                        'verified_by' => $initialStatus === 'active' ? $user->id : null,
+                        'verified_at' => $initialStatus === 'active' ? now() : null,
+                        'created_by' => $user->id,
+                        'updated_by' => $user->id,
+                    ]);
+                }
+
+                $storedPhoto = $request->file('visit_photo')->storeAs(
+                    'visits/sales',
+                    $this->buildPhotoFilename($user->username, $outlet->name, $request->file('visit_photo')->extension()),
+                    'public',
+                );
+
+                $visit = Visit::create([
                     'branch_id' => $user->branch_id,
-                    'name' => $request->string('new_outlet_name')->toString(),
-                    'address' => $request->string('new_outlet_address')->toString(),
-                    'district' => $request->string('new_outlet_district')->toString(),
-                    'city' => $request->string('new_outlet_city')->toString(),
-                    'category' => $request->string('new_outlet_category')->toString(),
-                    'outlet_status' => $initialStatus,
-                    'official_kode' => $request->string('new_outlet_official_kode')->toString() ?: null,
-                    'verified_by' => $initialStatus === 'active' ? $user->id : null,
-                    'verified_at' => $initialStatus === 'active' ? now() : null,
-                    'created_by' => $user->id,
-                    'updated_by' => $user->id,
+                    'outlet_id' => $outlet->id,
+                    'user_id' => $user->id,
+                    'visit_type' => 'sales',
+                    'outlet_condition' => $request->string('outlet_condition')->toString(),
+                    'latitude' => $request->input('latitude'),
+                    'longitude' => $request->input('longitude'),
+                    'visit_photo_path' => $storedPhoto,
+                    'visited_at' => now(),
+                    'notes' => $request->string('notes')->toString() ?: null,
                 ]);
-            }
 
-            $storedPhoto = $request->file('visit_photo')->storeAs(
-                'visits/sales',
-                $this->buildPhotoFilename($user->username, $outlet->name, $request->file('visit_photo')->extension()),
-                'public',
-            );
+                SalesVisitDetail::create([
+                    'visit_id' => $visit->id,
+                    'order_amount' => $request->filled('order_amount') ? $request->input('order_amount') : null,
+                    'receivable_amount' => $request->filled('receivable_amount') ? $request->input('receivable_amount') : null,
+                ]);
 
-            $visit = Visit::create([
-                'branch_id' => $user->branch_id,
-                'outlet_id' => $outlet->id,
-                'user_id' => $user->id,
-                'visit_type' => 'sales',
-                'outlet_condition' => $request->string('outlet_condition')->toString(),
-                'latitude' => $request->input('latitude'),
-                'longitude' => $request->input('longitude'),
-                'visit_photo_path' => $storedPhoto,
-                'visited_at' => now(),
-                'notes' => $request->string('notes')->toString() ?: null,
-            ]);
+                VisitSubmission::where('token', $submissionToken)->update([
+                    'visit_id' => $visit->id,
+                    'completed_at' => now(),
+                ]);
 
-            SalesVisitDetail::create([
-                'visit_id' => $visit->id,
-                'order_amount' => $request->filled('order_amount') ? $request->input('order_amount') : null,
-                'receivable_amount' => $request->filled('receivable_amount') ? $request->input('receivable_amount') : null,
-            ]);
+                return $visit;
+            });
+        } catch (Throwable $exception) {
+            VisitSubmission::where('token', $submissionToken)->delete();
 
-            return $visit;
-        });
+            throw $exception;
+        }
 
         return redirect()->route('sales-visits.index')->with('status', 'Kunjungan sales berhasil disimpan untuk outlet '.$visit->outlet->name.'.');
     }
@@ -126,5 +151,39 @@ class SalesVisitController extends Controller
             'pelanggan_lama' => 'active',
             default => 'prospek',
         };
+    }
+
+    private function beginSubmission(string $token, int $userId, string $visitType): array
+    {
+        try {
+            VisitSubmission::create([
+                'token' => $token,
+                'user_id' => $userId,
+                'visit_type' => $visitType,
+            ]);
+
+            return ['status' => 'new', 'visit' => null];
+        } catch (QueryException $exception) {
+            if (! $this->isDuplicateSubmissionException($exception)) {
+                throw $exception;
+            }
+
+            for ($attempt = 0; $attempt < 40; $attempt++) {
+                $existingVisitId = VisitSubmission::where('token', $token)->value('visit_id');
+
+                if ($existingVisitId) {
+                    return ['status' => 'duplicate', 'visit' => Visit::with('outlet')->find($existingVisitId)];
+                }
+
+                usleep(250000);
+            }
+
+            return ['status' => 'pending', 'visit' => null];
+        }
+    }
+
+    private function isDuplicateSubmissionException(QueryException $exception): bool
+    {
+        return in_array($exception->getCode(), ['23000', '23505'], true);
     }
 }

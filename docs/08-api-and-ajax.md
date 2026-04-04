@@ -1,7 +1,7 @@
 # 08 API and AJAX
 
 - Status: Draft
-- Last updated: 2026-03-28
+- Last updated: 2026-03-31
 - Purpose: Define lightweight JSON endpoints used by Blade and Alpine.
 
 ## Principles
@@ -33,7 +33,7 @@
       "district": "Cicendo",
       "city": "Bandung",
       "category": "salon",
-      "outlet_type": "pelanggan_lama"
+      "outlet_status": "active"
     }
   ]
 }
@@ -57,3 +57,4 @@
 - The codebase currently exposes outlet autocomplete at `GET /outlets/search` with route name `ajax.outlets.search`.
 - Response remains JSON and already respects branch scoping for non-admin users.
 - The same endpoint is now reused by the sales visit form for live outlet search.
+- Current response includes `outlet_status` instead of legacy `outlet_type` or `verification_status` fields.

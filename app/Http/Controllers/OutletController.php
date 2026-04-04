@@ -177,7 +177,7 @@ class OutletController extends Controller
         $search = trim((string) $request->string('search'));
 
         $outlets = $this->baseQuery($user)
-            ->with(['branch', 'creator', 'verifier'])
+            ->with(['branch', 'creator', 'verifier', 'latestVisit.user:id,name,role', 'latestVisit.branch:id,timezone'])
             ->tap($scope)
             ->when($search !== '', function ($query) use ($search) {
                 $query->where(function ($inner) use ($search) {

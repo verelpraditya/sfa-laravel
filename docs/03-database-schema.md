@@ -1,7 +1,7 @@
 # 03 Database Schema
 
 - Status: Draft
-- Last updated: 2026-03-28
+- Last updated: 2026-03-31
 - Purpose: Core schema draft, tables, relationships, enums, and constraints.
 
 ## Core Tables
@@ -40,10 +40,8 @@
 - `district`
 - `city`
 - `category` = `salon|toko|barbershop|lainnya`
-- `outlet_type` = `prospek|noo|pelanggan_lama`
-- `outlet_status` = `active|inactive`
+- `outlet_status` = `prospek|pending|active|inactive`
 - `official_kode` nullable unique
-- `verification_status` = `pending|verified` nullable
 - `verified_by` nullable
 - `verified_at` nullable
 - `created_by`
@@ -105,6 +103,8 @@
 - `notes` nullable
 - `created_at`
 
+Note: the audit table still keeps legacy column names `old_outlet_type` and `new_outlet_type`, but the current implementation writes outlet status changes into those columns.
+
 ### `outlet_verification_logs`
 
 - `id`
@@ -114,6 +114,8 @@
 - `verified_by`
 - `notes` nullable
 - `created_at`
+
+Note: the log table still keeps the legacy column name `verification_status`, but the current implementation writes the resulting outlet status value for audit purposes.
 
 ## Key Relationships
 
@@ -130,8 +132,8 @@
 
 - `official_kode` must be unique when present.
 - `username` must be unique.
-- `pelanggan_lama` requires `official_kode`.
-- `prospek` can keep `verification_status = null`.
+- `active` outlets should have `official_kode`.
+- `pending` outlets are waiting for supervisor `official_kode` assignment.
 - `sales` can create only `sales` visits.
 - `smd` can create only `smd` visits.
 - `supervisor` can create both visit types, only for self.

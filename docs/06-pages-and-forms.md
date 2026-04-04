@@ -1,7 +1,7 @@
 # 06 Pages and Forms
 
 - Status: Draft
-- Last updated: 2026-03-28
+- Last updated: 2026-04-01
 - Purpose: Page list, key form fields, and validation behavior.
 
 ## Core Pages
@@ -15,7 +15,6 @@
 - Visit history
 - Visit detail
 - Prospect list
-- NOO list
 - Reports
 
 ## Login Page
@@ -24,6 +23,7 @@
 - Has remember-me option
 - Supports show/hide password interaction
 - Styled for mobile-first field usage
+- Public root path redirects directly to login
 
 ## Shared Outlet Search Component
 
@@ -37,7 +37,7 @@
 - `GET /outlets`
   - desktop table view
   - mobile card view
-  - filter by search, verification status, and outlet type
+  - filter by search and outlet status
 - `GET /outlets/create`
   - create master outlet form
 - `GET /outlets/{outlet}/edit`
@@ -46,9 +46,9 @@
 ## Outlet Verification Pages
 
 - `GET /outlet-verifications`
-  - pending/verified outlet review list
+  - pending outlet review list only
 - `GET /outlet-verifications/{outlet}/edit`
-  - verification form for status and official code
+  - review form with read-only outlet info and editable `official_kode` only
 
 ## Sales Visit Form
 
@@ -60,7 +60,10 @@
 - `district` when new
 - `city` when new
 - `category` when new
-- `outlet_type` when new or updating status
+- `new_outlet_type` as user-facing inline choice:
+  - `prospek`
+  - `noo`
+  - `pelanggan_lama`
 - `official_kode` only when `pelanggan_lama`
 - `outlet_condition`
 - `order_amount`
@@ -77,8 +80,13 @@
 - visit proof photo required
 - `official_kode` required when `pelanggan_lama`
 - financial inputs only when `outlet_condition = buka`
-- new inline outlets default to `active`
-- new `prospek` outlets keep verification status empty/null
+- new inline outlets are mapped to outlet status:
+  - `prospek` -> `prospek`
+  - `noo` -> `pending`
+  - `pelanggan_lama` -> `active`
+- mobile photo flow prefers camera capture via browser hint, shows preview, and compresses image client-side before upload
+- uploaded photo filename is normalized to `username_outlet_YYYYMMDD_HHMMSS`
+- validation messages are customized in Indonesian and old input is preserved after submit failure
 
 ### Implemented pages
 
@@ -94,7 +102,7 @@
 - `activities[]`
 - `po_amount`
 - `payment_amount`
-- `display_photo`
+- `display_photos[]`
 - `latitude`
 - `longitude`
 - `visit_photo`
@@ -108,8 +116,22 @@
 - visit proof photo required
 - `po_amount` required if `ambil_po`
 - `payment_amount` required if `ambil_tagihan`
-- `display_photo` required if `merapikan_display`
-- new inline outlets default to `active`
+- minimum 1 display photo required if `merapikan_display`
+- maximum 10 display photos per visit
+- new inline outlets use the same outlet status mapping as sales visit form
+- visit proof photo matches sales visit flow: camera hint, preview, and client-side compression
+- display photo flow is optimized for field use:
+  - camera-first, one photo at a time
+  - `+ Tambah Foto` until maximum 10 photos
+  - compact per-photo status such as `Foto 1 siap`
+  - per-photo replace and remove actions
+  - no large preview block
+
+### Submission safety
+
+- sales and SMD visit forms now include a submission token to prevent duplicate visit creation when the user taps submit multiple times.
+- submit button is locked after first submit and changes to `Menyimpan...`.
+- duplicate submission is redirected as a normal success response if the first request already created the visit.
 
 ### Implemented pages
 
@@ -122,3 +144,18 @@
 - No custom supervisor-only form.
 - Supervisor selects visit type first.
 - Selected type loads the same validation rules as the target form.
+
+## Visit Detail
+
+- Visit detail page shows:
+  - visit summary
+  - latitude and longitude
+  - visit proof photo
+  - SMD display photo gallery when available
+  - embedded OpenStreetMap based on saved coordinates
+  - shortcut link to Google Maps
+
+## Reports
+
+- Accessible only for `admin_pusat` and `supervisor`
+- `sales` and `smd` do not see the report menu and cannot access report routes directly

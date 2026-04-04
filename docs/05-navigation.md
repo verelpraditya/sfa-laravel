@@ -1,7 +1,7 @@
 # 05 Navigation
 
 - Status: Draft
-- Last updated: 2026-03-28
+- Last updated: 2026-03-31
 - Purpose: Menu structure and navigation rules per role.
 
 ## Navigation Pattern
@@ -16,46 +16,43 @@
 - `Cabang`
 - `User`
 - `Outlet`
-- `Kunjungan`
+- `History Kunjungan`
 - `Verifikasi Outlet`
 - `Laporan`
-- `Import Outlet`
-- `Pengaturan`
 
 ## Supervisor Menu
 
-- `Dashboard Cabang`
-- `Aktivitas Saya`
-- `Input Kunjungan`
+- `Dashboard`
 - `History Kunjungan`
 - `Outlet`
 - `Verifikasi Outlet`
-- `Daftar Prospek`
-- `Daftar NOO`
+- `Prospek`
 - `Outlet Inactive`
-- `Laporan Cabang`
+- `Kunjungan Sales`
+- `Kunjungan SMD`
+- `Laporan`
 
 ## Sales Menu
 
-- `Dashboard Saya`
-- `Input Kunjungan`
+- `Dashboard`
 - `History Kunjungan`
-- `Riwayat Kunjungan`
-- `Outlet Cabang`
-- `Prospek Saya`
+- `Outlet`
+- `Prospek`
+- `Kunjungan Sales`
 
 ## SMD Menu
 
-- `Dashboard Saya`
-- `Input Kunjungan`
+- `Dashboard`
 - `History Kunjungan`
-- `Riwayat Kunjungan`
-- `Outlet Cabang`
-- `Aktivitas Saya`
+- `Outlet`
+- `Kunjungan SMD`
 
 ## Important Navigation Behavior
 
-- `Input Kunjungan` opens directly to form for `sales` and `smd`.
-- For `supervisor`, `Input Kunjungan` first asks for visit type: `sales` or `smd`.
+- Root URL redirects directly to `Login`.
+- `Kunjungan Sales` opens directly to sales visit flow for `sales` and `supervisor`.
+- `Kunjungan SMD` opens directly to SMD visit flow for `smd` and `supervisor`.
 - Non-admin users should never see cross-branch navigation targets.
-- `Outlet` navigation is now available in the app shell as a dedicated master-data module.
+- `Outlet` navigation is available in the app shell as a dedicated master-data module.
+- `Laporan` is visible only to `admin_pusat` and `supervisor`.
+- `Verifikasi Outlet` is a pending-only supervisor/admin workflow.

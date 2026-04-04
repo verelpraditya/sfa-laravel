@@ -1,4 +1,5 @@
 <x-app-layout>
+    @php($submissionToken = old('submission_token', (string) \Illuminate\Support\Str::uuid()))
     <x-slot name="header">
         <div>
             <div class="flex items-center gap-2">
@@ -21,8 +22,9 @@
                 </div>
             @endif
 
-            <form method="POST" action="{{ route('smd-visits.store') }}" enctype="multipart/form-data" class="space-y-6" x-data="smdVisitForm()" x-init="init()">
+            <form method="POST" action="{{ route('smd-visits.store') }}" enctype="multipart/form-data" class="space-y-6" x-data="smdVisitForm()" x-init="init()" @submit="handleSubmit($event)">
                 @csrf
+                <input type="hidden" name="submission_token" value="{{ $submissionToken }}">
 
                 <section class="app-panel app-animate-enter overflow-hidden p-4 sm:p-6">
                     <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
@@ -55,7 +57,11 @@
                                     <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Step 1</p>
                                     <h3 class="mt-2 text-xl font-semibold text-ink-950">Outlet yang dikunjungi</h3>
                                 </div>
-                                <button type="button" @click="creatingNewOutlet = ! creatingNewOutlet; resetSelection()" class="app-glass-button w-full sm:w-auto">
+                                <button type="button" @click="creatingNewOutlet = ! creatingNewOutlet; resetSelection()" class="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-sky-200 bg-sky-50 px-4 py-3 text-sm font-semibold text-sky-900 shadow-[0_14px_30px_-20px_rgba(14,165,233,0.45)] transition hover:-translate-y-0.5 hover:border-sky-300 hover:bg-sky-100 sm:w-auto">
+                                    <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-white shadow-sm shadow-sky-100/80">
+                                        <svg x-show="!creatingNewOutlet" class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9" d="M12 5v14M5 12h14" /></svg>
+                                        <svg x-show="creatingNewOutlet" x-cloak class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9" d="M7 7h10v10" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9" d="m9 15 6-6" /></svg>
+                                    </span>
                                     <span x-text="creatingNewOutlet ? 'Pakai Outlet Existing' : 'Buat Outlet Baru'"></span>
                                 </button>
                             </div>
@@ -217,22 +223,32 @@
                                 </div>
 
                                 <div class="app-soft-panel p-4 sm:p-5" x-show="activities.includes('merapikan_display')" x-transition x-cloak>
-                                    <x-input-label for="display_photo" value="Foto display" />
-                                    <label for="display_photo" class="mt-2 flex cursor-pointer items-center justify-between gap-4 rounded-[1.4rem] border border-dashed border-slate-300 bg-white px-4 py-4 text-sm text-slate-500 transition hover:border-sky-300 hover:bg-sky-50/50">
-                                        <span>
-                                            <span class="block font-semibold text-slate-800">Ambil foto display</span>
-                                            <span class="mt-1 block text-xs text-slate-500">Gunakan foto display yang jelas.</span>
-                                        </span>
-                                        <span class="rounded-full bg-sky-50 px-3 py-1.5 text-xs font-semibold text-sky-700">Kamera</span>
-                                    </label>
-                                    <input id="display_photo" name="display_photo" type="file" accept="image/*" capture="environment" @change="handleDisplayPhoto($event)" class="sr-only">
+                                    <x-input-label value="Foto display" />
+                                    <x-input-error class="mt-2" :messages="$errors->get('display_photos')" />
+                                    <x-input-error class="mt-2" :messages="$errors->get('display_photos.*')" />
                                     <x-input-error class="mt-2" :messages="$errors->get('display_photo')" />
-                                    <div x-show="displayPhotoName" class="mt-3 rounded-[1.4rem] border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600">
-                                        File dipilih: <span class="font-semibold text-slate-900" x-text="displayPhotoName"></span>
-                                    </div>
-                                    <div x-show="displayPhotoStatus" x-cloak class="mt-3 rounded-[1.2rem] border border-sky-100 bg-sky-50 px-4 py-3 text-xs font-medium text-sky-700" x-text="displayPhotoStatus"></div>
-                                    <div x-show="displayPhotoPreviewUrl" x-cloak class="mt-4 overflow-hidden rounded-[1.4rem] border border-slate-200 bg-white">
-                                        <img :src="displayPhotoPreviewUrl" alt="Preview foto display" class="h-56 w-full object-cover">
+                                    <p class="mt-2 text-xs text-slate-500">Ambil foto display satu per satu dari kamera. Maksimal 10 foto.</p>
+                                    <div class="mt-3 space-y-3">
+                                        <template x-for="(slot, index) in displayPhotoSlots" :key="slot.id">
+                                            <div class="rounded-[1.4rem] border border-slate-200 bg-white px-4 py-4 shadow-sm">
+                                                <div class="flex items-start justify-between gap-3">
+                                                    <div>
+                                                        <p class="text-sm font-semibold text-slate-900" x-text="slot.ready ? 'Foto ' + (index + 1) + ' siap' : 'Foto ' + (index + 1)"></p>
+                                                        <p class="mt-1 text-xs text-slate-500" x-text="slot.ready ? (slot.sizeLabel || 'Siap diupload') : 'Ambil foto dari kamera' "></p>
+                                                        <p x-show="slot.status" x-cloak class="mt-2 text-xs font-medium text-sky-700" x-text="slot.status"></p>
+                                                    </div>
+                                                    <div class="flex items-center gap-2">
+                                                        <label :for="'display_photo_' + slot.id" class="inline-flex cursor-pointer items-center rounded-full bg-sky-50 px-3 py-1.5 text-xs font-semibold text-sky-700" x-text="slot.ready ? 'Ganti' : 'Kamera'"></label>
+                                                        <button type="button" @click="removeDisplayPhotoSlot(slot.id)" x-show="displayPhotoSlots.length > 1 || slot.ready" class="inline-flex items-center rounded-full bg-rose-50 px-3 py-1.5 text-xs font-semibold text-rose-700">Hapus</button>
+                                                    </div>
+                                                </div>
+                                                <input :id="'display_photo_' + slot.id" name="display_photos[]" type="file" accept="image/*" capture="environment" @change="handleDisplayPhotoSlot($event, slot.id)" class="sr-only">
+                                            </div>
+                                        </template>
+
+                                        <button type="button" @click="addDisplayPhotoSlot()" x-show="displayPhotoSlots.length < 10" class="inline-flex items-center rounded-2xl border border-dashed border-sky-300 bg-sky-50/70 px-4 py-3 text-sm font-semibold text-sky-700 transition hover:bg-sky-100">
+                                            + Tambah Foto
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -256,7 +272,12 @@
                                             <p class="text-sm font-semibold text-slate-900">Lokasi kunjungan</p>
                                             <p class="mt-1 text-xs text-slate-500">Tap sekali untuk isi koordinat otomatis.</p>
                                         </div>
-                                        <button type="button" @click="fillMockLocation" class="app-glass-button w-full sm:w-auto">Ambil Lokasi</button>
+                                        <button type="button" @click="fillMockLocation" class="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-900 shadow-[0_14px_30px_-20px_rgba(16,185,129,0.4)] transition hover:-translate-y-0.5 hover:border-emerald-300 hover:bg-emerald-100 sm:w-auto">
+                                            <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-white shadow-sm shadow-emerald-100/80">
+                                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9" d="M12 21c4-4.35 6-7.39 6-10a6 6 0 1 0-12 0c0 2.61 2 5.65 6 10Z" /><circle cx="12" cy="11" r="2.5" stroke-width="1.9" /></svg>
+                                            </span>
+                                            Ambil Lokasi
+                                        </button>
                                     </div>
                                     <div class="mt-4 grid gap-4 sm:grid-cols-2">
                                         <div>
@@ -326,7 +347,10 @@
 
                 <div class="sticky bottom-4 z-20 flex justify-end">
                     <div class="w-full rounded-[1.75rem] border border-white/80 bg-white/92 p-3 shadow-[0_18px_40px_-22px_rgba(15,23,42,0.38)] backdrop-blur sm:w-auto">
-                        <x-primary-button class="w-full justify-center sm:min-w-[260px]">Simpan Kunjungan SMD</x-primary-button>
+                        <x-primary-button class="w-full justify-center sm:min-w-[260px]" x-bind:disabled="submitting">
+                            <span x-show="!submitting">Simpan Kunjungan SMD</span>
+                            <span x-show="submitting" x-cloak>Menyimpan...</span>
+                        </x-primary-button>
                     </div>
                 </div>
             </form>
@@ -349,9 +373,9 @@
                     visitPhotoName: '',
                     visitPhotoStatus: '',
                     visitPhotoPreviewUrl: null,
-                    displayPhotoName: '',
-                    displayPhotoStatus: '',
-                    displayPhotoPreviewUrl: null,
+                    displayPhotoSlots: [],
+                    nextDisplayPhotoSlotId: 1,
+                    submitting: false,
                     poAmountRaw: '{{ old('po_amount') }}',
                     paymentAmountRaw: '{{ old('payment_amount') }}',
                     poAmountDisplay: '',
@@ -363,6 +387,16 @@
                         if (this.selectedOutlet && ! this.query) {
                             this.query = this.selectedOutlet.name || '';
                         }
+
+                        this.addDisplayPhotoSlot();
+                    },
+                    handleSubmit(event) {
+                        if (this.submitting) {
+                            event.preventDefault();
+                            return;
+                        }
+
+                        this.submitting = true;
                     },
                     formatRupiah(value) {
                         const digits = String(value || '').replace(/\D/g, '');
@@ -443,8 +477,62 @@
                     async handleVisitPhoto(event) {
                         await this.handleCompressedUpload(event, 'visit');
                     },
-                    async handleDisplayPhoto(event) {
-                        await this.handleCompressedUpload(event, 'display');
+                    addDisplayPhotoSlot() {
+                        if (this.displayPhotoSlots.length >= 10) {
+                            return;
+                        }
+
+                        this.displayPhotoSlots.push({
+                            id: this.nextDisplayPhotoSlotId++,
+                            ready: false,
+                            sizeLabel: '',
+                            status: '',
+                        });
+                    },
+                    removeDisplayPhotoSlot(slotId) {
+                        this.displayPhotoSlots = this.displayPhotoSlots.filter((slot) => slot.id !== slotId);
+
+                        if (this.displayPhotoSlots.length === 0) {
+                            this.addDisplayPhotoSlot();
+                        }
+                    },
+                    async handleDisplayPhotoSlot(event, slotId) {
+                        const input = event.target;
+                        const file = input.files?.[0];
+                        const slot = this.displayPhotoSlots.find((item) => item.id === slotId);
+
+                        if (! slot) {
+                            return;
+                        }
+
+                        if (! file) {
+                            slot.ready = false;
+                            slot.sizeLabel = '';
+                            slot.status = '';
+                            return;
+                        }
+
+                        slot.status = 'Memproses foto...';
+
+                        try {
+                            const compressed = await this.compressImage(file, {
+                                maxWidth: 1600,
+                                maxHeight: 1600,
+                                quality: 0.82,
+                            });
+
+                            const transfer = new DataTransfer();
+                            transfer.items.add(compressed);
+                            input.files = transfer.files;
+
+                            slot.ready = true;
+                            slot.sizeLabel = this.formatFileSize(compressed.size);
+                            slot.status = '';
+                        } catch (error) {
+                            slot.ready = true;
+                            slot.sizeLabel = this.formatFileSize(file.size);
+                            slot.status = '';
+                        }
                     },
                     async handleCompressedUpload(event, kind) {
                         const input = event.target;
@@ -455,18 +543,12 @@
                                 this.visitPhotoName = '';
                                 this.visitPhotoStatus = '';
                                 this.visitPhotoPreviewUrl = null;
-                            } else {
-                                this.displayPhotoName = '';
-                                this.displayPhotoStatus = '';
-                                this.displayPhotoPreviewUrl = null;
                             }
                             return;
                         }
 
                         if (kind === 'visit') {
                             this.visitPhotoStatus = 'Memproses foto...';
-                        } else {
-                            this.displayPhotoStatus = 'Memproses foto...';
                         }
 
                         try {
@@ -484,20 +566,12 @@
                                 this.visitPhotoName = compressed.name;
                                 this.visitPhotoStatus = `Foto siap diupload (${this.formatFileSize(compressed.size)})`;
                                 this.setPreviewUrl(compressed, 'visit');
-                            } else {
-                                this.displayPhotoName = compressed.name;
-                                this.displayPhotoStatus = `Foto siap diupload (${this.formatFileSize(compressed.size)})`;
-                                this.setPreviewUrl(compressed, 'display');
                             }
                         } catch (error) {
                             if (kind === 'visit') {
                                 this.visitPhotoName = file.name;
                                 this.visitPhotoStatus = 'Foto asli akan diupload.';
                                 this.setPreviewUrl(file, 'visit');
-                            } else {
-                                this.displayPhotoName = file.name;
-                                this.displayPhotoStatus = 'Foto asli akan diupload.';
-                                this.setPreviewUrl(file, 'display');
                             }
                         }
                     },
@@ -572,7 +646,7 @@
                         return `${(size / 1048576).toFixed(2)} MB`;
                     },
                     setPreviewUrl(file, kind) {
-                        const currentUrl = kind === 'visit' ? this.visitPhotoPreviewUrl : this.displayPhotoPreviewUrl;
+                        const currentUrl = kind === 'visit' ? this.visitPhotoPreviewUrl : null;
 
                         if (currentUrl) {
                             URL.revokeObjectURL(currentUrl);
@@ -584,8 +658,6 @@
                             this.visitPhotoPreviewUrl = nextUrl;
                             return;
                         }
-
-                        this.displayPhotoPreviewUrl = nextUrl;
                     },
                 }
             }

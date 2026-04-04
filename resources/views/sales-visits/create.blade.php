@@ -1,4 +1,5 @@
 <x-app-layout>
+    @php($submissionToken = old('submission_token', (string) \Illuminate\Support\Str::uuid()))
     <x-slot name="header">
         <div class="flex items-center justify-between gap-3">
             <div>
@@ -23,8 +24,9 @@
                 </div>
             @endif
 
-            <form method="POST" action="{{ route('sales-visits.store') }}" enctype="multipart/form-data" class="space-y-6" x-data="salesVisitForm()" x-init="init()">
+            <form method="POST" action="{{ route('sales-visits.store') }}" enctype="multipart/form-data" class="space-y-6" x-data="salesVisitForm()" x-init="init()" @submit="handleSubmit($event)">
                 @csrf
+                <input type="hidden" name="submission_token" value="{{ $submissionToken }}">
 
                 <section class="app-panel app-animate-enter overflow-hidden p-4 sm:p-6">
                     <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
@@ -57,7 +59,11 @@
                                     <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Step 1</p>
                                     <h3 class="mt-2 text-xl font-semibold text-ink-950">Outlet yang dikunjungi</h3>
                                 </div>
-                                <button type="button" @click="creatingNewOutlet = ! creatingNewOutlet; resetSelection()" class="app-glass-button w-full sm:w-auto">
+                                <button type="button" @click="creatingNewOutlet = ! creatingNewOutlet; resetSelection()" class="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-sky-200 bg-sky-50 px-4 py-3 text-sm font-semibold text-sky-900 shadow-[0_14px_30px_-20px_rgba(14,165,233,0.45)] transition hover:-translate-y-0.5 hover:border-sky-300 hover:bg-sky-100 sm:w-auto">
+                                    <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-white shadow-sm shadow-sky-100/80">
+                                        <svg x-show="!creatingNewOutlet" class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9" d="M12 5v14M5 12h14" /></svg>
+                                        <svg x-show="creatingNewOutlet" x-cloak class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9" d="M7 7h10v10" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9" d="m9 15 6-6" /></svg>
+                                    </span>
                                     <span x-text="creatingNewOutlet ? 'Pakai Outlet Existing' : 'Buat Outlet Baru'"></span>
                                 </button>
                             </div>
@@ -241,7 +247,12 @@
                                             <p class="text-sm font-semibold text-slate-900">Lokasi kunjungan</p>
                                             <p class="mt-1 text-xs text-slate-500">Tap sekali untuk isi koordinat otomatis.</p>
                                         </div>
-                                        <button type="button" @click="fillMockLocation" class="app-glass-button w-full sm:w-auto">Ambil Lokasi</button>
+                                        <button type="button" @click="fillMockLocation" class="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-900 shadow-[0_14px_30px_-20px_rgba(16,185,129,0.4)] transition hover:-translate-y-0.5 hover:border-emerald-300 hover:bg-emerald-100 sm:w-auto">
+                                            <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-white shadow-sm shadow-emerald-100/80">
+                                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9" d="M12 21c4-4.35 6-7.39 6-10a6 6 0 1 0-12 0c0 2.61 2 5.65 6 10Z" /><circle cx="12" cy="11" r="2.5" stroke-width="1.9" /></svg>
+                                            </span>
+                                            Ambil Lokasi
+                                        </button>
                                     </div>
                                     <div class="mt-4 grid gap-4 sm:grid-cols-2">
                                         <div>
@@ -312,7 +323,10 @@
 
                 <div class="sticky bottom-4 z-20 flex justify-end">
                     <div class="w-full rounded-[1.75rem] border border-white/80 bg-white/92 p-3 shadow-[0_18px_40px_-22px_rgba(15,23,42,0.38)] backdrop-blur sm:w-auto">
-                        <x-primary-button class="w-full justify-center sm:min-w-[260px]">Simpan Kunjungan Sales</x-primary-button>
+                        <x-primary-button class="w-full justify-center sm:min-w-[260px]" x-bind:disabled="submitting">
+                            <span x-show="!submitting">Simpan Kunjungan Sales</span>
+                            <span x-show="submitting" x-cloak>Menyimpan...</span>
+                        </x-primary-button>
                     </div>
                 </div>
             </form>
@@ -335,6 +349,7 @@
                     photoName: '',
                     photoStatus: '',
                     photoPreviewUrl: null,
+                    submitting: false,
                     orderAmountRaw: '{{ old('order_amount') }}',
                     receivableAmountRaw: '{{ old('receivable_amount') }}',
                     orderAmountDisplay: '',
@@ -346,6 +361,14 @@
                         if (this.selectedOutlet && ! this.query) {
                             this.query = this.selectedOutlet.name || '';
                         }
+                    },
+                    handleSubmit(event) {
+                        if (this.submitting) {
+                            event.preventDefault();
+                            return;
+                        }
+
+                        this.submitting = true;
                     },
                     formatRupiah(value) {
                         const digits = String(value || '').replace(/\D/g, '');

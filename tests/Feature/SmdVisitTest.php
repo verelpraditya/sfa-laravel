@@ -32,7 +32,10 @@ class SmdVisitTest extends TestCase
             'outlet_id' => $outlet->id,
             'activities' => ['ambil_po', 'merapikan_display'],
             'po_amount' => 120000,
-            'display_photo' => UploadedFile::fake()->image('display.jpg'),
+            'display_photos' => [
+                UploadedFile::fake()->image('display-1.jpg'),
+                UploadedFile::fake()->image('display-2.jpg'),
+            ],
             'latitude' => '-6.9175000',
             'longitude' => '107.6191000',
             'visit_photo' => UploadedFile::fake()->image('visit.jpg'),
@@ -53,6 +56,7 @@ class SmdVisitTest extends TestCase
         $this->assertDatabaseHas('smd_visit_activities', [
             'activity_type' => 'merapikan_display',
         ]);
+        $this->assertDatabaseCount('smd_visit_display_photos', 2);
     }
 
     public function test_ambil_tagihan_requires_payment_amount(): void
@@ -104,6 +108,6 @@ class SmdVisitTest extends TestCase
         ]);
 
         $response->assertRedirect(route('smd-visits.create'));
-        $response->assertSessionHasErrors('display_photo');
+        $response->assertSessionHasErrors('display_photos');
     }
 }

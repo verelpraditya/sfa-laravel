@@ -66,6 +66,11 @@ class Visit extends Model
         return $this->hasMany(SmdVisitActivity::class);
     }
 
+    public function displayPhotos(): HasMany
+    {
+        return $this->hasMany(SmdVisitDisplayPhoto::class)->orderBy('sort_order');
+    }
+
     public function visitedAtForBranch(): ?Carbon
     {
         if (! $this->visited_at) {

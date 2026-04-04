@@ -1,4 +1,9 @@
 <x-app-layout>
+    @php($latitude = is_numeric($visit->latitude) ? (float) $visit->latitude : null)
+    @php($longitude = is_numeric($visit->longitude) ? (float) $visit->longitude : null)
+    @php($hasCoordinates = $latitude !== null && $longitude !== null)
+    @php($mapDelta = 0.005)
+    @php($bbox = $hasCoordinates ? implode(',', [$longitude - $mapDelta, $latitude - $mapDelta, $longitude + $mapDelta, $latitude + $mapDelta]) : null)
     <x-slot name="header">
         <div class="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
             <div>
@@ -91,6 +96,33 @@
                 </div>
 
                 <div class="space-y-6">
+                    @if ($hasCoordinates)
+                        <section class="app-panel app-animate-enter p-5 sm:p-6">
+                            <div class="flex items-center justify-between gap-3">
+                                <div>
+                                    <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Lokasi Kunjungan</p>
+                                    <h3 class="mt-2 text-xl font-semibold text-ink-950">Titik kunjungan di peta</h3>
+                                </div>
+                                <a href="{{ 'https://www.google.com/maps?q='.$latitude.','.$longitude }}" target="_blank" rel="noopener noreferrer" class="app-glass-button px-4 py-2.5">Buka Google Maps</a>
+                            </div>
+
+                            <div class="mt-4 overflow-hidden rounded-[1.5rem] border border-slate-200 bg-slate-50">
+                                <iframe
+                                    title="Peta lokasi kunjungan"
+                                    src="{{ 'https://www.openstreetmap.org/export/embed.html?bbox='.$bbox.'&layer=mapnik&marker='.$latitude.','.$longitude }}"
+                                    class="h-[18rem] w-full border-0 sm:h-[21rem]"
+                                    loading="lazy"
+                                    referrerpolicy="no-referrer-when-downgrade"
+                                ></iframe>
+                            </div>
+
+                            <div class="mt-4 flex flex-wrap gap-3 text-sm text-slate-600">
+                                <a href="{{ 'https://www.openstreetmap.org/?mlat='.$latitude.'&mlon='.$longitude.'#map=18/'.$latitude.'/'.$longitude }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center rounded-2xl border border-slate-200 bg-white px-4 py-2.5 font-semibold text-slate-700 shadow-sm transition hover:border-slate-300 hover:text-slate-900">Buka OpenStreetMap</a>
+                                <span class="inline-flex items-center rounded-2xl bg-slate-50 px-4 py-2.5">{{ $latitude }}, {{ $longitude }}</span>
+                            </div>
+                        </section>
+                    @endif
+
                     <section class="app-panel app-animate-enter p-5 sm:p-6">
                         <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Foto Bukti</p>
                         <div class="mt-4 overflow-hidden rounded-[1.5rem] border border-slate-200 bg-slate-50">
@@ -98,12 +130,22 @@
                         </div>
                     </section>
 
-                    @if ($visit->visit_type === 'smd' && $visit->smdDetail?->display_photo_path)
+                    @if ($visit->visit_type === 'smd' && ($visit->displayPhotos->isNotEmpty() || $visit->smdDetail?->display_photo_path))
                         <section class="app-panel app-animate-enter p-5 sm:p-6">
                             <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Foto Display</p>
-                            <div class="mt-4 overflow-hidden rounded-[1.5rem] border border-slate-200 bg-slate-50">
-                                <img src="{{ asset('storage/'.$visit->smdDetail->display_photo_path) }}" alt="Foto display" class="w-full object-cover">
-                            </div>
+                            @if ($visit->displayPhotos->isNotEmpty())
+                                <div class="mt-4 grid gap-3 sm:grid-cols-2">
+                                    @foreach ($visit->displayPhotos as $photo)
+                                        <div class="overflow-hidden rounded-[1.5rem] border border-slate-200 bg-slate-50">
+                                            <img src="{{ asset('storage/'.$photo->photo_path) }}" alt="Foto display {{ $loop->iteration }}" class="h-64 w-full object-cover">
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @else
+                                <div class="mt-4 overflow-hidden rounded-[1.5rem] border border-slate-200 bg-slate-50">
+                                    <img src="{{ asset('storage/'.$visit->smdDetail->display_photo_path) }}" alt="Foto display" class="w-full object-cover">
+                                </div>
+                            @endif
                         </section>
                     @endif
                 </div>

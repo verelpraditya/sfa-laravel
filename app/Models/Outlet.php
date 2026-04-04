@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Outlet extends Model
 {
@@ -51,6 +52,11 @@ class Outlet extends Model
     public function visits(): HasMany
     {
         return $this->hasMany(Visit::class);
+    }
+
+    public function latestVisit(): HasOne
+    {
+        return $this->hasOne(Visit::class)->latestOfMany('visited_at');
     }
 
     public function statusLabel(): string

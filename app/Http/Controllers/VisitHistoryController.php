@@ -19,7 +19,7 @@ class VisitHistoryController extends Controller
         $condition = $request->string('condition')->toString();
 
         $visits = $this->scopedQuery($user)
-            ->with(['branch', 'user', 'outlet', 'salesDetail', 'smdDetail', 'smdActivities'])
+            ->with(['branch', 'user', 'outlet', 'salesDetail', 'smdDetail', 'smdActivities', 'displayPhotos'])
             ->whereBetween('visited_at', [$from.' 00:00:00', $to.' 23:59:59'])
             ->when($type !== '', fn (Builder $query) => $query->where('visit_type', $type))
             ->when($condition !== '', fn (Builder $query) => $query->where('outlet_condition', $condition))
@@ -46,7 +46,7 @@ class VisitHistoryController extends Controller
         abort_unless($this->scopedQuery($request->user())->whereKey($visit->id)->exists(), 404);
 
         return view('visit-history.show', [
-            'visit' => $visit->load(['branch', 'user', 'outlet', 'salesDetail', 'smdDetail', 'smdActivities']),
+            'visit' => $visit->load(['branch', 'user', 'outlet', 'salesDetail', 'smdDetail', 'smdActivities', 'displayPhotos']),
         ]);
     }
 

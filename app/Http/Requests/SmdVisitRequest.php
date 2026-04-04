@@ -38,6 +38,8 @@ class SmdVisitRequest extends FormRequest
             'activities.*' => [Rule::in(['ambil_po', 'merapikan_display', 'tukar_faktur', 'ambil_tagihan'])],
             'po_amount' => ['nullable', 'numeric', 'min:0'],
             'payment_amount' => ['nullable', 'numeric', 'min:0'],
+            'display_photos' => ['nullable', 'array', 'max:10'],
+            'display_photos.*' => ['image', 'mimes:jpg,jpeg,png,webp', 'max:3072'],
             'display_photo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:3072'],
             'latitude' => ['required', 'numeric', 'between:-90,90'],
             'longitude' => ['required', 'numeric', 'between:-180,180'],
@@ -67,6 +69,11 @@ class SmdVisitRequest extends FormRequest
             'po_amount.min' => 'Nominal PO tidak boleh kurang dari 0.',
             'payment_amount.numeric' => 'Nominal pembayaran harus berupa angka.',
             'payment_amount.min' => 'Nominal pembayaran tidak boleh kurang dari 0.',
+            'display_photos.array' => 'Foto display tidak valid.',
+            'display_photos.max' => 'Foto display maksimal 10 file.',
+            'display_photos.*.image' => 'Setiap foto display harus berupa gambar.',
+            'display_photos.*.mimes' => 'Foto display harus berformat JPG, JPEG, PNG, atau WEBP.',
+            'display_photos.*.max' => 'Ukuran tiap foto display maksimal 3 MB.',
             'display_photo.image' => 'Foto display harus berupa gambar.',
             'display_photo.mimes' => 'Foto display harus berformat JPG, JPEG, PNG, atau WEBP.',
             'display_photo.max' => 'Ukuran foto display maksimal 3 MB.',
@@ -97,6 +104,7 @@ class SmdVisitRequest extends FormRequest
             'activities' => 'aktivitas SMD',
             'po_amount' => 'nominal PO',
             'payment_amount' => 'nominal pembayaran',
+            'display_photos' => 'foto display',
             'display_photo' => 'foto display',
             'latitude' => 'latitude',
             'longitude' => 'longitude',
@@ -134,8 +142,8 @@ class SmdVisitRequest extends FormRequest
                 $validator->errors()->add('payment_amount', 'Nominal pembayaran wajib diisi jika aktivitas Ambil Tagihan dipilih.');
             }
 
-            if ($activities->contains('merapikan_display') && ! $this->hasFile('display_photo')) {
-                $validator->errors()->add('display_photo', 'Foto display wajib diupload jika aktivitas Merapikan Display dipilih.');
+            if ($activities->contains('merapikan_display') && ! $this->hasFile('display_photo') && ! $this->hasFile('display_photos')) {
+                $validator->errors()->add('display_photos', 'Minimal 1 foto display wajib diupload jika aktivitas Merapikan Display dipilih.');
             }
         });
     }

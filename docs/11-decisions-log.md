@@ -1,7 +1,7 @@
 # 11 Decisions Log
 
 - Status: Active
-- Last updated: 2026-03-28
+- Last updated: 2026-04-01
 - Purpose: Record major product and technical decisions.
 
 ## 2026-03-28
@@ -21,7 +21,6 @@
 - Outlet search should be interactive without page reload.
 - `official_kode` is the official replacement term for Accurate code.
 - Sales can view all outlets in their own branch.
-- Sales can change outlet type from `prospek` to `noo`.
 - Laravel 12 scaffold was created successfully using PHP `8.2.30` and Composer `2.9.5`.
 - Current shell still defaults to PHP `7.3.33`, so future CLI work should use Herd or another explicit PHP `8.2+` executable.
 - Frontend packages `alpinejs` and `chart.js` were installed into the Laravel scaffold.
@@ -41,15 +40,30 @@
 - SMD visit form reuses the same outlet selection pattern but supports multiple activities and conditional file/nominal requirements.
 - Dashboard no longer uses placeholder numbers; it now reads real aggregates from the database by role scope.
 - Outlet verification is implemented as a dedicated supervisor/admin module instead of overloading the standard outlet edit flow.
-- `Prospek` outlets should not become pending verification items; they now use nullable verification status.
-- Converting `NOO` to `Pelanggan Lama` with `official_kode` now auto-verifies the outlet.
-- Supervisor can mark outlets `inactive` for stores that are closed or no longer ordering.
-- Supervisor dashboard should expose both branch-wide and personal activity views in the same account; the implementation now uses tabbed views.
 - Branch master now stores IANA timezone values so branch views can render visit times according to local branch time.
 - User master is implemented as an admin-only module for creating and updating internal accounts, roles, branches, and activation state.
 - Operational lists are implemented as dedicated filtered outlet views rather than asking users to rely on master outlet filters every time.
 - Reporting is implemented as a shared module with role-aware datasets and simple CSV export instead of introducing a heavy export package.
-- Project roadmap is now treated as three main phases: Phase 1 core workflow foundation, Phase 2 monitoring/reporting/data quality, and Phase 3 integration/automation/scale.
-- Phase 2 begins with richer reporting filters and aging-focused monitoring instead of new core CRUD flows.
-- Dashboard visit monitoring should show only today's latest 10 records; full history belongs in a dedicated `History Kunjungan` module with detail page and role-based scope.
+
+## 2026-03-31
+
+- Public root path now redirects directly to the login page.
+- Login page was redesigned for a production-ready mobile-first experience.
+- Report menu and report routes are restricted to `admin_pusat` and `supervisor`; `sales` and `smd` no longer have report access.
+- Visit forms now prefer camera capture on mobile browsers, compress photos client-side, show image previews, and preserve non-file input state after validation errors.
+- Uploaded visit images now use readable filenames in the format `username_outlet_YYYYMMDD_HHMMSS`.
+- Outlet lifecycle was simplified into one status model: `prospek`, `pending`, `active`, `inactive`.
+- Legacy outlet flow fields `outlet_type` and `verification_status` were removed from the active business flow.
+- User-facing inline outlet choices in sales/SMD forms remain `Prospek`, `NOO`, and `Pelanggan Lama`, but they now map internally to the unified outlet statuses.
+- Supervisor outlet verification was narrowed to a pending-only workflow where the supervisor fills `official_kode` and activates the outlet.
+- The separate `Outlet Pending` menu was removed in favor of a single focused `Verifikasi Outlet` workflow.
 - Dashboard KPI `Sales Amount Hari Ini` combines sales order and SMD PO, while `Collection Hari Ini` combines sales receivable input and SMD payment collection input.
+
+## 2026-04-01
+
+- Sales and SMD visit submissions now use a dedicated submission token so repeated taps on slow networks do not create duplicate visits.
+- Submit buttons on visit forms are locked after the first submit and switch to a `Menyimpan...` state.
+- SMD display evidence was expanded from a single image to a `1-10` photo workflow while keeping legacy single-photo data readable.
+- SMD display photo UX was changed to a camera-first, one-photo-at-a-time flow with compact status rows and `+ Tambah Foto`.
+- Visit detail page now shows an embedded OpenStreetMap view from saved coordinates and provides a Google Maps shortcut.
+- Prospect operational list now shows last visit time and last visiting user as lightweight follow-up context.
