@@ -2,11 +2,12 @@
     <x-slot name="header">
         <div class="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
             <div>
-                <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Kunjungan SMD</p>
-                <h2 class="mt-2 text-3xl font-semibold leading-tight text-ink-950">Riwayat Aktivitas SMD</h2>
-                <p class="mt-2 max-w-3xl text-sm leading-7 text-slate-500">Pantau aktivitas PO, display, tukar faktur, dan tagihan yang sudah dikerjakan tim SMD.</p>
+                <p class="app-overline">Kunjungan SMD</p>
+                <h2 class="app-page-title mt-2">Riwayat Aktivitas SMD</h2>
+                <p class="app-body-copy mt-2 max-w-3xl">Pantau aktivitas PO, display, tukar faktur, dan tagihan yang sudah dikerjakan tim SMD.</p>
             </div>
-            <a href="{{ route('smd-visits.create') }}" class="inline-flex items-center justify-center rounded-2xl bg-[linear-gradient(135deg,#1d4ed8_0%,#0f172a_100%)] px-5 py-3 text-sm font-semibold text-white shadow-[0_20px_40px_-18px_rgba(29,78,216,0.75)] transition hover:-translate-y-0.5 hover:shadow-[0_24px_46px_-18px_rgba(29,78,216,0.9)]">
+            <a href="{{ route('smd-visits.create') }}" class="app-action-primary">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M5 12h14M12 5v14" /></svg>
                 Input Kunjungan SMD
             </a>
         </div>
@@ -15,18 +16,31 @@
     <div class="py-6 sm:py-7">
         <div class="mx-auto max-w-7xl space-y-6 px-4 sm:px-6 lg:px-8">
             @if (session('status'))
-                <div class="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700">{{ session('status') }}</div>
+                <div class="app-alert app-alert-success">
+                    <span class="mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/80 text-emerald-600 shadow-sm">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9" d="m5 13 4 4L19 7" /></svg>
+                    </span>
+                    <div class="min-w-0">
+                        <p class="text-[12px] font-semibold uppercase tracking-[0.14em] text-emerald-700">Sukses</p>
+                        <p class="mt-1 font-medium">{{ session('status') }}</p>
+                    </div>
+                </div>
             @endif
 
             <section class="app-panel p-5">
                 <form method="GET" class="grid gap-3 md:grid-cols-4">
                     <div class="md:col-span-3">
                         <x-input-label for="search" value="Cari outlet / official kode" />
-                        <x-text-input id="search" name="search" class="mt-2 block w-full" :value="$filters['search']" placeholder="Mis. Toko Sinar atau OFF-BDG-001" />
+                        <div class="app-input-shell mt-2">
+                            <span class="app-input-icon">
+                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path d="M14.167 14.166 17.5 17.5" stroke-width="1.8" stroke-linecap="round" /><circle cx="8.75" cy="8.75" r="5.833" stroke-width="1.8" /></svg>
+                            </span>
+                            <x-text-input id="search" name="search" class="app-field-with-icon block w-full" :value="$filters['search']" placeholder="Mis. Toko Sinar atau OFF-BDG-001" />
+                        </div>
                     </div>
                     <div>
                         <x-input-label for="activity" value="Aktivitas" />
-                        <select id="activity" name="activity" class="mt-2 block w-full rounded-2xl border border-slate-200/90 bg-white px-4 py-3 text-sm text-slate-700 shadow-[0_10px_30px_-18px_rgba(15,23,42,0.35)] focus:border-sky-400 focus:ring-4 focus:ring-sky-100">
+                        <select id="activity" name="activity" class="app-select mt-2 block w-full">
                             <option value="">Semua</option>
                             <option value="ambil_po" @selected($filters['activity'] === 'ambil_po')>Ambil PO</option>
                             <option value="merapikan_display" @selected($filters['activity'] === 'merapikan_display')>Merapikan Display</option>
@@ -42,7 +56,7 @@
             </section>
 
             <section class="app-panel p-5">
-                <div class="hidden overflow-hidden rounded-[1.5rem] border border-slate-200 lg:block shadow-[0_18px_40px_-30px_rgba(15,23,42,0.28)]">
+                <div class="app-table-shell hidden lg:block">
                     <table class="min-w-full divide-y divide-slate-200 text-sm">
                         <thead class="bg-slate-50 text-left text-slate-500">
                             <tr>
@@ -84,7 +98,7 @@
                             <p class="mt-3 text-sm text-slate-600">{{ $visit->smdActivities->pluck('activity_type')->map(fn ($item) => str($item)->replace('_', ' ')->title())->implode(', ') }}</p>
                         </div>
                     @empty
-                        <div class="rounded-[1.5rem] border border-dashed border-slate-300 bg-slate-50 p-6 text-center text-sm text-slate-500">Belum ada kunjungan SMD yang tersimpan.</div>
+                        <div class="app-empty-state">Belum ada kunjungan SMD yang tersimpan.</div>
                     @endforelse
                 </div>
 

@@ -9,7 +9,7 @@
                     <span class="app-chip">{{ $branchName }}</span>
                     <span class="app-chip">{{ now()->translatedFormat('l, d F Y') }}</span>
                 </div>
-                <h2 class="mt-4 text-3xl font-semibold leading-tight text-ink-950 sm:text-[2.15rem]">Dashboard</h2>
+                <h2 class="app-page-title mt-4">Dashboard</h2>
             </div>
             @if ($user->isSales())
                 <a href="{{ route('sales-visits.create') }}" class="app-panel app-card-interactive overflow-hidden px-4 py-4 sm:px-5">
@@ -68,7 +68,7 @@
                 <section class="app-panel app-animate-enter overflow-hidden p-3 sm:p-4">
                     <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                         <div>
-                            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Mode Dashboard</p>
+                            <p class="app-overline">Mode Dashboard</p>
                             <p class="mt-1 text-sm text-slate-600">Pindah dari view tim cabang ke aktivitas pribadi tanpa keluar halaman.</p>
                         </div>
                         <div class="inline-flex w-full rounded-[1.25rem] bg-slate-100/90 p-1 sm:w-auto">
@@ -153,7 +153,7 @@
                             </div>
                             <div class="mt-5 space-y-3">
                                 <template x-if="current.topCustomers.length === 0">
-                                    <div class="rounded-[1.5rem] border border-dashed border-slate-300 bg-slate-50 px-4 py-5 text-center text-sm text-slate-500">Belum ada customer dengan order tercatat.</div>
+                                    <div class="app-empty-state px-4 py-5">Belum ada customer dengan order tercatat.</div>
                                 </template>
                                 <template x-for="(customer, index) in current.topCustomers" :key="customer.id ?? customer.name ?? index">
                                     <div class="rounded-[1.5rem] border border-blue-100 bg-[linear-gradient(180deg,#f8fbff_0%,#eef6ff_100%)] px-4 py-3.5 shadow-[0_20px_40px_-32px_rgba(37,99,235,0.25)] transition duration-200 hover:-translate-y-1 hover:shadow-[0_22px_46px_-30px_rgba(37,99,235,0.3)]">
@@ -184,7 +184,7 @@
                             </div>
                             <div class="mt-5 space-y-3">
                                 <template x-if="current.staleCustomers.length === 0">
-                                    <div class="rounded-[1.5rem] border border-dashed border-slate-300 bg-slate-50 px-4 py-5 text-center text-sm text-slate-500">Belum ada customer yang melewati batas 30 hari tanpa order.</div>
+                                    <div class="app-empty-state px-4 py-5">Belum ada customer yang melewati batas 30 hari tanpa order.</div>
                                 </template>
                                 <template x-for="customer in current.staleCustomers" :key="customer.id ?? customer.name">
                                     <div class="rounded-[1.5rem] border border-amber-100 bg-[linear-gradient(180deg,#fffaf0_0%,#fff5e6_100%)] px-4 py-3.5 shadow-[0_20px_40px_-32px_rgba(245,158,11,0.22)] transition duration-200 hover:-translate-y-1 hover:shadow-[0_22px_46px_-30px_rgba(245,158,11,0.28)]">
@@ -206,7 +206,7 @@
             <section class="app-panel app-animate-enter overflow-hidden p-5 sm:p-6">
                 <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                     <div>
-                        <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Monitoring Operasional</p>
+                        <p class="app-overline">Monitoring Operasional</p>
                         <h3 class="mt-2 text-xl font-semibold text-ink-950">Daftar Kunjungan</h3>
                     </div>
                     <div class="flex flex-wrap gap-2">
@@ -236,7 +236,7 @@
                                     <td class="px-4 py-4 text-slate-900" x-text="visit.user?.name || '-' "></td>
                                     <td class="px-4 py-4 text-slate-600" x-text="visit.outlet?.name || '-' "></td>
                                     <td class="px-4 py-4"><span class="inline-flex rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700" x-text="String(visit.visit_type).toUpperCase()"></span></td>
-                                    <td class="px-4 py-4"><span class="inline-flex rounded-full px-3 py-1 text-xs font-semibold" :class="visit.outlet_condition === 'buka' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'" x-text="visit.outlet_condition || '-' "></span></td>
+                                     <td class="px-4 py-4"><span class="inline-flex rounded-full px-3 py-1 text-xs font-semibold" :class="visit.outlet_condition === 'buka' ? 'bg-emerald-50 text-emerald-700' : (visit.outlet_condition === 'order_by_wa' ? 'bg-violet-50 text-violet-700' : 'bg-amber-50 text-amber-700')" x-text="formatOutletCondition(visit.outlet_condition)"></span></td>
                                     <td class="px-4 py-4 text-slate-900" x-text="formatCurrency(visitSalesAmount(visit))"></td>
                                     <td class="px-4 py-4 text-slate-900" x-text="formatCurrency(visitCollection(visit))"></td>
                                     <td class="px-4 py-4"><a :href="`/visit-history/${visit.id}`" class="inline-flex items-center rounded-xl border border-sky-200 bg-sky-50 px-3.5 py-2 text-xs font-semibold text-sky-900 shadow-sm shadow-sky-100/50 transition hover:bg-sky-100">Detail</a></td>
@@ -248,7 +248,7 @@
 
                 <div class="mt-5 space-y-3 lg:hidden">
                     <template x-if="current.recentVisits.length === 0">
-                        <div class="rounded-[1.5rem] border border-dashed border-slate-300 bg-slate-50 px-4 py-5 text-center text-sm text-slate-500">Belum ada aktivitas yang tercatat di scope ini.</div>
+                        <div class="app-empty-state px-4 py-5">Belum ada aktivitas yang tercatat di scope ini.</div>
                     </template>
                     <template x-for="visit in current.recentVisits" :key="visit.id">
                         <div class="app-soft-panel app-card-interactive px-4 py-4 text-sm text-slate-600">
@@ -270,7 +270,7 @@
                                 </div>
                             </div>
                             <div class="mt-4 flex items-center justify-between gap-3">
-                                <span class="inline-flex rounded-full px-3 py-1.5 text-xs font-semibold" :class="visit.outlet_condition === 'buka' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'" x-text="visit.outlet_condition || '-' "></span>
+                                <span class="inline-flex rounded-full px-3 py-1.5 text-xs font-semibold" :class="visit.outlet_condition === 'buka' ? 'bg-emerald-50 text-emerald-700' : (visit.outlet_condition === 'order_by_wa' ? 'bg-violet-50 text-violet-700' : 'bg-amber-50 text-amber-700')" x-text="formatOutletCondition(visit.outlet_condition)"></span>
                                 <a :href="`/visit-history/${visit.id}`" class="inline-flex items-center rounded-xl border border-sky-200 bg-sky-50 px-3.5 py-2 text-xs font-semibold text-sky-900 shadow-sm shadow-sky-100/50">Detail</a>
                             </div>
                         </div>
@@ -506,6 +506,13 @@
                             year: 'numeric',
                             timeZone: timezone,
                         }).format(date);
+                    },
+                    formatOutletCondition(value) {
+                        return {
+                            buka: 'Buka',
+                            tutup: 'Tutup',
+                            order_by_wa: 'Order by WA',
+                        }[value] || '-';
                     },
                     daysSince(value) {
                         if (!value) {

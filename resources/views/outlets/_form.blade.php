@@ -13,7 +13,7 @@
                 @if ($user->isAdminPusat())
                     <div class="sm:col-span-2">
                         <x-input-label for="branch_id" value="Cabang" />
-                        <select id="branch_id" name="branch_id" class="mt-2 block w-full rounded-2xl border border-slate-200/90 bg-white px-4 py-3 text-sm text-slate-700 shadow-[0_10px_30px_-18px_rgba(15,23,42,0.35)] focus:border-sky-400 focus:ring-4 focus:ring-sky-100">
+                        <select id="branch_id" name="branch_id" class="app-select mt-2 block w-full">
                             <option value="">Pilih cabang</option>
                             @foreach ($branches as $branch)
                                 <option value="{{ $branch->id }}" @selected((int) old('branch_id', $outlet->branch_id) === $branch->id)>{{ $branch->name }}</option>
@@ -37,7 +37,7 @@
 
                 <div class="sm:col-span-2">
                     <x-input-label for="address" value="Alamat outlet" />
-                    <textarea id="address" name="address" rows="4" class="mt-2 block w-full rounded-2xl border border-slate-200/90 bg-white px-4 py-3 text-sm text-slate-700 shadow-[0_10px_30px_-18px_rgba(15,23,42,0.35)] outline-none transition placeholder:text-slate-400 focus:border-sky-400 focus:ring-4 focus:ring-sky-100">{{ old('address', $outlet->address) }}</textarea>
+                    <textarea id="address" name="address" rows="4" class="app-textarea mt-2 block w-full">{{ old('address', $outlet->address) }}</textarea>
                     <x-input-error class="mt-2" :messages="$errors->get('address')" />
                 </div>
             </div>
@@ -49,7 +49,7 @@
             <div class="grid gap-5">
                 <div>
                     <x-input-label for="category" value="Kategori outlet" />
-                    <select id="category" name="category" class="mt-2 block w-full rounded-2xl border border-slate-200/90 bg-white px-4 py-3 text-sm text-slate-700 shadow-[0_10px_30px_-18px_rgba(15,23,42,0.35)] focus:border-sky-400 focus:ring-4 focus:ring-sky-100">
+                    <select id="category" name="category" class="app-select mt-2 block w-full">
                         @foreach (['salon' => 'Salon', 'toko' => 'Toko', 'barbershop' => 'Barbershop', 'lainnya' => 'Lainnya'] as $value => $label)
                             <option value="{{ $value }}" @selected(old('category', $outlet->category) === $value)>{{ $label }}</option>
                         @endforeach
@@ -59,7 +59,7 @@
 
                 <div>
                     <x-input-label for="outlet_status" value="Status outlet" />
-                    <select id="outlet_status" name="outlet_status" x-model="outletStatus" class="mt-2 block w-full rounded-2xl border border-slate-200/90 bg-white px-4 py-3 text-sm text-slate-700 shadow-[0_10px_30px_-18px_rgba(15,23,42,0.35)] focus:border-sky-400 focus:ring-4 focus:ring-sky-100">
+                    <select id="outlet_status" name="outlet_status" x-model="outletStatus" class="app-select mt-2 block w-full">
                         <option value="prospek" @selected(old('outlet_status', $outlet->outlet_status ?: 'prospek') === 'prospek')>Prospek</option>
                         <option value="pending" @selected(old('outlet_status', $outlet->outlet_status) === 'pending')>Pending</option>
                         <option value="active" @selected(old('outlet_status', $outlet->outlet_status) === 'active')>Aktif</option>
@@ -70,7 +70,7 @@
 
                 <div x-cloak x-show="outletStatus === 'active'" x-transition>
                     <x-input-label for="official_kode" value="Official kode" />
-                    <x-text-input id="official_kode" name="official_kode" class="mt-2 block w-full" :value="old('official_kode', $outlet->official_kode)" placeholder="Mis. OFF-001" />
+                    <x-text-input id="official_kode" name="official_kode" class="mt-2 block w-full" :value="old('official_kode', $outlet->official_kode)" placeholder="Mis. OFF-001" oninput="this.value = this.value.replaceAll(' ', '').toUpperCase()" autocomplete="off" spellcheck="false" autocapitalize="characters" />
                     <x-input-error class="mt-2" :messages="$errors->get('official_kode')" />
                 </div>
             </div>

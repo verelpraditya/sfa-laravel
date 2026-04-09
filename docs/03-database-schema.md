@@ -55,7 +55,7 @@
 - `outlet_id`
 - `user_id`
 - `visit_type` = `sales|smd`
-- `outlet_condition` = `buka|tutup` nullable
+- `outlet_condition` = `buka|tutup|order_by_wa` nullable
 - `latitude`
 - `longitude`
 - `visit_photo_path`

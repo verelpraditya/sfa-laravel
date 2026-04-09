@@ -64,6 +64,7 @@ Build a web-based SFA for distributor operations with these priorities:
   - `active`
   - `inactive`
 - `official_kode` is the official store code term used in the app.
+- `official_kode` should be stored without whitespace and in uppercase.
 - If sales creates a new inline outlet as `Prospek`, it saves as `outlet_status = prospek`.
 - If sales creates a new inline outlet as `NOO`, it saves as `outlet_status = pending`.
 - If sales creates a new inline outlet as `Pelanggan Lama`, it saves as `outlet_status = active` and requires `official_kode`.
@@ -84,6 +85,7 @@ Sales can only access the sales visit form.
 - Set outlet condition:
   - `buka`
   - `tutup`
+  - `order_by_wa`
 - Capture mandatory evidence:
   - GPS
   - timestamp
@@ -92,6 +94,9 @@ Sales can only access the sales visit form.
 ### Conditional fields
 
 - If `kondisi_outlet = buka`:
+  - `nominal_order` optional
+  - `total_tagihan` optional
+- If `kondisi_outlet = order_by_wa`:
   - `nominal_order` optional
   - `total_tagihan` optional
 - If `kondisi_outlet = tutup`:
@@ -103,6 +108,7 @@ Sales can only access the sales visit form.
 - Mobile photo flow prefers camera capture, compresses the image client-side, and shows a preview before submit.
 - Upload filenames are normalized to a readable `username_outlet_YYYYMMDD_HHMMSS` format.
 - Validation messages are customized in Indonesian and non-file fields are preserved after validation errors.
+- `official_kode` input now auto-removes spaces and converts value to uppercase.
 
 ## SMD Visit Requirements
 

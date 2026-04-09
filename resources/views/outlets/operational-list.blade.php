@@ -1,9 +1,9 @@
 <x-app-layout>
     <x-slot name="header">
         <div>
-            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Daftar Operasional</p>
-            <h2 class="mt-2 text-3xl font-semibold leading-tight text-ink-950">{{ $title }}</h2>
-            <p class="mt-2 max-w-3xl text-sm leading-7 text-slate-500">{{ $description }}</p>
+            <p class="app-overline">Daftar Operasional</p>
+            <h2 class="app-page-title mt-2">{{ $title }}</h2>
+            <p class="app-body-copy mt-2 max-w-3xl">{{ $description }}</p>
         </div>
     </x-slot>
 
@@ -23,7 +23,7 @@
             </section>
 
             <section class="app-panel p-5">
-                <div class="hidden overflow-hidden rounded-[1.5rem] border border-slate-200 lg:block shadow-[0_18px_40px_-30px_rgba(15,23,42,0.28)]">
+                <div class="app-table-shell hidden lg:block">
                     <table class="min-w-full divide-y divide-slate-200 text-sm">
                         <thead class="bg-slate-50 text-left text-slate-500">
                             <tr>
@@ -136,7 +136,7 @@
                             @endif
                         </div>
                     @empty
-                        <div class="rounded-[1.5rem] border border-dashed border-slate-300 bg-slate-50 p-6 text-center text-sm text-slate-500">Belum ada data untuk daftar ini.</div>
+                        <div class="app-empty-state">Belum ada data untuk daftar ini.</div>
                     @endforelse
                 </div>
 

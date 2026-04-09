@@ -5,14 +5,14 @@
             <div class="flex items-center gap-2">
                 <span class="app-chip">Kunjungan SMD</span>
             </div>
-            <h2 class="mt-4 text-3xl font-semibold leading-tight text-ink-950">Input Aktivitas SMD</h2>
+            <h2 class="app-page-title mt-4">Input Aktivitas SMD</h2>
         </div>
     </x-slot>
 
-    <div class="py-4 sm:py-6">
+    <div class="app-page-shell">
         <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
             @if ($errors->any())
-                <div class="mb-6 rounded-[1.6rem] border border-rose-200 bg-rose-50 px-4 py-4 text-sm text-rose-700 shadow-sm">
+                <div class="app-error-summary mb-6">
                     <p class="font-semibold">Form belum bisa disimpan. Periksa field yang masih bermasalah.</p>
                     <ul class="mt-2 list-disc space-y-1 pl-5">
                         @foreach ($errors->all() as $error)
@@ -26,36 +26,13 @@
                 @csrf
                 <input type="hidden" name="submission_token" value="{{ $submissionToken }}">
 
-                <section class="app-panel app-animate-enter overflow-hidden p-4 sm:p-6">
-                    <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-                        <div class="max-w-2xl">
-                            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Alur Input</p>
-                            <h3 class="mt-2 text-xl font-semibold text-ink-950">Pilih outlet, tandai aktivitas, lalu kirim bukti kunjungan</h3>
-                        </div>
-                        <div class="grid grid-cols-3 gap-2 sm:gap-3">
-                            <div class="rounded-[1.3rem] border border-sky-100 bg-sky-50 px-3 py-3 text-center shadow-sm">
-                                <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-sky-700">Step 1</p>
-                                <p class="mt-2 text-sm font-semibold text-slate-900">Outlet</p>
-                            </div>
-                            <div class="rounded-[1.3rem] border border-slate-200 bg-white px-3 py-3 text-center shadow-sm">
-                                <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">Step 2</p>
-                                <p class="mt-2 text-sm font-semibold text-slate-900">Aktivitas</p>
-                            </div>
-                            <div class="rounded-[1.3rem] border border-slate-200 bg-white px-3 py-3 text-center shadow-sm">
-                                <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">Step 3</p>
-                                <p class="mt-2 text-sm font-semibold text-slate-900">Bukti</p>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
                 <section class="grid items-start gap-6 xl:grid-cols-[1.08fr_0.92fr]">
                     <div class="space-y-6">
                         <section class="app-panel app-animate-enter p-4 sm:p-6">
                             <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                                 <div>
-                                    <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Step 1</p>
-                                    <h3 class="mt-2 text-xl font-semibold text-ink-950">Outlet yang dikunjungi</h3>
+                                    <p class="app-overline">Step 1</p>
+                                    <h3 class="app-section-title mt-2">Outlet yang dikunjungi</h3>
                                 </div>
                                 <button type="button" @click="creatingNewOutlet = ! creatingNewOutlet; resetSelection()" class="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-sky-200 bg-sky-50 px-4 py-3 text-sm font-semibold text-sky-900 shadow-[0_14px_30px_-20px_rgba(14,165,233,0.45)] transition hover:-translate-y-0.5 hover:border-sky-300 hover:bg-sky-100 sm:w-auto">
                                     <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-white shadow-sm shadow-sky-100/80">
@@ -76,7 +53,7 @@
                                     </div>
                                     <div class="flex-1">
                                         <x-input-label for="outlet-search" value="Cari outlet existing" />
-                                        <p class="mt-1 text-xs text-slate-500">Cari berdasarkan nama outlet atau official kode.</p>
+                                        <p class="app-helper mt-1">Cari berdasarkan nama outlet atau official kode.</p>
                                     </div>
                                 </div>
 
@@ -134,7 +111,7 @@
                                     </div>
                                     <div>
                                         <x-input-label for="new_outlet_category" value="Kategori outlet" />
-                                        <select id="new_outlet_category" name="new_outlet_category" class="mt-2 block w-full rounded-2xl border border-slate-200/90 bg-white px-4 py-3 text-sm text-slate-700 shadow-[0_10px_30px_-18px_rgba(15,23,42,0.35)] focus:border-sky-400 focus:ring-4 focus:ring-sky-100">
+                                        <select id="new_outlet_category" name="new_outlet_category" class="app-select mt-2 block w-full">
                                             <option value="salon" @selected(old('new_outlet_category', 'salon') === 'salon')>Salon</option>
                                             <option value="toko" @selected(old('new_outlet_category') === 'toko')>Toko</option>
                                             <option value="barbershop" @selected(old('new_outlet_category') === 'barbershop')>Barbershop</option>
@@ -144,7 +121,7 @@
                                     </div>
                                     <div>
                                         <x-input-label for="new_outlet_type" value="Jenis outlet" />
-                                        <select id="new_outlet_type" name="new_outlet_type" x-model="newOutletType" class="mt-2 block w-full rounded-2xl border border-slate-200/90 bg-white px-4 py-3 text-sm text-slate-700 shadow-[0_10px_30px_-18px_rgba(15,23,42,0.35)] focus:border-sky-400 focus:ring-4 focus:ring-sky-100">
+                                        <select id="new_outlet_type" name="new_outlet_type" x-model="newOutletType" class="app-select mt-2 block w-full">
                                             <option value="prospek">Prospek</option>
                                             <option value="noo">NOO</option>
                                             <option value="pelanggan_lama">Pelanggan Lama</option>
@@ -153,7 +130,7 @@
                                     </div>
                                     <div class="sm:col-span-2" x-show="newOutletType === 'pelanggan_lama'" x-cloak>
                                         <x-input-label for="new_outlet_official_kode" value="Official kode" />
-                                        <x-text-input id="new_outlet_official_kode" name="new_outlet_official_kode" class="mt-2 block w-full" :value="old('new_outlet_official_kode')" />
+                                        <x-text-input id="new_outlet_official_kode" name="new_outlet_official_kode" class="mt-2 block w-full" :value="old('new_outlet_official_kode')" oninput="this.value = this.value.replaceAll(' ', '').toUpperCase()" autocomplete="off" spellcheck="false" autocapitalize="characters" />
                                         <x-input-error class="mt-2" :messages="$errors->get('new_outlet_official_kode')" />
                                     </div>
                                     <div>
@@ -168,7 +145,7 @@
                                     </div>
                                     <div class="sm:col-span-2">
                                         <x-input-label for="new_outlet_address" value="Alamat outlet" />
-                                        <textarea id="new_outlet_address" name="new_outlet_address" rows="4" class="mt-2 block w-full rounded-2xl border border-slate-200/90 bg-white px-4 py-3 text-sm text-slate-700 shadow-[0_10px_30px_-18px_rgba(15,23,42,0.35)] outline-none transition placeholder:text-slate-400 focus:border-sky-400 focus:ring-4 focus:ring-sky-100">{{ old('new_outlet_address') }}</textarea>
+                                        <textarea id="new_outlet_address" name="new_outlet_address" rows="4" class="app-textarea mt-2 block w-full">{{ old('new_outlet_address') }}</textarea>
                                         <x-input-error class="mt-2" :messages="$errors->get('new_outlet_address')" />
                                     </div>
                                 </div>
@@ -179,8 +156,8 @@
                             <div class="flex items-start gap-3">
                                 <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,#1d4ed8_0%,#0f172a_100%)] text-white shadow-[0_16px_34px_-20px_rgba(29,78,216,0.65)]">2</div>
                                 <div>
-                                    <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Step 2</p>
-                                    <h3 class="mt-1 text-xl font-semibold text-ink-950">Aktivitas & nominal</h3>
+                                    <p class="app-overline">Step 2</p>
+                                    <h3 class="app-section-title mt-1">Aktivitas & nominal</h3>
                                 </div>
                             </div>
 
@@ -260,8 +237,8 @@
                             <div class="flex items-start gap-3">
                                 <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,#1d4ed8_0%,#0f172a_100%)] text-white shadow-[0_16px_34px_-20px_rgba(29,78,216,0.65)]">3</div>
                                 <div>
-                                    <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Step 3</p>
-                                    <h3 class="mt-1 text-xl font-semibold text-ink-950">Lokasi, foto, dan catatan</h3>
+                                    <p class="app-overline">Step 3</p>
+                                    <h3 class="app-section-title mt-1">Lokasi, foto, dan catatan</h3>
                                 </div>
                             </div>
 
@@ -315,14 +292,14 @@
 
                                 <div class="app-soft-panel p-4">
                                     <x-input-label for="notes" value="Catatan" />
-                                    <textarea id="notes" name="notes" rows="4" class="mt-2 block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm shadow-slate-200/60 outline-none transition placeholder:text-slate-400 focus:border-brand-400 focus:ring-4 focus:ring-brand-100" placeholder="Tambahkan catatan singkat jika perlu">{{ old('notes') }}</textarea>
+                                    <textarea id="notes" name="notes" rows="4" class="app-textarea mt-2 block w-full" placeholder="Tambahkan catatan singkat jika perlu">{{ old('notes') }}</textarea>
                                     <x-input-error class="mt-2" :messages="$errors->get('notes')" />
                                 </div>
                             </div>
                         </section>
 
                         <section class="app-panel app-animate-enter overflow-hidden p-4 sm:p-6">
-                            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Ringkasan Cepat</p>
+                            <p class="app-overline">Ringkasan Cepat</p>
                             <div class="mt-4 space-y-3 text-sm">
                                 <div class="flex items-center justify-between gap-3 rounded-[1.2rem] bg-slate-50 px-4 py-3">
                                     <span class="text-slate-500">Mode outlet</span>
@@ -345,9 +322,10 @@
                     </div>
                 </section>
 
-                <div class="sticky bottom-4 z-20 flex justify-end">
-                    <div class="w-full rounded-[1.75rem] border border-white/80 bg-white/92 p-3 shadow-[0_18px_40px_-22px_rgba(15,23,42,0.38)] backdrop-blur sm:w-auto">
-                        <x-primary-button class="w-full justify-center sm:min-w-[260px]" x-bind:disabled="submitting">
+                <div class="mt-6 flex justify-end">
+                    <div class="w-full rounded-[1rem] border border-slate-200 bg-white/95 p-3 shadow-[0_16px_30px_-24px_rgba(15,23,42,0.18)] sm:w-auto">
+                        <x-primary-button class="w-full justify-center sm:min-w-[220px]" x-bind:disabled="submitting">
+                            <svg x-show="!submitting" class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M5 12h14M12 5v14" /></svg>
                             <span x-show="!submitting">Simpan Kunjungan SMD</span>
                             <span x-show="submitting" x-cloak>Menyimpan...</span>
                         </x-primary-button>

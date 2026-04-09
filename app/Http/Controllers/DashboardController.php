@@ -97,7 +97,8 @@ class DashboardController extends Controller
         $oldPending = (clone $outletQuery)->where('outlet_status', 'pending')->where('created_at', '<=', now()->subDays(7))->count();
         $salesVisitsToday = (clone $visitQuery)->where('visit_type', 'sales')->where('visited_at', '>=', $today)->count();
         $smdVisitsToday = (clone $visitQuery)->where('visit_type', 'smd')->where('visited_at', '>=', $today)->count();
-        $openVisits = (clone $visitQuery)->where('visits.outlet_condition', 'buka')->count();
+        $openVisits = (clone $visitQuery)->whereIn('visits.outlet_condition', ['buka', 'order_by_wa'])->count();
+        $waVisits = (clone $visitQuery)->where('visits.outlet_condition', 'order_by_wa')->count();
         $closedVisits = (clone $visitQuery)->where('visits.outlet_condition', 'tutup')->count();
 
         $salesFinancialToday = (clone $visitQuery)
@@ -212,6 +213,7 @@ class DashboardController extends Controller
                 ['label' => 'Sales Amount Hari Ini', 'value' => 'Rp '.number_format((float) ($salesFinancialToday->total_order ?? 0), 0, ',', '.'), 'hint' => 'Nominal order yang masuk hari ini'],
                 ['label' => 'Collection Hari Ini', 'value' => 'Rp '.number_format((float) ($salesFinancialToday->total_receivable ?? 0), 0, ',', '.'), 'hint' => 'Collection yang tercatat dari kunjungan sales hari ini'],
                 ['label' => 'Outlet Buka', 'value' => $openVisits, 'hint' => 'Outlet melayani transaksi'],
+                ['label' => 'Order by WA', 'value' => $waVisits, 'hint' => 'Order dilakukan lewat WhatsApp'],
                 ['label' => 'Outlet Tutup', 'value' => $closedVisits, 'hint' => 'Outlet tidak beroperasi'],
             ],
             $user->isSmd() => [

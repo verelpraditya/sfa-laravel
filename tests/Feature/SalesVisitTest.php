@@ -52,6 +52,39 @@ class SalesVisitTest extends TestCase
         ]);
     }
 
+    public function test_sales_can_create_visit_with_order_by_wa_condition(): void
+    {
+        Storage::fake('public');
+
+        $branch = Branch::factory()->create();
+        $sales = User::factory()->create([
+            'branch_id' => $branch->id,
+            'role' => User::ROLE_SALES,
+        ]);
+        $outlet = Outlet::factory()->create([
+            'branch_id' => $branch->id,
+            'created_by' => $sales->id,
+        ]);
+
+        $response = $this->actingAs($sales)->post(route('sales-visits.store'), [
+            'outlet_id' => $outlet->id,
+            'outlet_condition' => 'order_by_wa',
+            'order_amount' => 150000,
+            'receivable_amount' => 200000,
+            'latitude' => '-6.9175000',
+            'longitude' => '107.6191000',
+            'visit_photo' => UploadedFile::fake()->image('visit.jpg'),
+        ]);
+
+        $response->assertRedirect(route('sales-visits.index'));
+        $this->assertDatabaseHas('visits', [
+            'outlet_id' => $outlet->id,
+            'user_id' => $sales->id,
+            'visit_type' => 'sales',
+            'outlet_condition' => 'order_by_wa',
+        ]);
+    }
+
     public function test_sales_can_create_visit_with_new_outlet_inline(): void
     {
         Storage::fake('public');

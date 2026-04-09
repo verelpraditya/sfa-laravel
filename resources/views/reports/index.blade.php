@@ -1,9 +1,9 @@
 <x-app-layout>
     @php
         $typeConfig = [
-            'sales' => ['label' => 'Sales', 'icon' => 'S', 'tone' => 'blue'],
-            'smd' => ['label' => 'SMD', 'icon' => 'M', 'tone' => 'emerald'],
-            'outlets' => ['label' => 'Outlet', 'icon' => 'O', 'tone' => 'amber'],
+            'sales' => ['label' => 'Sales', 'tone' => 'blue'],
+            'smd' => ['label' => 'SMD', 'tone' => 'emerald'],
+            'outlets' => ['label' => 'Outlet', 'tone' => 'amber'],
         ][$activeType];
     @endphp
 
@@ -14,9 +14,12 @@
                     <span class="app-chip">Laporan</span>
                     <span class="app-chip">{{ $typeConfig['label'] }}</span>
                 </div>
-                <h2 class="mt-4 text-3xl font-semibold leading-tight text-ink-950">{{ $title }}</h2>
+                <h2 class="app-page-title mt-4">{{ $title }}</h2>
             </div>
-            <a href="{{ route('reports.export', ['type' => $activeType, 'from' => $filters['from'], 'to' => $filters['to'], 'branch_id' => $filters['branchId'] ?? null, 'user_id' => $filters['userId'] ?? null]) }}" class="inline-flex items-center justify-center rounded-2xl bg-[linear-gradient(135deg,#1d4ed8_0%,#0f172a_100%)] px-5 py-3 text-sm font-semibold text-white shadow-[0_20px_40px_-18px_rgba(29,78,216,0.75)] transition hover:-translate-y-0.5 hover:shadow-[0_24px_46px_-18px_rgba(29,78,216,0.9)]">Export CSV</a>
+            <a href="{{ route('reports.export', ['type' => $activeType, 'from' => $filters['from'], 'to' => $filters['to'], 'branch_id' => $filters['branchId'] ?? null, 'user_id' => $filters['userId'] ?? null]) }}" class="app-action-primary">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 4v10m0 0 4-4m-4 4-4-4" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M5 20h14" /></svg>
+                Export CSV
+            </a>
         </div>
     </x-slot>
 
@@ -26,19 +29,27 @@
                 <div class="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
                     <div class="max-w-3xl">
                         <div class="flex items-center gap-3">
-                            <div class="flex h-12 w-12 items-center justify-center rounded-[1.2rem] bg-[linear-gradient(135deg,#1d4ed8_0%,#0f172a_100%)] text-sm font-semibold text-white shadow-[0_18px_38px_-20px_rgba(29,78,216,0.75)]">{{ $typeConfig['icon'] }}</div>
+                            <div class="flex h-12 w-12 items-center justify-center rounded-[1rem] bg-[linear-gradient(135deg,#4f46e5_0%,#4338ca_100%)] text-sm font-semibold text-white shadow-[0_18px_38px_-20px_rgba(79,70,229,0.45)]">
+                                @if ($activeType === 'sales')
+                                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M5.75 17.25 10 13l2.75 2.75L18.25 9.5" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M14.75 9.5h3.5V13" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M5.75 5.75v12.5h12.5" /></svg>
+                                @elseif ($activeType === 'smd')
+                                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4.75 12h4l2.25-5 4 10 2.25-5h2" /></svg>
+                                @else
+                                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M5.5 10.25h13" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M6.25 10.25V7.5l1.5-2.75h8.5l1.5 2.75v2.75" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M6.25 10.25v8.5h11.5v-8.5" /></svg>
+                                @endif
+                            </div>
                             <div>
-                                <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Mode Laporan</p>
-                                <h3 class="mt-1 text-xl font-semibold text-ink-950">{{ $typeConfig['label'] }}</h3>
+                                <p class="app-overline">Mode Laporan</p>
+                                <h3 class="app-section-title mt-1">{{ $typeConfig['label'] }}</h3>
                             </div>
                         </div>
-                        <p class="mt-4 text-sm leading-7 text-slate-600">{{ $description }}</p>
+                        <p class="app-body-copy mt-4">{{ $description }}</p>
                     </div>
 
                     <div class="grid grid-cols-3 gap-2 sm:gap-3">
-                        <a href="{{ route('reports.index', ['type' => 'sales', 'from' => $filters['from'], 'to' => $filters['to'], 'branch_id' => $filters['branchId'] ?? null, 'user_id' => $filters['userId'] ?? null]) }}" class="rounded-[1.2rem] px-4 py-3 text-center text-sm font-semibold transition {{ $activeType === 'sales' ? 'bg-[linear-gradient(135deg,#1d4ed8_0%,#0f172a_100%)] text-white shadow-[0_16px_34px_-18px_rgba(29,78,216,0.75)]' : 'border border-slate-200 bg-white text-slate-700 hover:border-slate-300' }}">Sales</a>
-                        <a href="{{ route('reports.index', ['type' => 'smd', 'from' => $filters['from'], 'to' => $filters['to'], 'branch_id' => $filters['branchId'] ?? null, 'user_id' => $filters['userId'] ?? null]) }}" class="rounded-[1.2rem] px-4 py-3 text-center text-sm font-semibold transition {{ $activeType === 'smd' ? 'bg-[linear-gradient(135deg,#1d4ed8_0%,#0f172a_100%)] text-white shadow-[0_16px_34px_-18px_rgba(29,78,216,0.75)]' : 'border border-slate-200 bg-white text-slate-700 hover:border-slate-300' }}">SMD</a>
-                        <a href="{{ route('reports.index', ['type' => 'outlets', 'from' => $filters['from'], 'to' => $filters['to'], 'branch_id' => $filters['branchId'] ?? null, 'user_id' => $filters['userId'] ?? null]) }}" class="rounded-[1.2rem] px-4 py-3 text-center text-sm font-semibold transition {{ $activeType === 'outlets' ? 'bg-[linear-gradient(135deg,#1d4ed8_0%,#0f172a_100%)] text-white shadow-[0_16px_34px_-18px_rgba(29,78,216,0.75)]' : 'border border-slate-200 bg-white text-slate-700 hover:border-slate-300' }}">Outlet</a>
+                        <a href="{{ route('reports.index', ['type' => 'sales', 'from' => $filters['from'], 'to' => $filters['to'], 'branch_id' => $filters['branchId'] ?? null, 'user_id' => $filters['userId'] ?? null]) }}" class="inline-flex min-h-[3rem] items-center justify-center gap-2 rounded-[0.95rem] px-4 py-3 text-center text-[14px] font-semibold transition {{ $activeType === 'sales' ? 'bg-[linear-gradient(135deg,#4f46e5_0%,#4338ca_100%)] text-white shadow-[0_16px_34px_-18px_rgba(79,70,229,0.55)]' : 'border border-slate-200 bg-white text-slate-700 hover:border-slate-300' }}"><svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M5.75 17.25 10 13l2.75 2.75L18.25 9.5" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M14.75 9.5h3.5V13" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M5.75 5.75v12.5h12.5" /></svg>Sales</a>
+                        <a href="{{ route('reports.index', ['type' => 'smd', 'from' => $filters['from'], 'to' => $filters['to'], 'branch_id' => $filters['branchId'] ?? null, 'user_id' => $filters['userId'] ?? null]) }}" class="inline-flex min-h-[3rem] items-center justify-center gap-2 rounded-[0.95rem] px-4 py-3 text-center text-[14px] font-semibold transition {{ $activeType === 'smd' ? 'bg-[linear-gradient(135deg,#4f46e5_0%,#4338ca_100%)] text-white shadow-[0_16px_34px_-18px_rgba(79,70,229,0.55)]' : 'border border-slate-200 bg-white text-slate-700 hover:border-slate-300' }}"><svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4.75 12h4l2.25-5 4 10 2.25-5h2" /></svg>SMD</a>
+                        <a href="{{ route('reports.index', ['type' => 'outlets', 'from' => $filters['from'], 'to' => $filters['to'], 'branch_id' => $filters['branchId'] ?? null, 'user_id' => $filters['userId'] ?? null]) }}" class="inline-flex min-h-[3rem] items-center justify-center gap-2 rounded-[0.95rem] px-4 py-3 text-center text-[14px] font-semibold transition {{ $activeType === 'outlets' ? 'bg-[linear-gradient(135deg,#4f46e5_0%,#4338ca_100%)] text-white shadow-[0_16px_34px_-18px_rgba(79,70,229,0.55)]' : 'border border-slate-200 bg-white text-slate-700 hover:border-slate-300' }}"><svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M5.5 10.25h13" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M6.25 10.25V7.5l1.5-2.75h8.5l1.5 2.75v2.75" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M6.25 10.25v8.5h11.5v-8.5" /></svg>Outlet</a>
                     </div>
                 </div>
             </section>
@@ -46,8 +57,8 @@
             <section class="app-panel app-animate-enter p-4 sm:p-6">
                 <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                     <div>
-                        <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Filter</p>
-                        <h3 class="mt-2 text-xl font-semibold text-ink-950">Atur rentang dan pelaksana laporan</h3>
+                        <p class="app-overline">Filter</p>
+                        <h3 class="app-section-title mt-2">Atur rentang dan pelaksana laporan</h3>
                     </div>
                     <div class="flex flex-wrap gap-2">
                         <span class="app-chip">{{ $filters['from'] }}</span>
@@ -67,7 +78,7 @@
                     </div>
                     <div>
                         <x-input-label for="branch_id" value="Cabang" />
-                        <select id="branch_id" name="branch_id" class="mt-2 block w-full rounded-2xl border border-slate-200/90 bg-white px-4 py-3 text-sm text-slate-700 shadow-[0_10px_30px_-18px_rgba(15,23,42,0.35)] focus:border-sky-400 focus:ring-4 focus:ring-sky-100">
+                        <select id="branch_id" name="branch_id" class="app-select mt-2 block w-full">
                             <option value="">Semua Cabang</option>
                             @foreach ($branches as $branch)
                                 <option value="{{ $branch->id }}" @selected((int) ($filters['branchId'] ?? 0) === $branch->id)>{{ $branch->name }}</option>
@@ -76,7 +87,7 @@
                     </div>
                     <div>
                         <x-input-label for="user_id" value="User" />
-                        <select id="user_id" name="user_id" class="mt-2 block w-full rounded-2xl border border-slate-200/90 bg-white px-4 py-3 text-sm text-slate-700 shadow-[0_10px_30px_-18px_rgba(15,23,42,0.35)] focus:border-sky-400 focus:ring-4 focus:ring-sky-100">
+                        <select id="user_id" name="user_id" class="app-select mt-2 block w-full">
                             <option value="">Semua User</option>
                             @foreach ($users as $reportUser)
                                 <option value="{{ $reportUser->id }}" @selected((int) ($filters['userId'] ?? 0) === $reportUser->id)>{{ $reportUser->name }}</option>
@@ -93,7 +104,7 @@
             <section class="grid gap-4 md:grid-cols-2 xl:grid-cols-4 {{ count($summary) >= 5 ? '2xl:grid-cols-5' : '' }}">
                 @foreach ($summary as $item)
                     <div class="app-panel app-animate-enter p-5">
-                        <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">{{ $item['label'] }}</p>
+                        <p class="app-overline">{{ $item['label'] }}</p>
                         <p class="mt-4 text-2xl font-semibold text-ink-950">{{ $item['value'] }}</p>
                     </div>
                 @endforeach
@@ -102,8 +113,8 @@
             <section class="app-panel app-animate-enter p-4 sm:p-6">
                 <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                     <div>
-                        <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Data Laporan</p>
-                        <h3 class="mt-2 text-xl font-semibold text-ink-950">Daftar hasil sesuai filter</h3>
+                        <p class="app-overline">Data Laporan</p>
+                        <h3 class="app-section-title mt-2">Daftar hasil sesuai filter</h3>
                     </div>
                     <span class="app-chip">{{ $rows->total() }} data</span>
                 </div>
@@ -256,7 +267,7 @@
                             @endif
                         </div>
                     @empty
-                        <div class="rounded-[1.5rem] border border-dashed border-slate-300 bg-slate-50 p-6 text-center text-sm text-slate-500">Belum ada data laporan.</div>
+                        <div class="app-empty-state">Belum ada data laporan.</div>
                     @endforelse
                 </div>
 

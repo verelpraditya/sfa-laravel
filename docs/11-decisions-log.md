@@ -1,7 +1,7 @@
 # 11 Decisions Log
 
 - Status: Active
-- Last updated: 2026-04-01
+- Last updated: 2026-04-02
 - Purpose: Record major product and technical decisions.
 
 ## 2026-03-28
@@ -67,3 +67,10 @@
 - SMD display photo UX was changed to a camera-first, one-photo-at-a-time flow with compact status rows and `+ Tambah Foto`.
 - Visit detail page now shows an embedded OpenStreetMap view from saved coordinates and provides a Google Maps shortcut.
 - Prospect operational list now shows last visit time and last visiting user as lightweight follow-up context.
+
+## 2026-04-02
+
+- Mobile UI was polished again with tighter typography hierarchy, stronger contrast, clearer CTA styles, and more consistent reusable components.
+- Login page was simplified and the password reveal action was reduced to a clean eye icon.
+- Sales visit form now supports the compatibility condition `order_by_wa`, which currently behaves like `buka` for nominal input purposes.
+- `official_kode` input now auto-removes spaces and converts to uppercase in sales, SMD, outlet master, and supervisor verification flows.

@@ -14,7 +14,7 @@
                 <span class="app-chip">Monitoring Operasional</span>
                 <span class="app-chip">History Kunjungan</span>
             </div>
-            <h2 class="mt-4 text-3xl font-semibold leading-tight text-ink-950">History Kunjungan</h2>
+            <h2 class="app-page-title mt-4">History Kunjungan</h2>
         </div>
     </x-slot>
 
@@ -23,8 +23,8 @@
             <section class="app-panel app-animate-enter overflow-hidden p-4 sm:p-6">
                 <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                     <div>
-                        <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Ringkasan Scope Aktif</p>
-                        <h3 class="mt-2 text-xl font-semibold text-ink-950">Riwayat kunjungan yang sedang kamu lihat</h3>
+                        <p class="app-overline">Ringkasan Scope Aktif</p>
+                        <h3 class="app-section-title mt-2">Riwayat kunjungan yang sedang kamu lihat</h3>
                     </div>
                     <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
                         <div class="app-kpi min-w-[9rem]">
@@ -50,8 +50,8 @@
             <section class="app-panel app-animate-enter p-4 sm:p-6">
                 <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                     <div>
-                        <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Filter</p>
-                        <h3 class="mt-2 text-xl font-semibold text-ink-950">Temukan kunjungan yang kamu butuhkan</h3>
+                        <p class="app-overline">Filter</p>
+                        <h3 class="app-section-title mt-2">Temukan kunjungan yang kamu butuhkan</h3>
                     </div>
                     <div class="flex flex-wrap gap-2">
                         <span class="app-chip">Order Rp {{ number_format($totalSalesAmount, 0, ',', '.') }}</span>
@@ -70,7 +70,7 @@
                     </div>
                     <div>
                         <x-input-label for="type" value="Tipe" />
-                        <select id="type" name="type" class="mt-2 block w-full rounded-2xl border border-slate-200/90 bg-white px-4 py-3 text-sm text-slate-700 shadow-[0_10px_30px_-18px_rgba(15,23,42,0.35)] focus:border-sky-400 focus:ring-4 focus:ring-sky-100">
+                        <select id="type" name="type" class="app-select mt-2 block w-full">
                             <option value="">Semua</option>
                             <option value="sales" @selected($filters['type'] === 'sales')>Sales</option>
                             <option value="smd" @selected($filters['type'] === 'smd')>SMD</option>
@@ -78,15 +78,21 @@
                     </div>
                     <div>
                         <x-input-label for="condition" value="Kondisi" />
-                        <select id="condition" name="condition" class="mt-2 block w-full rounded-2xl border border-slate-200/90 bg-white px-4 py-3 text-sm text-slate-700 shadow-[0_10px_30px_-18px_rgba(15,23,42,0.35)] focus:border-sky-400 focus:ring-4 focus:ring-sky-100">
+                        <select id="condition" name="condition" class="app-select mt-2 block w-full">
                             <option value="">Semua</option>
                             <option value="buka" @selected($filters['condition'] === 'buka')>Buka</option>
                             <option value="tutup" @selected($filters['condition'] === 'tutup')>Tutup</option>
+                            <option value="order_by_wa" @selected($filters['condition'] === 'order_by_wa')>Order by WA</option>
                         </select>
                     </div>
                     <div class="md:col-span-2 xl:col-span-2">
                         <x-input-label for="search" value="Cari user / outlet" />
-                        <x-text-input id="search" name="search" class="mt-2 block w-full" :value="$filters['search']" placeholder="Nama user atau outlet" />
+                        <div class="app-input-shell mt-2">
+                            <span class="app-input-icon">
+                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path d="M14.167 14.166 17.5 17.5" stroke-width="1.8" stroke-linecap="round" /><circle cx="8.75" cy="8.75" r="5.833" stroke-width="1.8" /></svg>
+                            </span>
+                            <x-text-input id="search" name="search" class="app-field-with-icon block w-full" :value="$filters['search']" placeholder="Nama user atau outlet" />
+                        </div>
                     </div>
                     <div class="md:col-span-2 xl:col-span-6 flex flex-col gap-3 sm:flex-row">
                         <x-primary-button class="justify-center sm:min-w-[180px]">Terapkan</x-primary-button>
@@ -98,8 +104,8 @@
             <section class="app-panel app-animate-enter p-4 sm:p-6">
                 <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                     <div>
-                        <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Daftar History</p>
-                        <h3 class="mt-2 text-xl font-semibold text-ink-950">Urutan kunjungan terbaru</h3>
+                        <p class="app-overline">Daftar History</p>
+                        <h3 class="app-section-title mt-2">Urutan kunjungan terbaru</h3>
                     </div>
                     <span class="app-chip">{{ $visits->total() }} data</span>
                 </div>
@@ -130,13 +136,13 @@
                                         </span>
                                     </td>
                                     <td class="px-4 py-4">
-                                        <span class="inline-flex rounded-full px-3 py-1 text-xs font-semibold {{ $visit->outlet_condition === 'buka' ? 'bg-emerald-50 text-emerald-700' : ($visit->outlet_condition === 'tutup' ? 'bg-amber-50 text-amber-700' : 'bg-slate-100 text-slate-600') }}">
-                                            {{ $visit->outlet_condition ?: '-' }}
+                                        <span class="inline-flex rounded-full px-3 py-1 text-xs font-semibold {{ $visit->outlet_condition === 'buka' ? 'bg-emerald-50 text-emerald-700' : ($visit->outlet_condition === 'order_by_wa' ? 'bg-violet-50 text-violet-700' : ($visit->outlet_condition === 'tutup' ? 'bg-amber-50 text-amber-700' : 'bg-slate-100 text-slate-600')) }}">
+                                            {{ $visit->outlet_condition === 'order_by_wa' ? 'Order by WA' : ($visit->outlet_condition ?: '-') }}
                                         </span>
                                     </td>
                                     <td class="px-4 py-4 text-slate-900">Rp {{ number_format($visit->salesAmount(), 0, ',', '.') }}</td>
                                     <td class="px-4 py-4 text-slate-900">Rp {{ number_format($visit->collectionAmount(), 0, ',', '.') }}</td>
-                                    <td class="px-4 py-4"><a href="{{ route('visit-history.show', $visit) }}" class="inline-flex items-center rounded-xl border border-sky-200 bg-sky-50 px-3.5 py-2 text-xs font-semibold text-sky-900 shadow-sm shadow-sky-100/50 transition hover:bg-sky-100">Detail</a></td>
+                                    <td class="px-4 py-4"><a href="{{ route('visit-history.show', $visit) }}" class="app-action-secondary min-h-[2.75rem] px-4 py-2 text-[13px]"><svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="m9 5 7 7-7 7" /></svg>Detail</a></td>
                                 </tr>
                             @empty
                                 <tr><td colspan="8" class="px-4 py-10 text-center text-sm text-slate-500">Belum ada history kunjungan.</td></tr>
@@ -171,12 +177,12 @@
                             </div>
 
                             <div class="mt-4 flex items-center justify-between gap-3">
-                                <span class="inline-flex rounded-full px-3 py-1.5 text-xs font-semibold {{ $visit->outlet_condition === 'buka' ? 'bg-emerald-50 text-emerald-700' : ($visit->outlet_condition === 'tutup' ? 'bg-amber-50 text-amber-700' : 'bg-white text-slate-600') }}">{{ $visit->outlet_condition ?: '-' }}</span>
-                                <a href="{{ route('visit-history.show', $visit) }}" class="inline-flex items-center rounded-xl border border-sky-200 bg-sky-50 px-3.5 py-2 text-xs font-semibold text-sky-900 shadow-sm shadow-sky-100/50">Detail</a>
+                                <span class="inline-flex rounded-full px-3 py-1.5 text-xs font-semibold {{ $visit->outlet_condition === 'buka' ? 'bg-emerald-50 text-emerald-700' : ($visit->outlet_condition === 'order_by_wa' ? 'bg-violet-50 text-violet-700' : ($visit->outlet_condition === 'tutup' ? 'bg-amber-50 text-amber-700' : 'bg-white text-slate-600')) }}">{{ $visit->outlet_condition === 'order_by_wa' ? 'Order by WA' : ($visit->outlet_condition ?: '-') }}</span>
+                                <a href="{{ route('visit-history.show', $visit) }}" class="app-action-secondary min-h-[2.75rem] px-4 py-2 text-[13px]"><svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="m9 5 7 7-7 7" /></svg>Detail</a>
                             </div>
                         </div>
                     @empty
-                        <div class="rounded-[1.5rem] border border-dashed border-slate-300 bg-slate-50 px-4 py-5 text-center text-sm text-slate-500">Belum ada history kunjungan.</div>
+                        <div class="app-empty-state">Belum ada history kunjungan.</div>
                     @endforelse
                 </div>
 

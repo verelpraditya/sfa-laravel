@@ -2,12 +2,13 @@
     <x-slot name="header">
         <div class="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
             <div>
-                <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Master Outlet</p>
-                <h2 class="mt-2 text-3xl font-semibold leading-tight text-ink-950">Outlet Cabang</h2>
-                <p class="mt-2 max-w-3xl text-sm leading-7 text-slate-500">Kelola outlet yang sudah terdaftar, pantau status outlet, dan siapkan data untuk autocomplete kunjungan tanpa reload.</p>
+                <p class="app-overline">Master Outlet</p>
+                <h2 class="app-page-title mt-2">Outlet Cabang</h2>
+                <p class="app-body-copy mt-2 max-w-3xl">Kelola outlet yang sudah terdaftar, pantau status outlet, dan siapkan data untuk autocomplete kunjungan tanpa reload.</p>
             </div>
             @if (auth()->user()->canManageOutletMaster())
-                <a href="{{ route('outlets.create') }}" class="inline-flex items-center justify-center rounded-2xl bg-[linear-gradient(135deg,#1d4ed8_0%,#0f172a_100%)] px-5 py-3 text-sm font-semibold text-white shadow-[0_20px_40px_-18px_rgba(29,78,216,0.75)] transition hover:-translate-y-0.5 hover:shadow-[0_24px_46px_-18px_rgba(29,78,216,0.9)]">
+                <a href="{{ route('outlets.create') }}" class="app-action-primary">
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M5 12h14M12 5v14" /></svg>
                     Tambah Outlet
                 </a>
             @endif
@@ -17,8 +18,14 @@
     <div class="py-8 sm:py-10">
         <div class="mx-auto max-w-7xl space-y-6 px-4 sm:px-6 lg:px-8">
             @if (session('status'))
-                <div class="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700">
-                    {{ session('status') }}
+                <div class="app-alert app-alert-success">
+                    <span class="mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/80 text-emerald-600 shadow-sm">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9" d="m5 13 4 4L19 7" /></svg>
+                    </span>
+                    <div class="min-w-0">
+                        <p class="text-[12px] font-semibold uppercase tracking-[0.14em] text-emerald-700">Sukses</p>
+                        <p class="mt-1 font-medium">{{ session('status') }}</p>
+                    </div>
                 </div>
             @endif
 
@@ -31,7 +38,7 @@
                                     <path d="M14.167 14.166 17.5 17.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
                                     <circle cx="8.75" cy="8.75" r="5.833" stroke="currentColor" stroke-width="1.8" />
                                 </svg>
-                                <input id="search" name="search" value="{{ $filters['search'] }}" placeholder="Cari outlet..." class="block w-full rounded-2xl border border-slate-200/90 bg-white py-3 pl-11 pr-4 text-sm text-slate-700 shadow-[0_10px_30px_-18px_rgba(15,23,42,0.35)] outline-none transition placeholder:text-slate-400 focus:border-sky-400 focus:ring-4 focus:ring-sky-100">
+                                <input id="search" name="search" value="{{ $filters['search'] }}" placeholder="Cari outlet..." class="app-field app-field-with-icon block w-full">
                             </div>
                             <button type="button" @click="mobileFiltersOpen = !mobileFiltersOpen" class="inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 shadow-[0_10px_30px_-18px_rgba(15,23,42,0.35)] transition hover:border-slate-300 hover:bg-slate-50">
                                 <svg class="h-4 w-4 text-slate-500" viewBox="0 0 20 20" fill="none" aria-hidden="true">
@@ -45,7 +52,7 @@
                         <div x-cloak x-show="mobileFiltersOpen" x-transition class="space-y-3 rounded-[1.35rem] border border-slate-200 bg-slate-50 p-3">
                             <div>
                                 <x-input-label for="outlet_status" value="Status outlet" />
-                                <select id="outlet_status" name="outlet_status" class="mt-2 block w-full rounded-2xl border border-slate-200/90 bg-white px-4 py-3 text-sm text-slate-700 shadow-[0_10px_30px_-18px_rgba(15,23,42,0.35)] focus:border-sky-400 focus:ring-4 focus:ring-sky-100">
+                                <select id="outlet_status" name="outlet_status" class="app-select mt-2 block w-full">
                                     <option value="">Semua</option>
                                     <option value="prospek" @selected($filters['outlet_status'] === 'prospek')>Prospek</option>
                                     <option value="pending" @selected($filters['outlet_status'] === 'pending')>Pending</option>
@@ -64,7 +71,7 @@
                         </div>
                         <div>
                             <x-input-label for="outlet_status-desktop" value="Status outlet" />
-                            <select id="outlet_status-desktop" name="outlet_status" class="mt-2 block w-full rounded-2xl border border-slate-200/90 bg-white px-4 py-3 text-sm text-slate-700 shadow-[0_10px_30px_-18px_rgba(15,23,42,0.35)] focus:border-sky-400 focus:ring-4 focus:ring-sky-100">
+                            <select id="outlet_status-desktop" name="outlet_status" class="app-select mt-2 block w-full">
                                 <option value="">Semua</option>
                                 <option value="prospek" @selected($filters['outlet_status'] === 'prospek')>Prospek</option>
                                 <option value="pending" @selected($filters['outlet_status'] === 'pending')>Pending</option>
@@ -81,7 +88,7 @@
             </section>
 
             <section class="rounded-[1.75rem] border border-white/80 bg-white/90 p-5 shadow-sm shadow-slate-200/60">
-                <div class="hidden overflow-hidden rounded-[1.5rem] border border-slate-200 lg:block shadow-[0_18px_40px_-30px_rgba(15,23,42,0.28)]">
+                <div class="app-table-shell hidden lg:block">
                     <table class="min-w-full divide-y divide-slate-200 text-sm">
                         <thead class="bg-slate-50 text-left text-slate-500">
                             <tr>
@@ -157,7 +164,7 @@
                             </div>
                         </div>
                     @empty
-                        <div class="rounded-[1.5rem] border border-dashed border-slate-300 bg-slate-50 p-6 text-center text-sm text-slate-500">Belum ada outlet sesuai filter saat ini.</div>
+                        <div class="app-empty-state">Belum ada outlet sesuai filter saat ini.</div>
                     @endforelse
                 </div>
 

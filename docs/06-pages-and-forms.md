@@ -1,7 +1,7 @@
 # 06 Pages and Forms
 
 - Status: Draft
-- Last updated: 2026-04-01
+- Last updated: 2026-04-02
 - Purpose: Page list, key form fields, and validation behavior.
 
 ## Core Pages
@@ -79,7 +79,8 @@
 - timestamp captured automatically
 - visit proof photo required
 - `official_kode` required when `pelanggan_lama`
-- financial inputs only when `outlet_condition = buka`
+- `official_kode` input auto-removes spaces and converts value to uppercase
+- financial inputs only when `outlet_condition = buka` or `order_by_wa`
 - new inline outlets are mapped to outlet status:
   - `prospek` -> `prospek`
   - `noo` -> `pending`
@@ -87,6 +88,7 @@
 - mobile photo flow prefers camera capture via browser hint, shows preview, and compresses image client-side before upload
 - uploaded photo filename is normalized to `username_outlet_YYYYMMDD_HHMMSS`
 - validation messages are customized in Indonesian and old input is preserved after submit failure
+- reusable mobile UI system now uses tighter typography, stronger contrast, and clearer CTA hierarchy across major pages
 
 ### Implemented pages
 

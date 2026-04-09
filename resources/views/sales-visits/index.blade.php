@@ -2,11 +2,12 @@
     <x-slot name="header">
         <div class="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
             <div>
-                <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Kunjungan Sales</p>
-                <h2 class="mt-2 text-3xl font-semibold leading-tight text-ink-950">Riwayat Kunjungan</h2>
-                <p class="mt-2 max-w-3xl text-sm leading-7 text-slate-500">Pantau kunjungan sales yang sudah masuk, status outlet buka atau tutup, dan nominal transaksi saat outlet buka.</p>
+                <p class="app-overline">Kunjungan Sales</p>
+                <h2 class="app-page-title mt-2">Riwayat Kunjungan</h2>
+                <p class="app-body-copy mt-2 max-w-3xl">Pantau kunjungan sales yang sudah masuk, termasuk outlet buka, tutup, atau order by WA.</p>
             </div>
-            <a href="{{ route('sales-visits.create') }}" class="inline-flex items-center justify-center rounded-2xl bg-[linear-gradient(135deg,#1d4ed8_0%,#0f172a_100%)] px-5 py-3 text-sm font-semibold text-white shadow-[0_20px_40px_-18px_rgba(29,78,216,0.75)] transition hover:-translate-y-0.5 hover:shadow-[0_24px_46px_-18px_rgba(29,78,216,0.9)]">
+            <a href="{{ route('sales-visits.create') }}" class="app-action-primary">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M5 12h14M12 5v14" /></svg>
                 Input Kunjungan Sales
             </a>
         </div>
@@ -15,21 +16,35 @@
     <div class="py-8 sm:py-10">
         <div class="mx-auto max-w-7xl space-y-6 px-4 sm:px-6 lg:px-8">
             @if (session('status'))
-                <div class="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700">{{ session('status') }}</div>
+                <div class="app-alert app-alert-success">
+                    <span class="mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/80 text-emerald-600 shadow-sm">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9" d="m5 13 4 4L19 7" /></svg>
+                    </span>
+                    <div class="min-w-0">
+                        <p class="text-[12px] font-semibold uppercase tracking-[0.14em] text-emerald-700">Sukses</p>
+                        <p class="mt-1 font-medium">{{ session('status') }}</p>
+                    </div>
+                </div>
             @endif
 
             <section class="app-panel p-5">
                 <form method="GET" class="grid gap-3 md:grid-cols-4">
                     <div class="md:col-span-3">
                         <x-input-label for="search" value="Cari outlet / official kode" />
-                        <x-text-input id="search" name="search" class="mt-2 block w-full" :value="$filters['search']" placeholder="Mis. Salon Mawar atau OFF-BDG-001" />
+                        <div class="app-input-shell mt-2">
+                            <span class="app-input-icon">
+                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path d="M14.167 14.166 17.5 17.5" stroke-width="1.8" stroke-linecap="round" /><circle cx="8.75" cy="8.75" r="5.833" stroke-width="1.8" /></svg>
+                            </span>
+                            <x-text-input id="search" name="search" class="app-field-with-icon block w-full" :value="$filters['search']" placeholder="Mis. Salon Mawar atau OFF-BDG-001" />
+                        </div>
                     </div>
                     <div>
                         <x-input-label for="condition" value="Kondisi outlet" />
-                        <select id="condition" name="condition" class="mt-2 block w-full rounded-2xl border border-slate-200/90 bg-white px-4 py-3 text-sm text-slate-700 shadow-[0_10px_30px_-18px_rgba(15,23,42,0.35)] focus:border-sky-400 focus:ring-4 focus:ring-sky-100">
+                        <select id="condition" name="condition" class="app-select mt-2 block w-full">
                             <option value="">Semua</option>
                             <option value="buka" @selected($filters['condition'] === 'buka')>Buka</option>
                             <option value="tutup" @selected($filters['condition'] === 'tutup')>Tutup</option>
+                            <option value="order_by_wa" @selected($filters['condition'] === 'order_by_wa')>Order by WA</option>
                         </select>
                     </div>
                     <div class="md:col-span-4 flex flex-wrap gap-3">
@@ -40,7 +55,7 @@
             </section>
 
             <section class="app-panel p-5">
-                <div class="hidden overflow-hidden rounded-[1.5rem] border border-slate-200 lg:block">
+                <div class="app-table-shell hidden lg:block">
                     <table class="min-w-full divide-y divide-slate-200 text-sm">
                         <thead class="bg-slate-50 text-left text-slate-500">
                             <tr>
@@ -61,7 +76,7 @@
                                     </td>
                                     <td class="px-4 py-4 text-slate-600">{{ $visit->visitedAtForBranch()?->format('d M Y H:i') }}</td>
                                     <td class="px-4 py-4">
-                                        <span class="rounded-full px-3 py-1 text-xs font-semibold {{ $visit->outlet_condition === 'buka' ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700' }}">{{ ucfirst($visit->outlet_condition) }}</span>
+                                        <span class="rounded-full px-3 py-1 text-xs font-semibold {{ $visit->outlet_condition === 'buka' ? 'bg-emerald-50 text-emerald-700' : ($visit->outlet_condition === 'order_by_wa' ? 'bg-violet-50 text-violet-700' : 'bg-rose-50 text-rose-700') }}">{{ $visit->outlet_condition === 'order_by_wa' ? 'Order by WA' : ucfirst($visit->outlet_condition) }}</span>
                                     </td>
                                     <td class="px-4 py-4 text-slate-600">Rp {{ number_format((float) $visit->salesDetail?->order_amount, 0, ',', '.') }}</td>
                                     <td class="px-4 py-4 text-slate-600">Rp {{ number_format((float) $visit->salesDetail?->receivable_amount, 0, ',', '.') }}</td>
@@ -84,7 +99,7 @@
                                     <p class="font-semibold text-slate-900">{{ $visit->outlet?->name }}</p>
                                     <p class="mt-1 text-sm text-slate-500">{{ $visit->visitedAtForBranch()?->format('d M Y H:i') }}</p>
                                 </div>
-                                <span class="rounded-full px-3 py-1 text-xs font-semibold {{ $visit->outlet_condition === 'buka' ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700' }}">{{ ucfirst($visit->outlet_condition) }}</span>
+                                <span class="rounded-full px-3 py-1 text-xs font-semibold {{ $visit->outlet_condition === 'buka' ? 'bg-emerald-50 text-emerald-700' : ($visit->outlet_condition === 'order_by_wa' ? 'bg-violet-50 text-violet-700' : 'bg-rose-50 text-rose-700') }}">{{ $visit->outlet_condition === 'order_by_wa' ? 'Order by WA' : ucfirst($visit->outlet_condition) }}</span>
                             </div>
                             <div class="mt-4 grid grid-cols-2 gap-3 text-sm text-slate-600">
                                 <div>
@@ -98,7 +113,7 @@
                             </div>
                         </div>
                     @empty
-                        <div class="rounded-[1.5rem] border border-dashed border-slate-300 bg-slate-50 p-6 text-center text-sm text-slate-500">Belum ada kunjungan sales yang tersimpan.</div>
+                        <div class="app-empty-state">Belum ada kunjungan sales yang tersimpan.</div>
                     @endforelse
                 </div>
 

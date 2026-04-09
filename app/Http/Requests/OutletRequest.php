@@ -9,6 +9,13 @@ use Illuminate\Validation\Rule;
 
 class OutletRequest extends FormRequest
 {
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'official_kode' => $this->normalizeOfficialKode($this->input('official_kode')),
+        ]);
+    }
+
     public function authorize(): bool
     {
         return $this->user() !== null;
@@ -37,8 +44,16 @@ class OutletRequest extends FormRequest
                 'nullable',
                 'string',
                 'max:100',
+                'regex:/^\S+$/',
                 Rule::unique(Outlet::class, 'official_kode')->ignore($outlet?->id),
             ],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'official_kode.regex' => 'Official kode tidak boleh mengandung spasi.',
         ];
     }
 
@@ -78,5 +93,16 @@ class OutletRequest extends FormRequest
         }
 
         return (int) ($this->integer('branch_id') ?: $outlet?->branch_id);
+    }
+
+    private function normalizeOfficialKode(?string $value): ?string
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        $normalized = strtoupper(preg_replace('/\s+/', '', $value) ?? '');
+
+        return $normalized !== '' ? $normalized : null;
     }
 }

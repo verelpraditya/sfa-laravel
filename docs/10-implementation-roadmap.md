@@ -1,7 +1,7 @@
 # 10 Implementation Roadmap
 
 - Status: Draft
-- Last updated: 2026-04-01
+- Last updated: 2026-04-02
 - Purpose: Phased plan for building the MVP.
 
 ## Phase 1: Core Workflow Foundation
@@ -37,6 +37,9 @@
 - Done: SMD display-photo workflow upgraded to support 1-10 photos with camera-first per-photo capture UX
 - Done: visit detail page now includes embedded map location and Google Maps shortcut
 - Done: prospect operational list now shows last-visit follow-up context
+- Done: mobile UI polish pass for typography, spacing, CTA hierarchy, and reusable form components
+- Done: sales visit compatibility option `order_by_wa` added and treated like `buka`
+- Done: `official_kode` input now normalizes to uppercase without spaces across all entry points
 - Phase 1 status: functionally complete
 
 ## Phase 2: Monitoring, Reporting, and Data Quality

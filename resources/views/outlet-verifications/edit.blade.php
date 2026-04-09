@@ -13,7 +13,15 @@
     <div class="py-8 sm:py-10">
         <div class="mx-auto max-w-7xl space-y-6 px-4 sm:px-6 lg:px-8">
             @if (session('status'))
-                <div class="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700">{{ session('status') }}</div>
+                <div class="app-alert app-alert-success">
+                    <span class="mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/80 text-emerald-600 shadow-sm">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9" d="m5 13 4 4L19 7" /></svg>
+                    </span>
+                    <div class="min-w-0">
+                        <p class="text-[12px] font-semibold uppercase tracking-[0.14em] text-emerald-700">Sukses</p>
+                        <p class="mt-1 font-medium">{{ session('status') }}</p>
+                    </div>
+                </div>
             @endif
 
             <div class="grid gap-6 xl:grid-cols-[1fr_0.92fr]">
@@ -66,13 +74,13 @@
 
                             <div class="md:col-span-2">
                                 <x-input-label for="official_kode" value="Official kode" />
-                                <x-text-input id="official_kode" name="official_kode" class="mt-2 block w-full" :value="old('official_kode', $outlet->official_kode)" placeholder="Mis. OFF-BDG-010" />
+                                <x-text-input id="official_kode" name="official_kode" class="mt-2 block w-full" :value="old('official_kode', $outlet->official_kode)" placeholder="Mis. OFF-BDG-010" oninput="this.value = this.value.replaceAll(' ', '').toUpperCase()" autocomplete="off" spellcheck="false" autocapitalize="characters" />
                                 <x-input-error class="mt-2" :messages="$errors->get('official_kode')" />
                             </div>
 
                             <div class="md:col-span-2">
                                 <x-input-label for="verification_notes" value="Catatan verifikasi" />
-                                <textarea id="verification_notes" name="verification_notes" rows="4" class="mt-2 block w-full rounded-2xl border border-slate-200/90 bg-white px-4 py-3 text-sm text-slate-700 shadow-[0_10px_30px_-18px_rgba(15,23,42,0.35)] outline-none transition placeholder:text-slate-400 focus:border-sky-400 focus:ring-4 focus:ring-sky-100">{{ old('verification_notes') }}</textarea>
+                                <textarea id="verification_notes" name="verification_notes" rows="4" class="app-textarea mt-2 block w-full">{{ old('verification_notes') }}</textarea>
                                 <x-input-error class="mt-2" :messages="$errors->get('verification_notes')" />
                             </div>
                         </div>

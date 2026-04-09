@@ -10,6 +10,13 @@ class SmdVisitRequest extends FormRequest
 {
     private ?Outlet $existingOutlet = null;
 
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'new_outlet_official_kode' => $this->normalizeOfficialKode($this->input('new_outlet_official_kode')),
+        ]);
+    }
+
     public function authorize(): bool
     {
         return $this->user() !== null && $this->user()->canCreateSmdVisit();
@@ -32,6 +39,7 @@ class SmdVisitRequest extends FormRequest
                 'nullable',
                 'string',
                 'max:100',
+                'regex:/^\S+$/',
                 Rule::unique(Outlet::class, 'official_kode'),
             ],
             'activities' => ['required', 'array', 'min:1'],
@@ -60,6 +68,7 @@ class SmdVisitRequest extends FormRequest
             'new_outlet_type.required' => 'Jenis outlet baru wajib dipilih.',
             'new_outlet_type.in' => 'Jenis outlet baru tidak valid.',
             'new_outlet_official_kode.required' => 'Official kode wajib diisi untuk pelanggan lama.',
+            'new_outlet_official_kode.regex' => 'Official kode tidak boleh mengandung spasi.',
             'new_outlet_official_kode.unique' => 'Official kode sudah dipakai outlet lain.',
             'activities.required' => 'Pilih minimal satu aktivitas SMD.',
             'activities.array' => 'Aktivitas SMD tidak valid.',
@@ -151,5 +160,16 @@ class SmdVisitRequest extends FormRequest
     public function existingOutlet(): ?Outlet
     {
         return $this->existingOutlet;
+    }
+
+    private function normalizeOfficialKode(?string $value): ?string
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        $normalized = strtoupper(preg_replace('/\s+/', '', $value) ?? '');
+
+        return $normalized !== '' ? $normalized : null;
     }
 }

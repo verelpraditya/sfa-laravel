@@ -11,7 +11,7 @@
                     <span class="app-chip">History Kunjungan</span>
                     <span class="app-chip">{{ $visit->typeLabel() }}</span>
                 </div>
-                <h2 class="mt-4 text-3xl font-semibold leading-tight text-ink-950">Detail Kunjungan</h2>
+                <h2 class="app-page-title mt-4">Detail Kunjungan</h2>
             </div>
             <a href="{{ route('visit-history.index') }}" class="app-glass-button justify-center">Kembali ke History</a>
         </div>
@@ -29,25 +29,25 @@
                         <div class="mt-5 flex flex-wrap gap-2 text-xs font-semibold">
                             <span class="rounded-full bg-white/12 px-3 py-1.5 text-white">{{ $visit->typeLabel() }}</span>
                             <span class="rounded-full bg-white/12 px-3 py-1.5 text-white">{{ $visit->visitedAtForBranch()?->format('d M Y H:i') }}</span>
-                            <span class="rounded-full bg-white/12 px-3 py-1.5 text-white">{{ $visit->outlet_condition ?: 'Tanpa kondisi' }}</span>
+                            <span class="rounded-full bg-white/12 px-3 py-1.5 text-white">{{ $visit->outlet_condition === 'order_by_wa' ? 'Order by WA' : ($visit->outlet_condition ?: 'Tanpa kondisi') }}</span>
                         </div>
                     </div>
 
                     <div class="grid gap-3 sm:grid-cols-2">
                         <div class="app-kpi">
-                            <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">Sales Amount</p>
+                            <p class="app-overline !tracking-[0.16em]">Sales Amount</p>
                             <p class="mt-3 text-2xl font-semibold text-ink-950">Rp {{ number_format($visit->salesAmount(), 0, ',', '.') }}</p>
                         </div>
                         <div class="app-kpi">
-                            <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">Collection</p>
+                            <p class="app-overline !tracking-[0.16em]">Collection</p>
                             <p class="mt-3 text-2xl font-semibold text-ink-950">Rp {{ number_format($visit->collectionAmount(), 0, ',', '.') }}</p>
                         </div>
                         <div class="app-kpi">
-                            <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">Latitude</p>
+                            <p class="app-overline !tracking-[0.16em]">Latitude</p>
                             <p class="mt-3 text-sm font-semibold text-ink-950">{{ $visit->latitude }}</p>
                         </div>
                         <div class="app-kpi">
-                            <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">Longitude</p>
+                            <p class="app-overline !tracking-[0.16em]">Longitude</p>
                             <p class="mt-3 text-sm font-semibold text-ink-950">{{ $visit->longitude }}</p>
                         </div>
                     </div>
@@ -59,8 +59,8 @@
                     <section class="app-panel app-animate-enter p-5 sm:p-6">
                         <div class="flex items-center justify-between gap-3">
                             <div>
-                                <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Informasi Kunjungan</p>
-                                <h3 class="mt-2 text-xl font-semibold text-ink-950">Data utama</h3>
+                                <p class="app-overline">Informasi Kunjungan</p>
+                                <h3 class="app-section-title mt-2">Data utama</h3>
                             </div>
                         </div>
 
@@ -69,7 +69,7 @@
                             <div class="app-soft-panel px-4 py-4"><p class="text-[11px] uppercase tracking-[0.14em] text-slate-400">Cabang</p><p class="mt-1 font-semibold text-slate-900">{{ $visit->branch?->name }}</p></div>
                             <div class="app-soft-panel px-4 py-4"><p class="text-[11px] uppercase tracking-[0.14em] text-slate-400">Outlet</p><p class="mt-1 font-semibold text-slate-900">{{ $visit->outlet?->name }}</p></div>
                             <div class="app-soft-panel px-4 py-4"><p class="text-[11px] uppercase tracking-[0.14em] text-slate-400">Tipe</p><p class="mt-1 font-semibold text-slate-900">{{ $visit->typeLabel() }}</p></div>
-                            <div class="app-soft-panel px-4 py-4"><p class="text-[11px] uppercase tracking-[0.14em] text-slate-400">Kondisi</p><p class="mt-1 font-semibold text-slate-900">{{ $visit->outlet_condition ?: '-' }}</p></div>
+                            <div class="app-soft-panel px-4 py-4"><p class="text-[11px] uppercase tracking-[0.14em] text-slate-400">Kondisi</p><p class="mt-1 font-semibold text-slate-900">{{ $visit->outlet_condition === 'order_by_wa' ? 'Order by WA' : ($visit->outlet_condition ?: '-') }}</p></div>
                             <div class="app-soft-panel px-4 py-4"><p class="text-[11px] uppercase tracking-[0.14em] text-slate-400">Waktu</p><p class="mt-1 font-semibold text-slate-900">{{ $visit->visitedAtForBranch()?->format('d M Y H:i') }}</p></div>
                         </div>
 
@@ -88,7 +88,7 @@
                     </section>
 
                     <section class="app-panel app-animate-enter p-5 sm:p-6">
-                        <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Catatan</p>
+                        <p class="app-overline">Catatan</p>
                         <div class="mt-4 app-soft-panel px-4 py-4">
                             <p class="text-sm leading-7 text-slate-600">{{ $visit->notes ?: 'Tidak ada catatan tambahan.' }}</p>
                         </div>
@@ -100,8 +100,8 @@
                         <section class="app-panel app-animate-enter p-5 sm:p-6">
                             <div class="flex items-center justify-between gap-3">
                                 <div>
-                                    <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Lokasi Kunjungan</p>
-                                    <h3 class="mt-2 text-xl font-semibold text-ink-950">Titik kunjungan di peta</h3>
+                                    <p class="app-overline">Lokasi Kunjungan</p>
+                                    <h3 class="app-section-title mt-2">Titik kunjungan di peta</h3>
                                 </div>
                                 <a href="{{ 'https://www.google.com/maps?q='.$latitude.','.$longitude }}" target="_blank" rel="noopener noreferrer" class="app-glass-button px-4 py-2.5">Buka Google Maps</a>
                             </div>
@@ -124,7 +124,7 @@
                     @endif
 
                     <section class="app-panel app-animate-enter p-5 sm:p-6">
-                        <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Foto Bukti</p>
+                        <p class="app-overline">Foto Bukti</p>
                         <div class="mt-4 overflow-hidden rounded-[1.5rem] border border-slate-200 bg-slate-50">
                             <img src="{{ asset('storage/'.$visit->visit_photo_path) }}" alt="Foto bukti kunjungan" class="w-full object-cover">
                         </div>
@@ -132,7 +132,7 @@
 
                     @if ($visit->visit_type === 'smd' && ($visit->displayPhotos->isNotEmpty() || $visit->smdDetail?->display_photo_path))
                         <section class="app-panel app-animate-enter p-5 sm:p-6">
-                            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Foto Display</p>
+                            <p class="app-overline">Foto Display</p>
                             @if ($visit->displayPhotos->isNotEmpty())
                                 <div class="mt-4 grid gap-3 sm:grid-cols-2">
                                     @foreach ($visit->displayPhotos as $photo)
