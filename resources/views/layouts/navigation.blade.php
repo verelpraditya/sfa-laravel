@@ -110,22 +110,19 @@
 </aside>
 
 <div x-data="{ open: false }" class="xl:hidden">
-    <div class="sticky top-0 z-40 border-b border-white/70 bg-white/82 shadow-[0_20px_40px_-34px_rgba(15,23,42,0.35)] backdrop-blur-xl">
-        <div class="mx-auto max-w-7xl px-4 py-4 sm:px-6">
+    <div class="sticky top-0 z-40 border-b border-slate-200 bg-white shadow-sm">
+        <div class="mx-auto max-w-7xl px-4 py-3 sm:px-6">
             <div class="flex items-center justify-between gap-3">
                 <div class="flex min-w-0 items-center gap-3">
-                    <button @click="open = true" class="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-[1.15rem] border border-slate-200/90 bg-white text-slate-700 shadow-[0_12px_30px_-20px_rgba(15,23,42,0.3)] transition hover:border-slate-300 hover:text-slate-900">
+                    <button @click="open = true" class="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-slate-300 bg-white text-slate-700 shadow-sm transition hover:bg-slate-50 active:bg-slate-100" aria-label="Buka menu">
                         <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M4 6h16M4 12h16M4 18h16" /></svg>
                     </button>
                     <div class="min-w-0">
-                        <p class="truncate text-[11px] font-semibold uppercase tracking-[0.24em] text-sky-700">SFA Distributor</p>
-                        <p class="mt-1 truncate text-sm font-semibold text-slate-900">{{ $user->roleLabel() }} · {{ $user->branch?->name ?? 'Semua Cabang' }}</p>
+                        <p class="truncate text-sm font-bold text-slate-900">{{ $user->name }}</p>
+                        <p class="truncate text-xs text-slate-500">{{ $user->roleLabel() }} · {{ $user->branch?->name ?? 'Semua Cabang' }}</p>
                     </div>
                 </div>
-                <div class="rounded-[1.2rem] border border-white/70 bg-white/86 px-3 py-2 text-right shadow-[0_12px_30px_-22px_rgba(15,23,42,0.25)] backdrop-blur">
-                    <p class="text-sm font-semibold text-slate-900">{{ $user->name }}</p>
-                    <p class="text-[11px] uppercase tracking-[0.18em] text-slate-500">{{ now()->translatedFormat('d M') }}</p>
-                </div>
+                <span class="shrink-0 rounded-full bg-sky-100 px-3 py-1 text-xs font-bold text-sky-700">{{ now()->translatedFormat('d M Y') }}</span>
             </div>
         </div>
     </div>

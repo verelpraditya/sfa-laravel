@@ -1,7 +1,7 @@
 # 11 Decisions Log
 
 - Status: Active
-- Last updated: 2026-04-02
+- Last updated: 2026-04-10
 - Purpose: Record major product and technical decisions.
 
 ## 2026-03-28
@@ -74,3 +74,14 @@
 - Login page was simplified and the password reveal action was reduced to a clean eye icon.
 - Sales visit form now supports the compatibility condition `order_by_wa`, which currently behaves like `buka` for nominal input purposes.
 - `official_kode` input now auto-removes spaces and converts to uppercase in sales, SMD, outlet master, and supervisor verification flows.
+
+## 2026-04-10
+
+- UI/UX was migrated from glassmorphism to a clean-colorful design system. All major pages now use gradient hero headers (`app-hero-gradient`), colored KPI cards with left accent bars, icon-based info rows for detail pages, and dark pill toast notifications. Sidebar remains dark theme.
+- Sales visit form and SMD visit form were intentionally left unchanged — user is satisfied with their current design.
+- Visit edit and delete was added for `admin_pusat` and `supervisor`. Supervisor is scoped to own branch. Editable fields include outlet, date, condition, amounts, activities, and notes. Photos and GPS remain immutable (field evidence integrity). Delete performs hard delete with cascade (details, activities, display photos) and removes physical files from storage.
+- Outlet detail page (show) was created with 4 sections: outlet snapshot with info rows, KPI stats (total visits, sales, collection, last visit), OpenStreetMap embed from last visit coordinates, and paginated visit timeline.
+- Outlet index and operational list pages were redesigned with gradient hero headers and added "Detail" buttons linking to the new show page.
+- Outlet delete was restricted to `admin_pusat` only and is blocked when the outlet has any linked visits. This prevents accidental loss of visit business records.
+- Duplicate outlet detection and merge tool was implemented for `admin_pusat` and `supervisor`. Detection uses case-insensitive name matching and official_kode matching within the same branch. Merge transfers all visits and audit logs from duplicates to a selected master outlet, then deletes the empty duplicates.
+- Sidebar navigation was restructured with collapsible menu groups using Alpine.js. Groups: Master Data (admin only), Outlet (outlet-related pages), Kunjungan (visit-related pages), Monitoring (reports). Groups auto-expand when a child item is active.

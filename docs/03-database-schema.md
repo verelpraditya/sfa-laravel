@@ -1,7 +1,7 @@
 # 03 Database Schema
 
 - Status: Draft
-- Last updated: 2026-03-31
+- Last updated: 2026-04-10
 - Purpose: Core schema draft, tables, relationships, enums, and constraints.
 
 ## Core Tables
@@ -86,6 +86,25 @@
 - `visit_id`
 - `activity_type` = `ambil_po|merapikan_display|tukar_faktur|ambil_tagihan`
 - timestamps
+
+### `smd_visit_display_photos`
+
+- `id`
+- `visit_id`
+- `photo_path`
+- `sort_order`
+- timestamps
+
+### `visit_submissions`
+
+- `id`
+- `visit_id` nullable
+- `user_id`
+- `submission_token` unique
+- `visit_type` = `sales|smd`
+- timestamps
+
+Note: `visit_submissions` provides duplicate-submit protection. Each visit form generates a unique token; if a second submit arrives with the same token, it is treated as a duplicate and redirected as success.
 
 ## Implemented Status
 

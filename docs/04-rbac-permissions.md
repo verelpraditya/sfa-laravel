@@ -1,7 +1,7 @@
 # 04 RBAC Permissions
 
 - Status: Draft
-- Last updated: 2026-03-31
+- Last updated: 2026-04-10
 - Purpose: Role-based access control matrix and scoping rules.
 
 ## Role Matrix
@@ -14,15 +14,19 @@
 | Manage users | Yes | No | No | No |
 | View all outlets | Yes | No | No | No |
 | View branch outlets | Yes | Yes | Yes | Yes |
+| View outlet detail | Yes | Yes (own branch) | Yes (own branch) | Yes (own branch) |
 | Manage branch outlets | Yes | Yes | No | No |
+| Delete outlet (no visits) | Yes | No | No | No |
 | Create outlet during visit | Yes | Yes | Yes | Yes |
 | Activate pending outlet | Yes | Yes | No | No |
 | Fill `official_kode` | Yes | Yes | No | No |
 | View reports | Yes | Yes | No | No |
 | Create sales visit | Optional later | Yes | Yes | No |
 | Create SMD visit | Optional later | Yes | No | Yes |
-| Edit submitted visit | No | No | No | No |
-| Delete submitted visit | No | No | No | No |
+| Edit submitted visit | Yes | Yes (own branch) | No | No |
+| Delete submitted visit | Yes | Yes (own branch) | No | No |
+| Detect duplicate outlets | Yes | Yes (own branch) | No | No |
+| Merge duplicate outlets | Yes | Yes (own branch) | No | No |
 | View branch dashboard | Yes | Yes | No | No |
 | View personal dashboard | Yes | Yes | Yes | Yes |
 
@@ -44,7 +48,9 @@
 
 - Supervisor activates pending outlet records, not visit evidence.
 - `official_kode` updates are controlled by supervisor/admin.
-- Submitted visits remain immutable for audit safety.
+- Submitted visits can be edited or deleted by `admin_pusat` and `supervisor` (own branch only for supervisor). Photos and GPS coordinates remain immutable — only business data fields (outlet, date, condition, amounts, activities, notes) are editable.
+- Outlet deletion is restricted to `admin_pusat` and only allowed when the outlet has no linked visits.
+- Duplicate outlet detection and merging is available to `admin_pusat` and `supervisor` (own branch). Merging transfers all visits from duplicate outlets to the selected master outlet before deleting the duplicates.
 - Public user self-registration is disabled.
 
 ## Current Code Foundation

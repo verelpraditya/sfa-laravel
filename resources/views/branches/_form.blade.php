@@ -19,7 +19,7 @@
                 </div>
                 <div>
                     <x-input-label for="timezone" value="Zona waktu" />
-                    <select id="timezone" name="timezone" class="mt-2 block w-full rounded-2xl border border-slate-200/90 bg-white px-4 py-3 text-sm text-slate-700 shadow-[0_10px_30px_-18px_rgba(15,23,42,0.35)] focus:border-sky-400 focus:ring-4 focus:ring-sky-100">
+                    <select id="timezone" name="timezone" class="app-select mt-2 block w-full">
                         @foreach ($timezones as $value => $label)
                             <option value="{{ $value }}" @selected(old('timezone', $branch->timezone ?: 'Asia/Jakarta') === $value)>{{ $label }}</option>
                         @endforeach
@@ -28,7 +28,7 @@
                 </div>
                 <div class="sm:col-span-2">
                     <x-input-label for="address" value="Alamat cabang" />
-                    <textarea id="address" name="address" rows="4" class="mt-2 block w-full rounded-2xl border border-slate-200/90 bg-white px-4 py-3 text-sm text-slate-700 shadow-[0_10px_30px_-18px_rgba(15,23,42,0.35)] outline-none transition placeholder:text-slate-400 focus:border-sky-400 focus:ring-4 focus:ring-sky-100">{{ old('address', $branch->address) }}</textarea>
+                    <textarea id="address" name="address" rows="4" class="app-textarea mt-2 block w-full">{{ old('address', $branch->address) }}</textarea>
                     <x-input-error class="mt-2" :messages="$errors->get('address')" />
                 </div>
             </div>
@@ -39,7 +39,7 @@
         <div class="app-soft-panel p-5">
             <div>
                 <x-input-label for="is_active" value="Status cabang" />
-                <select id="is_active" name="is_active" class="mt-2 block w-full rounded-2xl border border-slate-200/90 bg-white px-4 py-3 text-sm text-slate-700 shadow-[0_10px_30px_-18px_rgba(15,23,42,0.35)] focus:border-sky-400 focus:ring-4 focus:ring-sky-100">
+                <select id="is_active" name="is_active" class="app-select mt-2 block w-full">
                     <option value="1" @selected((string) old('is_active', $branch->is_active ?? true) === '1')>Active</option>
                     <option value="0" @selected((string) old('is_active', $branch->is_active ?? true) === '0')>Inactive</option>
                 </select>
@@ -48,7 +48,7 @@
         </div>
 
         <div class="app-soft-panel p-5 text-sm leading-7 text-slate-600">
-            <p class="font-semibold text-ink-950">Catatan timezone</p>
+            <p class="font-semibold text-slate-900">Catatan timezone</p>
             <p class="mt-2">Zona waktu cabang dipakai untuk menampilkan jam kunjungan sesuai kota cabang, misalnya `Asia/Jakarta` untuk WIB dan `Asia/Makassar` untuk WITA.</p>
         </div>
     </section>
@@ -56,5 +56,5 @@
 
 <div class="mt-6 flex flex-wrap gap-3">
     <x-primary-button>{{ $submitLabel }}</x-primary-button>
-    <a href="{{ route('branches.index') }}" class="inline-flex items-center rounded-2xl border border-sky-200 bg-sky-50 px-5 py-3 text-sm font-semibold text-sky-900 shadow-sm shadow-sky-100/80 transition hover:border-sky-300 hover:bg-sky-100">Kembali</a>
+    <a href="{{ route('branches.index') }}" class="app-action-secondary px-5 py-3">Kembali</a>
 </div>

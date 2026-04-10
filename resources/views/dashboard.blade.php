@@ -2,49 +2,44 @@
     @php($user = auth()->user())
     @php($branchName = $user->branch?->name ?? 'Semua Cabang')
     <x-slot name="header">
-        <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-            <div class="max-w-3xl">
-                <div class="flex flex-wrap items-center gap-2">
-                    <span class="app-chip">{{ $user->roleLabel() }}</span>
-                    <span class="app-chip">{{ $branchName }}</span>
-                    <span class="app-chip">{{ now()->translatedFormat('l, d F Y') }}</span>
+        {{-- Greeting Hero --}}
+        <div class="app-hero-gradient -mx-4 -mt-4 rounded-b-2xl px-5 py-6 sm:-mx-6 sm:px-8 sm:py-8">
+            <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                <div>
+                    <p class="text-sm font-medium text-white/80">{{ now()->translatedFormat('l, d F Y') }} · {{ $branchName }}</p>
+                    <h2 class="mt-1 text-2xl font-bold text-white sm:text-3xl">
+                        Halo, {{ $user->name }}!
+                    </h2>
+                    <p class="mt-1 text-sm text-white/70">{{ $user->roleLabel() }} — siap produktif hari ini.</p>
                 </div>
-                <h2 class="app-page-title mt-4">Dashboard</h2>
+                @if ($user->isSales())
+                    <a href="{{ route('sales-visits.create') }}" class="inline-flex items-center gap-3 rounded-xl bg-white px-5 py-3.5 shadow-lg shadow-sky-500/20 transition hover:shadow-xl hover:shadow-sky-500/30 active:scale-[0.98]">
+                        <span class="flex h-10 w-10 items-center justify-center rounded-lg bg-sky-500 text-lg font-black text-white">+</span>
+                        <span>
+                            <span class="block text-sm font-bold text-slate-900">Input Kunjungan Sales</span>
+                            <span class="text-xs text-slate-500">Tap untuk buat kunjungan baru</span>
+                        </span>
+                        <svg class="ml-1 h-5 w-5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    </a>
+                @elseif ($user->isSmd())
+                    <a href="{{ route('smd-visits.create') }}" class="inline-flex items-center gap-3 rounded-xl bg-white px-5 py-3.5 shadow-lg shadow-sky-500/20 transition hover:shadow-xl hover:shadow-sky-500/30 active:scale-[0.98]">
+                        <span class="flex h-10 w-10 items-center justify-center rounded-lg bg-sky-500 text-lg font-black text-white">+</span>
+                        <span>
+                            <span class="block text-sm font-bold text-slate-900">Input Kunjungan SMD</span>
+                            <span class="text-xs text-slate-500">Tap untuk buat kunjungan baru</span>
+                        </span>
+                        <svg class="ml-1 h-5 w-5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    </a>
+                @else
+                    <div class="inline-flex items-center gap-3 rounded-xl bg-white/15 px-5 py-4 backdrop-blur-sm">
+                        <span class="flex h-11 w-11 items-center justify-center rounded-lg bg-white text-lg font-black text-sky-600 shadow-sm">{{ strtoupper(substr($user->name, 0, 1)) }}</span>
+                        <span>
+                            <span class="block text-sm font-bold text-white">{{ '@'.$user->username }}</span>
+                            <span class="text-xs text-white/70">Siap untuk monitoring hari ini</span>
+                        </span>
+                    </div>
+                @endif
             </div>
-            @if ($user->isSales())
-                <a href="{{ route('sales-visits.create') }}" class="app-panel app-card-interactive overflow-hidden px-4 py-4 sm:px-5">
-                    <div class="flex items-center gap-4">
-                        <div class="flex h-12 w-12 items-center justify-center rounded-[1.2rem] bg-[radial-gradient(circle_at_top,_#67e8f9,_#38bdf8_45%,_#2563eb_100%)] text-lg font-black text-white shadow-[0_16px_34px_-18px_rgba(56,189,248,0.85)]">+</div>
-                        <div>
-                            <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-400">Aksi Cepat</p>
-                            <p class="mt-1 text-sm font-semibold text-slate-900">Input Kunjungan Sales</p>
-                            <p class="text-xs text-slate-500">Tap untuk langsung buat kunjungan baru</p>
-                        </div>
-                    </div>
-                </a>
-            @elseif ($user->isSmd())
-                <a href="{{ route('smd-visits.create') }}" class="app-panel app-card-interactive overflow-hidden px-4 py-4 sm:px-5">
-                    <div class="flex items-center gap-4">
-                        <div class="flex h-12 w-12 items-center justify-center rounded-[1.2rem] bg-[radial-gradient(circle_at_top,_#67e8f9,_#38bdf8_45%,_#2563eb_100%)] text-lg font-black text-white shadow-[0_16px_34px_-18px_rgba(56,189,248,0.85)]">+</div>
-                        <div>
-                            <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-400">Aksi Cepat</p>
-                            <p class="mt-1 text-sm font-semibold text-slate-900">Input Kunjungan SMD</p>
-                            <p class="text-xs text-slate-500">Tap untuk langsung buat kunjungan baru</p>
-                        </div>
-                    </div>
-                </a>
-            @else
-                <div class="app-panel overflow-hidden px-4 py-4 sm:px-5">
-                    <div class="flex items-center gap-4">
-                        <div class="flex h-12 w-12 items-center justify-center rounded-[1.2rem] bg-[radial-gradient(circle_at_top,_#67e8f9,_#38bdf8_45%,_#2563eb_100%)] text-lg font-black text-white shadow-[0_16px_34px_-18px_rgba(56,189,248,0.85)]">S</div>
-                        <div>
-                            <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-400">Workspace Aktif</p>
-                            <p class="mt-1 text-sm font-semibold text-slate-900">{{ '@'.$user->username }}</p>
-                            <p class="text-xs text-slate-500">Siap untuk monitoring hari ini</p>
-                        </div>
-                    </div>
-                </div>
-            @endif
         </div>
     </x-slot>
 
@@ -65,75 +60,51 @@
             x-init="initChart()"
         >
             @if ($user->isSupervisor())
-                <section class="app-panel app-animate-enter overflow-hidden p-3 sm:p-4">
-                    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                        <div>
-                            <p class="app-overline">Mode Dashboard</p>
-                            <p class="mt-1 text-sm text-slate-600">Pindah dari view tim cabang ke aktivitas pribadi tanpa keluar halaman.</p>
-                        </div>
-                        <div class="inline-flex w-full rounded-[1.25rem] bg-slate-100/90 p-1 sm:w-auto">
-                            <button type="button" @click="switchTab('branch')" :class="activeTab === 'branch' ? 'bg-[linear-gradient(135deg,#1d4ed8_0%,#0f172a_100%)] text-white shadow-[0_14px_34px_-18px_rgba(29,78,216,0.75)]' : 'text-slate-500'" class="rounded-[1rem] px-4 py-2 text-sm font-semibold transition">Dashboard Cabang</button>
-                            <button type="button" @click="switchTab('personal')" :class="activeTab === 'personal' ? 'bg-[linear-gradient(135deg,#1d4ed8_0%,#0f172a_100%)] text-white shadow-[0_14px_34px_-18px_rgba(29,78,216,0.75)]' : 'text-slate-500'" class="rounded-[1rem] px-4 py-2 text-sm font-semibold transition">Aktivitas Saya</button>
-                        </div>
+                <section class="app-animate-enter">
+                    <div class="inline-flex rounded-lg bg-white p-1 shadow-sm border border-slate-200">
+                        <button type="button" @click="switchTab('branch')" :class="activeTab === 'branch' ? 'bg-sky-500 text-white shadow-sm' : 'text-slate-500 hover:text-slate-700'" class="rounded-md px-5 py-2.5 text-sm font-semibold transition">
+                            <span class="hidden sm:inline">Dashboard</span> Cabang
+                        </button>
+                        <button type="button" @click="switchTab('personal')" :class="activeTab === 'personal' ? 'bg-sky-500 text-white shadow-sm' : 'text-slate-500 hover:text-slate-700'" class="rounded-md px-5 py-2.5 text-sm font-semibold transition">
+                            Aktivitas Saya
+                        </button>
                     </div>
                 </section>
             @endif
 
-            <section>
-                <div class="app-panel app-animate-enter relative overflow-hidden p-5 sm:p-6">
-                    <div class="absolute -right-10 top-4 h-28 w-28 rounded-full bg-sky-300/22 blur-3xl"></div>
-                    <div class="absolute left-8 top-16 h-20 w-20 rounded-full bg-cyan-200/20 blur-3xl"></div>
-                    <div class="relative">
-                        <div class="flex flex-wrap items-start justify-between gap-4">
-                            <div class="max-w-xl">
-                                <p class="text-xs font-semibold uppercase tracking-[0.2em] text-sky-700">Pulse Hari Ini</p>
-                                <h3 class="mt-3 text-2xl font-semibold text-ink-950 sm:text-[2rem]" x-text="primaryMetric.value"></h3>
-                                <p class="mt-2 text-sm font-semibold text-slate-800" x-text="primaryMetric.label"></p>
-                                <p class="mt-2 text-sm leading-7 text-slate-600" x-text="primaryMetric.hint"></p>
-                            </div>
-                            <div class="rounded-[1.4rem] border border-white/70 bg-white/76 px-4 py-3 text-right shadow-[0_20px_40px_-28px_rgba(15,23,42,0.22)] backdrop-blur">
-                                <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Scope Aktif</p>
-                                <p class="mt-2 text-sm font-semibold text-slate-900" x-text="scopeTitle"></p>
-                                <p class="mt-1 text-xs text-slate-500" x-text="current.chartHelper"></p>
+            <section class="app-animate-enter">
+                <p class="mb-3 text-xs font-bold uppercase tracking-[0.15em] text-slate-400">Ringkasan Hari Ini</p>
+                {{-- 3 compact KPI cards: mobile 2-col, desktop 3-col --}}
+                <div class="grid grid-cols-2 gap-3 lg:grid-cols-3">
+                    <template x-for="metric in pulseMetrics" :key="metric.label">
+                        <div class="relative rounded-xl border overflow-hidden bg-white shadow-sm transition hover:shadow-md"
+                             :class="metricCardClass(metric.label)">
+                            <div class="absolute left-0 top-0 h-full w-1 rounded-l-xl" :class="metricAccentClass(metric.label)"></div>
+                            <div class="px-4 py-3.5 pl-5">
+                                <p class="text-[11px] font-bold uppercase tracking-[0.16em]" :class="metricLabelClass(metric.label)" x-text="metric.label"></p>
+                                <p class="mt-2 text-xl font-bold leading-tight" :class="metricValueClass(metric.label)" x-text="metric.value"></p>
                             </div>
                         </div>
-
-                        <div class="mt-6 grid grid-cols-2 gap-3 lg:grid-cols-3">
-                            <template x-for="metric in supportingMetrics" :key="metric.label">
-                                <div class="app-kpi app-card-interactive" :class="metricCardClass(metric.label)">
-                                    <div class="absolute inset-x-4 top-0 h-1 rounded-b-full" :class="metricAccentClass(metric.label)"></div>
-                                    <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400" x-text="metric.label"></p>
-                                    <p class="mt-3 text-xl font-semibold" :class="metricValueClass(metric.label)" x-text="metric.value"></p>
-                                    <p class="mt-2 text-xs leading-5 text-slate-500" x-text="metric.hint"></p>
-                                </div>
-                            </template>
-                        </div>
-
-                        <div class="mt-6 flex flex-wrap gap-2">
-                            <template x-for="highlight in current.highlights.slice(0, 3)" :key="highlight.label">
-                                <span class="app-chip">
-                                    <span class="font-bold text-slate-900" x-text="highlight.value"></span>
-                                    <span x-text="highlight.label"></span>
-                                </span>
-                            </template>
-                        </div>
-                    </div>
+                    </template>
                 </div>
             </section>
 
             <section class="grid items-start gap-6 xl:grid-cols-[1.1fr_0.9fr]">
-                <div class="app-panel app-animate-enter p-5 sm:p-6">
+                <div class="app-panel app-animate-enter overflow-hidden p-5 sm:p-6">
                     <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                         <div>
-                            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Trend Kunjungan</p>
-                            <h3 class="mt-2 text-xl font-semibold text-ink-950">Kunjungan & Collection</h3>
+                            <p class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-blue-600">
+                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"/></svg>
+                                Trend Kunjungan
+                            </p>
+                            <h3 class="mt-2 text-xl font-bold text-slate-900">Kunjungan & Collection</h3>
                         </div>
                         <p class="text-sm text-slate-500" x-text="current.chartHelper"></p>
                     </div>
-                    <div class="app-soft-panel mt-6 overflow-hidden p-4 sm:p-5">
-                        <div class="mb-4 flex flex-wrap gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
-                            <span class="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5 shadow-sm"><span class="app-status-dot bg-blue-600"></span>Kunjungan</span>
-                            <span class="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5 shadow-sm"><span class="app-status-dot bg-emerald-500"></span>Collection</span>
+                    <div class="mt-6 overflow-hidden rounded-xl border border-slate-200 bg-gradient-to-br from-slate-50 to-white p-4 sm:p-5">
+                        <div class="mb-4 flex flex-wrap gap-2">
+                            <span class="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-3 py-1.5 text-xs font-bold text-blue-700"><span class="h-2.5 w-2.5 rounded-full bg-blue-600"></span>Kunjungan</span>
+                            <span class="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-bold text-emerald-700"><span class="h-2.5 w-2.5 rounded-full bg-emerald-500"></span>Collection</span>
                         </div>
                         <div class="h-[16rem] sm:h-[18rem]">
                             <canvas id="dashboard-performance-chart"></canvas>
@@ -143,57 +114,70 @@
 
                 @if (! $user->isSales() && ! $user->isSmd())
                     <div class="space-y-6">
-                        <div class="app-panel app-animate-enter p-5 sm:p-6">
+                        <div class="app-panel app-animate-enter overflow-hidden p-5 sm:p-6">
+                            <div class="absolute inset-x-0 top-0 h-1 bg-blue-500"></div>
                             <div class="flex items-center justify-between gap-3">
                                 <div>
-                                    <p class="text-xs font-semibold uppercase tracking-[0.18em] text-blue-600">Customer Priority</p>
-                                    <h3 class="mt-2 text-xl font-semibold text-ink-950">Top customer</h3>
+                                    <p class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-blue-600">
+                                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                        Customer Priority
+                                    </p>
+                                    <h3 class="mt-2 text-xl font-bold text-slate-900">Top Customer</h3>
                                 </div>
-                                <span class="inline-flex items-center rounded-full bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-700">Order aktif</span>
+                                <span class="inline-flex items-center rounded-full bg-blue-100 px-3 py-1.5 text-xs font-bold text-blue-700">Order aktif</span>
                             </div>
                             <div class="mt-5 space-y-3">
                                 <template x-if="current.topCustomers.length === 0">
                                     <div class="app-empty-state px-4 py-5">Belum ada customer dengan order tercatat.</div>
                                 </template>
                                 <template x-for="(customer, index) in current.topCustomers" :key="customer.id ?? customer.name ?? index">
-                                    <div class="rounded-[1.5rem] border border-blue-100 bg-[linear-gradient(180deg,#f8fbff_0%,#eef6ff_100%)] px-4 py-3.5 shadow-[0_20px_40px_-32px_rgba(37,99,235,0.25)] transition duration-200 hover:-translate-y-1 hover:shadow-[0_22px_46px_-30px_rgba(37,99,235,0.3)]">
+                                     <div class="rounded-xl border border-blue-100 bg-gradient-to-r from-blue-50 to-white px-4 py-3.5 transition duration-200 hover:shadow-md">
                                         <div class="flex items-center justify-between gap-3">
                                             <div class="flex items-center gap-3">
-                                                <span class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-[1rem] text-sm font-semibold text-white shadow-[0_12px_28px_-18px_rgba(37,99,235,0.8)] ring-1 ring-blue-200/40" style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: #ffffff;">
-                                                    <span class="text-white" x-text="index + 1"></span>
+                                                <span class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-blue-600 to-indigo-600 text-sm font-bold text-white shadow-sm">
+                                                    <span x-text="index + 1"></span>
                                                 </span>
                                                 <div>
-                                                    <p class="text-sm font-semibold text-slate-900" x-text="customer.name"></p>
+                                                    <p class="text-sm font-bold text-slate-900" x-text="customer.name"></p>
                                                     <p class="mt-1 text-xs leading-5 text-slate-500"><span x-text="customer.total_orders"></span> order · terakhir <span x-text="formatSimpleDate(customer.last_order_at)"></span></p>
                                                 </div>
                                             </div>
-                                            <span class="inline-flex min-w-[5rem] items-center justify-center rounded-full bg-white px-3 py-1.5 text-sm font-semibold text-blue-700 shadow-sm" x-text="formatCurrency(customer.total_amount)"></span>
+                                            <span class="inline-flex min-w-[5rem] items-center justify-center rounded-full bg-blue-600 px-3 py-1.5 text-sm font-bold text-white shadow-sm" x-text="formatCurrency(customer.total_amount)"></span>
                                         </div>
                                     </div>
                                 </template>
                             </div>
                         </div>
 
-                        <div class="app-panel app-animate-enter p-5 sm:p-6">
+                        <div class="app-panel app-animate-enter overflow-hidden p-5 sm:p-6">
+                            <div class="absolute inset-x-0 top-0 h-1 bg-amber-500"></div>
                             <div class="flex items-center justify-between gap-3">
                                 <div>
-                                    <p class="text-xs font-semibold uppercase tracking-[0.18em] text-amber-600">Follow Up Supervisor</p>
-                                    <h3 class="mt-2 text-xl font-semibold text-ink-950">Lama tidak order</h3>
+                                    <p class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-amber-600">
+                                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/></svg>
+                                        Follow Up Supervisor
+                                    </p>
+                                    <h3 class="mt-2 text-xl font-bold text-slate-900">Lama Tidak Order</h3>
                                 </div>
-                                <span class="inline-flex items-center rounded-full bg-amber-50 px-3 py-1.5 text-xs font-semibold text-amber-700">> 30 hari</span>
+                                <span class="inline-flex items-center rounded-full bg-amber-100 px-3 py-1.5 text-xs font-bold text-amber-700">> 30 hari</span>
                             </div>
                             <div class="mt-5 space-y-3">
                                 <template x-if="current.staleCustomers.length === 0">
                                     <div class="app-empty-state px-4 py-5">Belum ada customer yang melewati batas 30 hari tanpa order.</div>
                                 </template>
                                 <template x-for="customer in current.staleCustomers" :key="customer.id ?? customer.name">
-                                    <div class="rounded-[1.5rem] border border-amber-100 bg-[linear-gradient(180deg,#fffaf0_0%,#fff5e6_100%)] px-4 py-3.5 shadow-[0_20px_40px_-32px_rgba(245,158,11,0.22)] transition duration-200 hover:-translate-y-1 hover:shadow-[0_22px_46px_-30px_rgba(245,158,11,0.28)]">
+                                    <div class="rounded-xl border border-amber-100 bg-gradient-to-r from-amber-50 to-white px-4 py-3.5 transition duration-200 hover:shadow-md">
                                         <div class="flex items-center justify-between gap-3">
-                                            <div>
-                                                <p class="text-sm font-semibold text-slate-900" x-text="customer.name"></p>
-                                                <p class="mt-1 text-xs text-slate-500">Terakhir order <span x-text="formatSimpleDate(customer.last_order_at)"></span> · <span x-text="customer.total_orders"></span> order total</p>
+                                            <div class="flex items-center gap-3">
+                                                <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-amber-500 to-orange-500 shadow-sm">
+                                                    <svg class="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                                </span>
+                                                <div>
+                                                    <p class="text-sm font-bold text-slate-900" x-text="customer.name"></p>
+                                                    <p class="mt-1 text-xs text-slate-500">Terakhir order <span x-text="formatSimpleDate(customer.last_order_at)"></span> · <span x-text="customer.total_orders"></span> order total</p>
+                                                </div>
                                             </div>
-                                            <p class="inline-flex min-w-[5rem] items-center justify-center rounded-full bg-white px-3 py-1.5 text-sm font-semibold text-amber-700 shadow-sm" x-text="daysSince(customer.last_order_at)"></p>
+                                            <p class="inline-flex min-w-[5rem] items-center justify-center rounded-full bg-amber-500 px-3 py-1.5 text-sm font-bold text-white shadow-sm" x-text="daysSince(customer.last_order_at)"></p>
                                         </div>
                                     </div>
                                 </template>
@@ -204,20 +188,23 @@
             </section>
 
             <section class="app-panel app-animate-enter overflow-hidden p-5 sm:p-6">
-                <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+                <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <div>
-                        <p class="app-overline">Monitoring Operasional</p>
-                        <h3 class="mt-2 text-xl font-semibold text-ink-950">Daftar Kunjungan</h3>
+                        <p class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-slate-500">
+                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                            Monitoring Operasional
+                        </p>
+                        <h3 class="mt-2 text-xl font-bold text-slate-900">Daftar Kunjungan</h3>
                     </div>
-                    <div class="flex flex-wrap gap-2">
-                        <span class="app-chip" x-text="`${current.recentVisits.length} visit ditampilkan`"></span>
-                        <a href="{{ route('visit-history.index') }}" class="app-glass-button px-4 py-2.5">Buka History</a>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span class="inline-flex items-center rounded-full bg-slate-900 px-3 py-1.5 text-[11px] font-bold tracking-wide text-white" x-text="`${current.recentVisits.length} visit`"></span>
+                        <a href="{{ route('visit-history.index') }}" class="app-btn-sm-primary px-4 py-2.5">Buka History</a>
                     </div>
                 </div>
 
-                <div class="mt-5 hidden overflow-hidden rounded-[1.65rem] border border-slate-200/90 lg:block">
+                <div class="mt-5 hidden overflow-hidden rounded-lg border border-slate-200 lg:block">
                     <table class="min-w-full divide-y divide-slate-200 text-sm">
-                        <thead class="bg-[linear-gradient(180deg,#f8fbff_0%,#eef5fe_100%)] text-left text-slate-500">
+                        <thead class="bg-slate-50 text-left text-slate-500">
                             <tr>
                                 <th class="px-4 py-3.5 font-semibold">Waktu</th>
                                 <th class="px-4 py-3.5 font-semibold">User</th>
@@ -229,7 +216,7 @@
                                 <th class="px-4 py-3.5 font-semibold">Aksi</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-slate-100 bg-white/90">
+                        <tbody class="divide-y divide-slate-100 bg-white">
                             <template x-for="visit in current.recentVisits" :key="visit.id">
                                 <tr class="transition duration-200 hover:bg-sky-50/60">
                                     <td class="px-4 py-4 text-slate-600" x-text="formatVisitDate(visit.visited_at, visit.branch?.timezone)"></td>
@@ -251,27 +238,27 @@
                         <div class="app-empty-state px-4 py-5">Belum ada aktivitas yang tercatat di scope ini.</div>
                     </template>
                     <template x-for="visit in current.recentVisits" :key="visit.id">
-                        <div class="app-soft-panel app-card-interactive px-4 py-4 text-sm text-slate-600">
+                        <div class="rounded-xl border border-slate-200 bg-white px-4 py-4 shadow-sm transition hover:shadow-md">
                             <div class="flex items-start justify-between gap-3">
                                 <div>
-                                    <p class="font-semibold text-slate-900" x-text="visit.outlet?.name || '-' "></p>
+                                    <p class="font-bold text-slate-900" x-text="visit.outlet?.name || '-' "></p>
                                     <p class="mt-1 text-xs text-slate-500" x-text="`${String(visit.visit_type).toUpperCase()} · ${visit.user?.name || '-'}`"></p>
                                 </div>
                                 <p class="text-xs text-slate-400" x-text="formatVisitDate(visit.visited_at, visit.branch?.timezone)"></p>
                             </div>
                             <div class="mt-4 grid grid-cols-2 gap-3">
-                                <div class="rounded-2xl bg-white px-3 py-3 shadow-sm">
-                                    <p class="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-400">Sales Amount</p>
-                                    <p class="mt-2 text-sm font-semibold text-slate-900" x-text="formatCurrency(visitSalesAmount(visit))"></p>
+                                <div class="rounded-lg border border-blue-100 bg-blue-50 px-3 py-3">
+                                    <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-blue-600">Sales Amount</p>
+                                    <p class="mt-2 text-sm font-bold text-slate-900" x-text="formatCurrency(visitSalesAmount(visit))"></p>
                                 </div>
-                                <div class="rounded-2xl bg-white px-3 py-3 shadow-sm">
-                                    <p class="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-400">Collection</p>
-                                    <p class="mt-2 text-sm font-semibold text-slate-900" x-text="formatCurrency(visitCollection(visit))"></p>
+                                <div class="rounded-lg border border-emerald-100 bg-emerald-50 px-3 py-3">
+                                    <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-emerald-600">Collection</p>
+                                    <p class="mt-2 text-sm font-bold text-slate-900" x-text="formatCurrency(visitCollection(visit))"></p>
                                 </div>
                             </div>
                             <div class="mt-4 flex items-center justify-between gap-3">
-                                <span class="inline-flex rounded-full px-3 py-1.5 text-xs font-semibold" :class="visit.outlet_condition === 'buka' ? 'bg-emerald-50 text-emerald-700' : (visit.outlet_condition === 'order_by_wa' ? 'bg-violet-50 text-violet-700' : 'bg-amber-50 text-amber-700')" x-text="formatOutletCondition(visit.outlet_condition)"></span>
-                                <a :href="`/visit-history/${visit.id}`" class="inline-flex items-center rounded-xl border border-sky-200 bg-sky-50 px-3.5 py-2 text-xs font-semibold text-sky-900 shadow-sm shadow-sky-100/50">Detail</a>
+                                <span class="inline-flex rounded-full px-3 py-1.5 text-xs font-bold" :class="visit.outlet_condition === 'buka' ? 'bg-emerald-100 text-emerald-700' : (visit.outlet_condition === 'order_by_wa' ? 'bg-violet-100 text-violet-700' : 'bg-amber-100 text-amber-700')" x-text="formatOutletCondition(visit.outlet_condition)"></span>
+                                <a :href="`/visit-history/${visit.id}`" class="app-btn-sm-primary px-4 py-2">Detail</a>
                             </div>
                         </div>
                     </template>
@@ -291,24 +278,10 @@
                     get current() {
                         return this.datasets[this.activeTab] || this.datasets.default;
                     },
-                    get primaryMetric() {
-                        return this.current?.metrics?.[1] || this.current?.metrics?.[0] || { label: '-', value: '-', hint: '' };
-                    },
-                    get supportingMetrics() {
+                    // Selalu 3 KPI: index 0 (Visit), 1 (Sales Amount), 2 (Collection)
+                    get pulseMetrics() {
                         const metrics = this.current?.metrics || [];
-
-                        return [metrics[0], ...metrics.slice(2)].filter(Boolean);
-                    },
-                    get scopeTitle() {
-                        if (this.activeTab === 'personal') {
-                            return 'Aktivitas pribadi';
-                        }
-
-                        if (this.activeTab === 'branch') {
-                            return `Cabang ${this.branchName}`;
-                        }
-
-                        return this.branchName;
+                        return metrics.slice(0, 3).filter(Boolean);
                     },
                     metricTone(label) {
                         const value = String(label || '').toLowerCase();
@@ -325,22 +298,37 @@
                             return 'blue';
                         }
 
+                        if (value.includes('sales') || value.includes('amount') || value.includes('po')) {
+                            return 'sky';
+                        }
+
                         return 'slate';
                     },
                     metricCardClass(label) {
                         return {
-                            blue: 'border-blue-100 bg-[linear-gradient(180deg,#fbfdff_0%,#eef6ff_100%)]',
-                            emerald: 'border-emerald-100 bg-[linear-gradient(180deg,#fbfffd_0%,#ecfdf5_100%)]',
-                            amber: 'border-amber-100 bg-[linear-gradient(180deg,#fffdf8_0%,#fff7ed_100%)]',
-                            slate: 'border-white/70 bg-white/90',
+                            blue: 'border-blue-200 bg-gradient-to-br from-blue-50 to-white',
+                            emerald: 'border-emerald-200 bg-gradient-to-br from-emerald-50 to-white',
+                            amber: 'border-amber-200 bg-gradient-to-br from-amber-50 to-white',
+                            sky: 'border-sky-200 bg-gradient-to-br from-sky-50 to-white',
+                            slate: 'border-slate-200 bg-white',
                         }[this.metricTone(label)];
                     },
                     metricAccentClass(label) {
                         return {
-                            blue: 'bg-[linear-gradient(90deg,#60a5fa_0%,#2563eb_100%)]',
-                            emerald: 'bg-[linear-gradient(90deg,#6ee7b7_0%,#10b981_100%)]',
-                            amber: 'bg-[linear-gradient(90deg,#fcd34d_0%,#f59e0b_100%)]',
-                            slate: 'bg-[linear-gradient(90deg,#cbd5e1_0%,#94a3b8_100%)]',
+                            blue: 'bg-blue-500',
+                            emerald: 'bg-emerald-500',
+                            amber: 'bg-amber-500',
+                            sky: 'bg-sky-500',
+                            slate: 'bg-slate-400',
+                        }[this.metricTone(label)];
+                    },
+                    metricLabelClass(label) {
+                        return {
+                            blue: 'text-blue-600',
+                            emerald: 'text-emerald-600',
+                            amber: 'text-amber-600',
+                            sky: 'text-sky-600',
+                            slate: 'text-slate-400',
                         }[this.metricTone(label)];
                     },
                     metricValueClass(label) {
@@ -348,7 +336,8 @@
                             blue: 'text-blue-700',
                             emerald: 'text-emerald-700',
                             amber: 'text-amber-700',
-                            slate: 'text-ink-950',
+                            sky: 'text-sky-700',
+                            slate: 'text-slate-900',
                         }[this.metricTone(label)];
                     },
                     initChart() {

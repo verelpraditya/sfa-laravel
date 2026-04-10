@@ -4,7 +4,11 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ============================================================
+   Design Tokens
+   ============================================================ */
 :root {
+    /* Brand palette */
     --brand-navy-950: #0f172a;
     --brand-navy-900: #13213b;
     --brand-navy-800: #17284a;
@@ -12,12 +16,23 @@
     --brand-sky-500: #0ea5e9;
     --brand-sky-400: #38bdf8;
     --brand-cyan-300: #67e8f9;
-    --brand-surface: rgba(255, 255, 255, 0.78);
-    --brand-border: rgba(148, 163, 184, 0.18);
-    --app-radius-lg: 1.15rem;
-    --app-radius-xl: 1.5rem;
+
+    /* Surfaces - solid, no transparency */
+    --brand-surface: #ffffff;
+    --brand-surface-secondary: #f8fafc;
+    --brand-border: #e2e8f0;
+    --brand-border-light: #f1f5f9;
+
+    /* Radius tokens — 4 levels only */
+    --radius-sm: 0.5rem;
+    --radius-md: 0.75rem;
+    --radius-lg: 1rem;
+    --radius-xl: 1.25rem;
 }
 
+/* ============================================================
+   Base
+   ============================================================ */
 @layer base {
     html {
         font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
@@ -31,10 +46,7 @@
         font-size: 15px;
         line-height: 1.6;
         letter-spacing: -0.01em;
-        background:
-            radial-gradient(circle at top left, rgba(103, 232, 249, 0.18), transparent 22%),
-            radial-gradient(circle at top right, rgba(59, 130, 246, 0.18), transparent 28%),
-            linear-gradient(180deg, #f3f7fc 0%, #edf3fb 52%, #e8eef7 100%);
+        background: #f8fafc;
     }
 
     ::selection {
@@ -43,7 +55,12 @@
     }
 }
 
+/* ============================================================
+   Components
+   ============================================================ */
 @layer components {
+
+    /* --- Page structure --- */
     .app-page-shell {
         @apply py-5 sm:py-7;
     }
@@ -52,59 +69,188 @@
         @apply mx-auto max-w-7xl px-4 sm:px-6 lg:px-8;
     }
 
+    /* --- Typography --- */
     .app-overline {
-        @apply text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500;
+        @apply text-[12px] font-semibold uppercase tracking-[0.14em] text-slate-500;
     }
 
     .app-page-title {
-        @apply text-[1.25rem] font-semibold leading-[1.2] tracking-[-0.02em] text-slate-950 sm:text-[1.4rem];
+        @apply text-xl font-bold leading-tight tracking-tight text-slate-900 sm:text-2xl;
     }
 
     .app-section-title {
-        @apply text-[1.05rem] font-semibold leading-[1.3] tracking-[-0.015em] text-slate-950 sm:text-[1.125rem];
+        @apply text-base font-semibold leading-snug tracking-tight text-slate-900 sm:text-lg;
     }
 
     .app-body-copy {
-        @apply text-[13px] leading-6 text-slate-600 sm:text-[14px];
+        @apply text-sm leading-relaxed text-slate-600;
     }
 
     .app-helper {
-        @apply text-[12px] leading-5 text-slate-500;
+        @apply text-[13px] leading-5 text-slate-500;
     }
 
-    .app-empty-state {
-        @apply rounded-[1rem] border border-dashed border-slate-300 bg-slate-50 p-5 text-center text-[13px] leading-6 text-slate-500;
-    }
-
+    /* --- Panels & Cards --- */
     .app-panel {
-        @apply rounded-[1rem] border bg-white/90 shadow-[0_18px_50px_-34px_rgba(15,23,42,0.22)] backdrop-blur-xl sm:rounded-[1.15rem];
-        border-color: var(--brand-border);
+        @apply rounded-xl border border-slate-200 bg-white shadow-sm;
     }
 
     .app-soft-panel {
-        @apply rounded-[0.95rem] border border-sky-100/80 bg-[linear-gradient(180deg,#fcfdff_0%,#f3f8ff_100%)];
+        @apply rounded-xl border border-slate-200 bg-slate-50;
     }
 
     .app-card-interactive {
-        @apply transition duration-200 ease-out hover:-translate-y-1 hover:shadow-[0_26px_60px_-34px_rgba(15,23,42,0.28)];
+        @apply transition duration-150 ease-out hover:shadow-md;
     }
 
     .app-kpi {
-        @apply relative overflow-hidden rounded-[1rem] border border-white/70 bg-white/90 p-4 shadow-[0_16px_38px_-30px_rgba(15,23,42,0.22)] backdrop-blur;
+        @apply relative rounded-xl border border-slate-200 bg-white p-4 shadow-sm overflow-hidden;
     }
 
-    .app-kpi::before {
+    /* Colored KPI variants — each has a left accent bar + tinted bg */
+    .app-kpi-blue {
+        @apply app-kpi border-blue-200 bg-gradient-to-br from-blue-50 to-white;
+    }
+    .app-kpi-blue::before {
         content: '';
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(135deg, rgba(255, 255, 255, 0.36), rgba(255, 255, 255, 0));
-        pointer-events: none;
+        @apply absolute left-0 top-0 h-full w-1 bg-blue-500 rounded-l-xl;
     }
 
+    .app-kpi-emerald {
+        @apply app-kpi border-emerald-200 bg-gradient-to-br from-emerald-50 to-white;
+    }
+    .app-kpi-emerald::before {
+        content: '';
+        @apply absolute left-0 top-0 h-full w-1 bg-emerald-500 rounded-l-xl;
+    }
+
+    .app-kpi-amber {
+        @apply app-kpi border-amber-200 bg-gradient-to-br from-amber-50 to-white;
+    }
+    .app-kpi-amber::before {
+        content: '';
+        @apply absolute left-0 top-0 h-full w-1 bg-amber-500 rounded-l-xl;
+    }
+
+    .app-kpi-violet {
+        @apply app-kpi border-violet-200 bg-gradient-to-br from-violet-50 to-white;
+    }
+    .app-kpi-violet::before {
+        content: '';
+        @apply absolute left-0 top-0 h-full w-1 bg-violet-500 rounded-l-xl;
+    }
+
+    .app-kpi-sky {
+        @apply app-kpi border-sky-200 bg-gradient-to-br from-sky-50 to-white;
+    }
+    .app-kpi-sky::before {
+        content: '';
+        @apply absolute left-0 top-0 h-full w-1 bg-sky-500 rounded-l-xl;
+    }
+
+    .app-kpi-rose {
+        @apply app-kpi border-rose-200 bg-gradient-to-br from-rose-50 to-white;
+    }
+    .app-kpi-rose::before {
+        content: '';
+        @apply absolute left-0 top-0 h-full w-1 bg-rose-500 rounded-l-xl;
+    }
+
+    /* Removed ::before glass pseudo-element — no more glassmorphism */
+
+    /* --- Hero / Greeting banner --- */
+    .app-hero-gradient {
+        background: linear-gradient(135deg, #0ea5e9 0%, #6366f1 50%, #8b5cf6 100%);
+    }
+
+    .app-hero-gradient-warm {
+        background: linear-gradient(135deg, #f59e0b 0%, #ef4444 50%, #ec4899 100%);
+    }
+
+    /* --- Colored info cell (for detail grids) --- */
+    .app-info-cell {
+        @apply rounded-lg px-4 py-4;
+    }
+
+    .app-info-cell-blue {
+        @apply app-info-cell bg-blue-50 border border-blue-100;
+    }
+
+    .app-info-cell-emerald {
+        @apply app-info-cell bg-emerald-50 border border-emerald-100;
+    }
+
+    .app-info-cell-amber {
+        @apply app-info-cell bg-amber-50 border border-amber-100;
+    }
+
+    .app-info-cell-violet {
+        @apply app-info-cell bg-violet-50 border border-violet-100;
+    }
+
+    .app-info-cell-sky {
+        @apply app-info-cell bg-sky-50 border border-sky-100;
+    }
+
+    .app-info-cell-slate {
+        @apply app-info-cell bg-slate-50 border border-slate-200;
+    }
+
+    .app-form-card {
+        @apply rounded-xl border border-slate-200 bg-white px-4 py-4 shadow-sm;
+    }
+
+    .app-table-shell {
+        @apply overflow-hidden rounded-xl border border-slate-200 shadow-sm;
+    }
+
+    /* --- Chips & Badges --- */
     .app-chip {
-        @apply inline-flex items-center gap-2 rounded-full border border-white/85 bg-white/85 px-3 py-1.5 text-[11px] font-semibold tracking-[0.1em] text-slate-600 shadow-sm backdrop-blur;
+        @apply inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-100 px-3 py-1 text-[11px] font-semibold tracking-wide text-slate-600;
     }
 
+    .app-badge {
+        @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold;
+    }
+
+    .app-badge-sky {
+        @apply bg-sky-100 text-sky-700;
+    }
+
+    .app-badge-emerald {
+        @apply bg-emerald-100 text-emerald-700;
+    }
+
+    .app-badge-amber {
+        @apply bg-amber-100 text-amber-700;
+    }
+
+    .app-badge-rose {
+        @apply bg-rose-100 text-rose-700;
+    }
+
+    .app-badge-violet {
+        @apply bg-violet-100 text-violet-700;
+    }
+
+    .app-badge-slate {
+        @apply bg-slate-100 text-slate-600;
+    }
+
+    /* --- Status & Dividers --- */
+    .app-status-dot {
+        @apply inline-flex h-2.5 w-2.5 rounded-full;
+    }
+
+    .app-divider {
+        @apply h-px w-full bg-slate-200;
+    }
+
+    .app-empty-state {
+        @apply rounded-xl border border-dashed border-slate-300 bg-slate-50 px-5 py-8 text-center text-sm leading-relaxed text-slate-500;
+    }
+
+    /* --- Decorative (sidebar only) --- */
     .app-grid-glow {
         background-image:
             linear-gradient(rgba(148, 163, 184, 0.08) 1px, transparent 1px),
@@ -112,73 +258,61 @@
         background-size: 28px 28px;
     }
 
-    .app-divider {
-        @apply h-px w-full bg-gradient-to-r from-transparent via-slate-200/90 to-transparent;
+    /* =========================================================
+       BUTTONS — Clear, solid, obviously clickable
+       ========================================================= */
+
+    /* Primary: Sky blue solid — the main CTA */
+    .app-action-primary {
+        @apply inline-flex min-h-[3rem] items-center justify-center gap-2 rounded-xl bg-sky-500 px-6 py-3 text-sm font-bold text-white shadow-sm transition duration-150 hover:bg-sky-600 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 active:bg-sky-700 disabled:cursor-not-allowed disabled:opacity-50;
     }
 
-    .app-status-dot {
-        @apply inline-flex h-2.5 w-2.5 rounded-full;
+    /* Secondary: Outlined button — clear border, obviously clickable */
+    .app-action-secondary {
+        @apply inline-flex min-h-[3rem] items-center justify-center gap-2 rounded-xl border-2 border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-700 shadow-sm transition duration-150 hover:border-slate-400 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 active:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50;
     }
 
+    /* Glass button — solid white with clear border */
     .app-glass-button {
-        @apply inline-flex min-h-[3rem] items-center justify-center rounded-[0.95rem] border border-slate-200 bg-white px-4 py-3 text-[14px] font-semibold text-slate-700 shadow-[0_14px_30px_-24px_rgba(15,23,42,0.22)] transition duration-200 hover:-translate-y-0.5 hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900;
+        @apply inline-flex min-h-[3rem] items-center justify-center rounded-xl border-2 border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm transition duration-150 hover:border-slate-400 hover:bg-slate-50 active:bg-slate-100;
     }
 
+    /* Danger button */
+    .app-action-danger {
+        @apply inline-flex min-h-[3rem] items-center justify-center gap-2 rounded-xl bg-rose-500 px-5 py-3 text-sm font-bold text-white shadow-sm transition duration-150 hover:bg-rose-600 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-offset-2 active:bg-rose-700 disabled:cursor-not-allowed disabled:opacity-50;
+    }
+
+    /* Small action link — looks like a button, not a text link */
+    .app-btn-sm {
+        @apply inline-flex items-center justify-center rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-sm transition duration-150 hover:border-slate-400 hover:bg-slate-50 active:bg-slate-100;
+    }
+
+    .app-btn-sm-primary {
+        @apply inline-flex items-center justify-center rounded-lg bg-sky-500 px-3 py-1.5 text-xs font-bold text-white shadow-sm transition duration-150 hover:bg-sky-600 active:bg-sky-700;
+    }
+
+    /* =========================================================
+       FORM FIELDS
+       ========================================================= */
     .app-field-label {
-        @apply block text-[12px] font-semibold leading-5 tracking-[0.01em] text-slate-700;
+        @apply block text-[13px] font-semibold leading-5 text-slate-700;
     }
 
     .app-field {
-        @apply min-h-[3rem] w-full rounded-[0.9rem] border border-slate-300 bg-white px-4 py-3 text-[14px] leading-6 text-slate-800 shadow-[0_12px_28px_-22px_rgba(15,23,42,0.14)] outline-none transition duration-200 placeholder:text-slate-400 focus:border-sky-500 focus:ring-4 focus:ring-sky-100 disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-50 disabled:text-slate-400;
+        @apply min-h-[3rem] w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm leading-6 text-slate-800 shadow-sm outline-none transition duration-150 placeholder:text-slate-400 focus:border-sky-500 focus:ring-2 focus:ring-sky-200 disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-400;
     }
 
     .app-select {
-        @apply app-field pr-10;
-        background-image: linear-gradient(45deg, transparent 50%, #94a3b8 50%), linear-gradient(135deg, #94a3b8 50%, transparent 50%);
-        background-position: calc(100% - 20px) calc(50% - 2px), calc(100% - 14px) calc(50% - 2px);
-        background-size: 6px 6px, 6px 6px;
+        @apply app-field cursor-pointer pr-10;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%2364748b'%3E%3Cpath fill-rule='evenodd' d='M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z' clip-rule='evenodd'/%3E%3C/svg%3E");
+        background-position: right 0.75rem center;
+        background-size: 1.25rem 1.25rem;
         background-repeat: no-repeat;
         appearance: none;
     }
 
     .app-textarea {
-        @apply app-field min-h-[6.75rem] resize-y;
-    }
-
-    .app-error-list {
-        @apply mt-2 space-y-1.5 text-xs font-medium leading-5 text-rose-600;
-    }
-
-    .app-error-summary {
-        @apply rounded-[1rem] border border-rose-200 bg-rose-50 px-4 py-4 text-[13px] text-rose-700 shadow-sm;
-    }
-
-    .app-form-card {
-        @apply rounded-[1rem] border border-slate-200/90 bg-white px-4 py-4 shadow-[0_16px_34px_-24px_rgba(15,23,42,0.18)];
-    }
-
-    .app-table-shell {
-        @apply overflow-hidden rounded-[1rem] border border-slate-200 shadow-[0_18px_40px_-30px_rgba(15,23,42,0.18)];
-    }
-
-    .app-alert {
-        @apply flex items-start gap-3 rounded-[1rem] border px-4 py-4 text-[13px] leading-6 shadow-sm;
-    }
-
-    .app-alert-warning {
-        @apply border-amber-200 bg-amber-50 text-amber-900;
-    }
-
-    .app-alert-success {
-        @apply border-emerald-200 bg-emerald-50 text-emerald-800;
-    }
-
-    .app-action-primary {
-        @apply inline-flex min-h-[3rem] items-center justify-center gap-2 rounded-[0.95rem] bg-[linear-gradient(135deg,#4f46e5_0%,#4338ca_100%)] px-5 py-3 text-[14px] font-semibold text-white shadow-[0_18px_34px_-18px_rgba(79,70,229,0.55)] transition duration-200 hover:-translate-y-0.5 hover:shadow-[0_22px_40px_-18px_rgba(79,70,229,0.7)] focus:outline-none focus:ring-4 focus:ring-indigo-100 disabled:cursor-not-allowed disabled:opacity-60;
-    }
-
-    .app-action-secondary {
-        @apply inline-flex min-h-[3rem] items-center justify-center gap-2 rounded-[0.95rem] border border-slate-200 bg-white px-4 py-3 text-[14px] font-semibold text-slate-700 shadow-[0_14px_30px_-24px_rgba(15,23,42,0.18)] transition duration-200 hover:-translate-y-0.5 hover:border-slate-300 hover:bg-slate-50;
+        @apply app-field min-h-[6.5rem] resize-y;
     }
 
     .app-input-shell {
@@ -192,11 +326,59 @@
     .app-field-with-icon {
         @apply pl-11;
     }
+
+    /* =========================================================
+       VALIDATION
+       ========================================================= */
+    .app-error-list {
+        @apply mt-2 space-y-1 text-xs font-medium leading-5 text-rose-600;
+    }
+
+    .app-error-summary {
+        @apply rounded-xl border border-rose-200 bg-rose-50 px-4 py-4 text-sm text-rose-700;
+    }
+
+    /* =========================================================
+       ALERTS
+       ========================================================= */
+    .app-alert {
+        @apply flex items-start gap-3 rounded-xl border px-4 py-4 text-sm leading-relaxed;
+    }
+
+    .app-alert-warning {
+        @apply border-amber-200 bg-amber-50 text-amber-900;
+    }
+
+    .app-alert-success {
+        @apply border-emerald-200 bg-emerald-50 text-emerald-800;
+    }
+
+    /* =========================================================
+       STEP PROGRESS (for forms)
+       ========================================================= */
+    .app-step-bar {
+        @apply flex items-center gap-1;
+    }
+
+    .app-step-segment {
+        @apply h-1.5 flex-1 rounded-full bg-slate-200 transition-colors duration-300;
+    }
+
+    .app-step-segment-active {
+        @apply bg-sky-500;
+    }
+
+    .app-step-segment-done {
+        @apply bg-emerald-500;
+    }
 }
 
+/* ============================================================
+   Animations
+   ============================================================ */
 @media (prefers-reduced-motion: no-preference) {
     .app-animate-enter {
-        animation: app-enter 0.45s ease-out both;
+        animation: app-enter 0.3s ease-out both;
     }
 
     .app-animate-float {
@@ -207,9 +389,8 @@
 @keyframes app-enter {
     from {
         opacity: 0;
-        transform: translateY(12px);
+        transform: translateY(8px);
     }
-
     to {
         opacity: 1;
         transform: translateY(0);
@@ -217,16 +398,13 @@
 }
 
 @keyframes app-float {
-    0%,
-    100% {
-        transform: translateY(0);
-    }
-
-    50% {
-        transform: translateY(-6px);
-    }
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
 }
 
+/* ============================================================
+   Utilities
+   ============================================================ */
 [x-cloak] {
     display: none !important;
 }

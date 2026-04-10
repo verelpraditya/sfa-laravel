@@ -1,7 +1,7 @@
 # 06 Pages and Forms
 
 - Status: Draft
-- Last updated: 2026-04-02
+- Last updated: 2026-04-10
 - Purpose: Page list, key form fields, and validation behavior.
 
 ## Core Pages
@@ -38,10 +38,24 @@
   - desktop table view
   - mobile card view
   - filter by search and outlet status
+  - gradient hero header
+  - "Detail" button links to outlet show page
+  - "Edit" button for authorized users
+- `GET /outlets/{outlet}`
+  - outlet detail/show page with 4 sections:
+    1. Snapshot: name, branch, address, district, city, status badge, category badge, official kode, created by, verified by
+    2. KPI stats: total visits, total sales, total collection, last visit date
+    3. Location: embedded OpenStreetMap from last visit coordinates, Google Maps shortcut
+    4. Timeline: paginated visit history to this outlet
+  - "Edit" and "Hapus" buttons for authorized users
 - `GET /outlets/create`
   - create master outlet form
 - `GET /outlets/{outlet}/edit`
   - edit master outlet form
+- `DELETE /outlets/{outlet}`
+  - hard delete outlet, admin_pusat only
+  - blocked if outlet has any linked visits
+  - cascade deletes audit logs (outlet_status_histories, outlet_verification_logs)
 
 ## Outlet Verification Pages
 
@@ -156,6 +170,66 @@
   - SMD display photo gallery when available
   - embedded OpenStreetMap based on saved coordinates
   - shortcut link to Google Maps
+  - Edit and Delete buttons for admin_pusat and supervisor (own branch)
+  - delete confirmation modal with warning about permanent data loss
+
+## Visit Edit
+
+- `GET /visit-history/{visit}/edit` — edit form (admin_pusat and supervisor only)
+- `PUT /visit-history/{visit}` — update visit
+- `DELETE /visit-history/{visit}` — delete visit with cascade
+
+### Editable fields
+
+- `outlet_id` — select from branch-scoped outlet list
+- `visited_at` — datetime picker
+- `outlet_condition` — buka / tutup / order_by_wa
+- `order_amount` and `receivable_amount` (sales visits)
+- `po_amount` and `payment_amount` (SMD visits)
+- `activities[]` (SMD visits) — checkbox group
+- `notes` — textarea
+
+### Read-only fields (not editable)
+
+- GPS coordinates (latitude, longitude)
+- Visit photo
+- Display photos (SMD)
+- User who performed the visit
+
+### Validation
+
+- Uses `UpdateVisitRequest` form request
+- Authorization: admin_pusat can edit any visit, supervisor can edit only visits in their branch
+- Conditional rules per visit_type (sales vs smd)
+- outlet_id must belong to the user's branch (non-admin)
+- visited_at must not be in the future
+- SMD activities: at least one required, po_amount required if ambil_po, payment_amount required if ambil_tagihan
+
+### Delete behavior
+
+- Hard delete with DB transaction
+- Cascade deletes: salesDetail, smdDetail, smdActivities, displayPhotos
+- Physical photo files deleted from storage (visit photo, display photos)
+- Redirect to visit history index with success toast
+
+## Duplicate Outlet Detection and Merge
+
+- `GET /outlets/duplicates` — detection page (admin_pusat and supervisor)
+- `GET /outlets/duplicates/{outlet}` — comparison page showing outlet vs its duplicates
+- `POST /outlets/merge` — execute merge
+
+### Detection criteria
+
+- Outlets with identical names (case-insensitive, trimmed) in the same branch
+- Outlets with identical `official_kode` in the same branch
+
+### Merge behavior
+
+- User selects one outlet as "master" and one or more as duplicates
+- All visits from duplicate outlets are transferred to the master outlet (UPDATE visits SET outlet_id = master)
+- Audit logs (outlet_status_histories, outlet_verification_logs) are transferred to master
+- Duplicate outlets are hard deleted after visit transfer
+- Master outlet data (name, address, status, official_kode) is preserved unchanged
 
 ## Reports
 

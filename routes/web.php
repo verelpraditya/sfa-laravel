@@ -31,6 +31,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/visit-history/{visit}', [VisitHistoryController::class, 'show'])->name('visit-history.show');
 
     Route::middleware('role:admin_pusat,supervisor')->group(function () {
+        Route::get('/visit-history/{visit}/edit', [VisitHistoryController::class, 'edit'])->name('visit-history.edit');
+        Route::put('/visit-history/{visit}', [VisitHistoryController::class, 'update'])->name('visit-history.update');
+        Route::delete('/visit-history/{visit}', [VisitHistoryController::class, 'destroy'])->name('visit-history.destroy');
+
         Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
         Route::get('/reports/export', [ReportController::class, 'export'])->name('reports.export');
     });
@@ -41,7 +45,7 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::get('/outlets/search', [OutletController::class, 'search'])->name('ajax.outlets.search');
-    Route::resource('outlets', OutletController::class)->except(['show', 'destroy']);
+    Route::resource('outlets', OutletController::class)->except(['destroy']);
     Route::get('/outlet-lists/prospects', [OutletController::class, 'prospects'])->name('outlet-lists.prospects');
     Route::get('/outlet-lists/noo', [OutletController::class, 'noo'])->name('outlet-lists.noo');
     Route::get('/outlet-lists/inactive', [OutletController::class, 'inactive'])->name('outlet-lists.inactive');

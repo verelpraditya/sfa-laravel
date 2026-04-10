@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\OutletRequest;
 use App\Models\Branch;
 use App\Models\Outlet;
+use App\Models\Visit;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -49,8 +50,59 @@ class OutletController extends Controller
         abort_unless($request->user()->canManageOutletMaster(), 403);
 
         return view('outlets.create', [
-            'outlet' => new Outlet(),
+            'outlet' => new Outlet,
             'branches' => Branch::orderBy('name')->get(),
+        ]);
+    }
+
+    public function show(Request $request, Outlet $outlet): View
+    {
+        $user = $request->user();
+
+        abort_if(! $user->isAdminPusat() && $user->branch_id !== $outlet->branch_id, 404);
+
+        $outlet->load(['branch', 'creator', 'verifier']);
+
+        $visits = Visit::where('outlet_id', $outlet->id)
+            ->when(! $user->isAdminPusat(), fn ($q) => $q->where('branch_id', $user->branch_id))
+            ->with(['user', 'salesDetail', 'smdDetail', 'branch'])
+            ->latest('visited_at')
+            ->paginate(10);
+
+        $totalVisits = Visit::where('outlet_id', $outlet->id)->count();
+        $totalSales = Visit::where('outlet_id', $outlet->id)
+            ->whereHas('salesDetail')
+            ->with('salesDetail')
+            ->get()
+            ->sum(fn ($v) => (float) ($v->salesDetail?->order_amount ?? 0))
+            + Visit::where('outlet_id', $outlet->id)
+                ->whereHas('smdDetail')
+                ->with('smdDetail')
+                ->get()
+                ->sum(fn ($v) => (float) ($v->smdDetail?->po_amount ?? 0));
+
+        $totalCollection = Visit::where('outlet_id', $outlet->id)
+            ->whereHas('salesDetail')
+            ->with('salesDetail')
+            ->get()
+            ->sum(fn ($v) => (float) ($v->salesDetail?->receivable_amount ?? 0))
+            + Visit::where('outlet_id', $outlet->id)
+                ->whereHas('smdDetail')
+                ->with('smdDetail')
+                ->get()
+                ->sum(fn ($v) => (float) ($v->smdDetail?->payment_amount ?? 0));
+
+        $lastVisit = Visit::where('outlet_id', $outlet->id)->latest('visited_at')->first();
+
+        return view('outlets.show', [
+            'outlet' => $outlet,
+            'visits' => $visits,
+            'stats' => [
+                'total_visits' => $totalVisits,
+                'total_sales' => $totalSales,
+                'total_collection' => $totalCollection,
+                'last_visit' => $lastVisit,
+            ],
         ]);
     }
 

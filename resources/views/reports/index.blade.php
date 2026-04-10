@@ -29,7 +29,7 @@
                 <div class="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
                     <div class="max-w-3xl">
                         <div class="flex items-center gap-3">
-                            <div class="flex h-12 w-12 items-center justify-center rounded-[1rem] bg-[linear-gradient(135deg,#4f46e5_0%,#4338ca_100%)] text-sm font-semibold text-white shadow-[0_18px_38px_-20px_rgba(79,70,229,0.45)]">
+                            <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-sky-500 text-sm font-semibold text-white shadow-sm">
                                 @if ($activeType === 'sales')
                                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M5.75 17.25 10 13l2.75 2.75L18.25 9.5" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M14.75 9.5h3.5V13" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M5.75 5.75v12.5h12.5" /></svg>
                                 @elseif ($activeType === 'smd')
@@ -47,9 +47,9 @@
                     </div>
 
                     <div class="grid grid-cols-3 gap-2 sm:gap-3">
-                        <a href="{{ route('reports.index', ['type' => 'sales', 'from' => $filters['from'], 'to' => $filters['to'], 'branch_id' => $filters['branchId'] ?? null, 'user_id' => $filters['userId'] ?? null]) }}" class="inline-flex min-h-[3rem] items-center justify-center gap-2 rounded-[0.95rem] px-4 py-3 text-center text-[14px] font-semibold transition {{ $activeType === 'sales' ? 'bg-[linear-gradient(135deg,#4f46e5_0%,#4338ca_100%)] text-white shadow-[0_16px_34px_-18px_rgba(79,70,229,0.55)]' : 'border border-slate-200 bg-white text-slate-700 hover:border-slate-300' }}"><svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M5.75 17.25 10 13l2.75 2.75L18.25 9.5" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M14.75 9.5h3.5V13" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M5.75 5.75v12.5h12.5" /></svg>Sales</a>
-                        <a href="{{ route('reports.index', ['type' => 'smd', 'from' => $filters['from'], 'to' => $filters['to'], 'branch_id' => $filters['branchId'] ?? null, 'user_id' => $filters['userId'] ?? null]) }}" class="inline-flex min-h-[3rem] items-center justify-center gap-2 rounded-[0.95rem] px-4 py-3 text-center text-[14px] font-semibold transition {{ $activeType === 'smd' ? 'bg-[linear-gradient(135deg,#4f46e5_0%,#4338ca_100%)] text-white shadow-[0_16px_34px_-18px_rgba(79,70,229,0.55)]' : 'border border-slate-200 bg-white text-slate-700 hover:border-slate-300' }}"><svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4.75 12h4l2.25-5 4 10 2.25-5h2" /></svg>SMD</a>
-                        <a href="{{ route('reports.index', ['type' => 'outlets', 'from' => $filters['from'], 'to' => $filters['to'], 'branch_id' => $filters['branchId'] ?? null, 'user_id' => $filters['userId'] ?? null]) }}" class="inline-flex min-h-[3rem] items-center justify-center gap-2 rounded-[0.95rem] px-4 py-3 text-center text-[14px] font-semibold transition {{ $activeType === 'outlets' ? 'bg-[linear-gradient(135deg,#4f46e5_0%,#4338ca_100%)] text-white shadow-[0_16px_34px_-18px_rgba(79,70,229,0.55)]' : 'border border-slate-200 bg-white text-slate-700 hover:border-slate-300' }}"><svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M5.5 10.25h13" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M6.25 10.25V7.5l1.5-2.75h8.5l1.5 2.75v2.75" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M6.25 10.25v8.5h11.5v-8.5" /></svg>Outlet</a>
+                        <a href="{{ route('reports.index', ['type' => 'sales', 'from' => $filters['from'], 'to' => $filters['to'], 'branch_id' => $filters['branchId'] ?? null, 'user_id' => $filters['userId'] ?? null]) }}" class="inline-flex min-h-[3rem] items-center justify-center gap-2 rounded-lg px-4 py-3 text-center text-[14px] font-semibold transition {{ $activeType === 'sales' ? 'bg-sky-500 text-white shadow-sm' : 'border border-slate-200 bg-white text-slate-700 hover:border-slate-300' }}"><svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M5.75 17.25 10 13l2.75 2.75L18.25 9.5" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M14.75 9.5h3.5V13" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M5.75 5.75v12.5h12.5" /></svg>Sales</a>
+                        <a href="{{ route('reports.index', ['type' => 'smd', 'from' => $filters['from'], 'to' => $filters['to'], 'branch_id' => $filters['branchId'] ?? null, 'user_id' => $filters['userId'] ?? null]) }}" class="inline-flex min-h-[3rem] items-center justify-center gap-2 rounded-lg px-4 py-3 text-center text-[14px] font-semibold transition {{ $activeType === 'smd' ? 'bg-sky-500 text-white shadow-sm' : 'border border-slate-200 bg-white text-slate-700 hover:border-slate-300' }}"><svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4.75 12h4l2.25-5 4 10 2.25-5h2" /></svg>SMD</a>
+                        <a href="{{ route('reports.index', ['type' => 'outlets', 'from' => $filters['from'], 'to' => $filters['to'], 'branch_id' => $filters['branchId'] ?? null, 'user_id' => $filters['userId'] ?? null]) }}" class="inline-flex min-h-[3rem] items-center justify-center gap-2 rounded-lg px-4 py-3 text-center text-[14px] font-semibold transition {{ $activeType === 'outlets' ? 'bg-sky-500 text-white shadow-sm' : 'border border-slate-200 bg-white text-slate-700 hover:border-slate-300' }}"><svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M5.5 10.25h13" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M6.25 10.25V7.5l1.5-2.75h8.5l1.5 2.75v2.75" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M6.25 10.25v8.5h11.5v-8.5" /></svg>Outlet</a>
                     </div>
                 </div>
             </section>
@@ -96,7 +96,7 @@
                     </div>
                     <div class="md:col-span-2 xl:col-span-2 flex flex-col gap-3 sm:flex-row sm:items-end">
                         <x-primary-button class="justify-center sm:min-w-[180px]">Terapkan</x-primary-button>
-                        <a href="{{ route('reports.index', ['type' => $activeType]) }}" class="app-glass-button justify-center sm:min-w-[140px]">Reset</a>
+                        <a href="{{ route('reports.index', ['type' => $activeType]) }}" class="app-action-secondary justify-center sm:min-w-[140px]">Reset</a>
                     </div>
                 </form>
             </section>
@@ -105,7 +105,7 @@
                 @foreach ($summary as $item)
                     <div class="app-panel app-animate-enter p-5">
                         <p class="app-overline">{{ $item['label'] }}</p>
-                        <p class="mt-4 text-2xl font-semibold text-ink-950">{{ $item['value'] }}</p>
+                        <p class="mt-4 text-2xl font-semibold text-slate-900">{{ $item['value'] }}</p>
                     </div>
                 @endforeach
             </section>
@@ -119,10 +119,10 @@
                     <span class="app-chip">{{ $rows->total() }} data</span>
                 </div>
 
-                <div class="mt-5 hidden overflow-hidden rounded-[1.65rem] border border-slate-200/90 lg:block">
+                <div class="mt-5 hidden overflow-hidden rounded-lg border border-slate-200 lg:block">
                     @if ($activeType === 'sales')
                         <table class="min-w-full divide-y divide-slate-200 text-sm">
-                            <thead class="bg-[linear-gradient(180deg,#f8fbff_0%,#eef5fe_100%)] text-left text-slate-500">
+                            <thead class="bg-slate-50 text-left text-slate-500">
                                 <tr>
                                     <th class="px-4 py-3.5 font-semibold">Waktu</th>
                                     <th class="px-4 py-3.5 font-semibold">Outlet</th>
@@ -131,7 +131,7 @@
                                     <th class="px-4 py-3.5 font-semibold">Tagihan</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-slate-100 bg-white/90">
+                            <tbody class="divide-y divide-slate-100 bg-white">
                                 @forelse ($rows as $row)
                                     <tr class="transition duration-200 hover:bg-sky-50/60">
                                         <td class="px-4 py-4 text-slate-600">{{ $row->visitedAtForBranch()?->format('d M Y H:i') }}</td>
@@ -147,7 +147,7 @@
                         </table>
                     @elseif ($activeType === 'smd')
                         <table class="min-w-full divide-y divide-slate-200 text-sm">
-                            <thead class="bg-[linear-gradient(180deg,#f8fbff_0%,#eef5fe_100%)] text-left text-slate-500">
+                            <thead class="bg-slate-50 text-left text-slate-500">
                                 <tr>
                                     <th class="px-4 py-3.5 font-semibold">Waktu</th>
                                     <th class="px-4 py-3.5 font-semibold">Outlet</th>
@@ -156,7 +156,7 @@
                                     <th class="px-4 py-3.5 font-semibold">Pembayaran</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-slate-100 bg-white/90">
+                            <tbody class="divide-y divide-slate-100 bg-white">
                                 @forelse ($rows as $row)
                                     <tr class="transition duration-200 hover:bg-sky-50/60">
                                         <td class="px-4 py-4 text-slate-600">{{ $row->visitedAtForBranch()?->format('d M Y H:i') }}</td>
@@ -178,7 +178,7 @@
                         </table>
                     @else
                         <table class="min-w-full divide-y divide-slate-200 text-sm">
-                            <thead class="bg-[linear-gradient(180deg,#f8fbff_0%,#eef5fe_100%)] text-left text-slate-500">
+                            <thead class="bg-slate-50 text-left text-slate-500">
                                 <tr>
                                     <th class="px-4 py-3.5 font-semibold">Dibuat</th>
                                     <th class="px-4 py-3.5 font-semibold">Outlet</th>
@@ -186,7 +186,7 @@
                                     <th class="px-4 py-3.5 font-semibold">Status</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-slate-100 bg-white/90">
+                            <tbody class="divide-y divide-slate-100 bg-white">
                                 @forelse ($rows as $row)
                                     <tr class="transition duration-200 hover:bg-sky-50/60">
                                         <td class="px-4 py-4 text-slate-600">{{ $row->created_at?->format('d M Y H:i') }}</td>

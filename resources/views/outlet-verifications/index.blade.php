@@ -11,18 +11,6 @@
 
     <div class="py-6 sm:py-7">
         <div class="mx-auto max-w-7xl space-y-6 px-4 sm:px-6 lg:px-8">
-            @if (session('status'))
-                <div class="app-alert app-alert-success">
-                    <span class="mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/80 text-emerald-600 shadow-sm">
-                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9" d="m5 13 4 4L19 7" /></svg>
-                    </span>
-                    <div class="min-w-0">
-                        <p class="text-[12px] font-semibold uppercase tracking-[0.14em] text-emerald-700">Sukses</p>
-                        <p class="mt-1 font-medium">{{ session('status') }}</p>
-                    </div>
-                </div>
-            @endif
-
             <section class="app-panel p-5">
                 <form method="GET" class="grid gap-3 md:grid-cols-3">
                     <div class="md:col-span-2">
@@ -36,7 +24,7 @@
                     </div>
                     <div class="md:col-span-3 flex flex-wrap gap-3">
                         <x-primary-button>Terapkan Filter</x-primary-button>
-                        <a href="{{ route('outlet-verifications.index') }}" class="inline-flex items-center rounded-2xl border border-sky-200 bg-sky-50 px-5 py-3 text-sm font-semibold text-sky-900 shadow-sm shadow-sky-100/80 transition hover:border-sky-300 hover:bg-sky-100">Reset</a>
+                        <a href="{{ route('outlet-verifications.index') }}" class="app-action-secondary px-5 py-3">Reset</a>
                     </div>
                 </form>
             </section>

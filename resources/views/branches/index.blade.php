@@ -3,19 +3,15 @@
         <div class="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
             <div>
                 <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Admin Pusat</p>
-                <h2 class="mt-2 text-3xl font-semibold leading-tight text-ink-950">Master Cabang</h2>
+                <h2 class="mt-2 text-3xl font-semibold leading-tight text-slate-900">Master Cabang</h2>
                 <p class="mt-2 max-w-3xl text-sm leading-7 text-slate-500">Kelola cabang, kota, dan timezone agar jam kunjungan mengikuti lokasi cabang.</p>
             </div>
-            <a href="{{ route('branches.create') }}" class="inline-flex items-center justify-center rounded-2xl bg-[linear-gradient(135deg,#1d4ed8_0%,#0f172a_100%)] px-5 py-3 text-sm font-semibold text-white shadow-[0_20px_40px_-18px_rgba(29,78,216,0.75)] transition hover:-translate-y-0.5 hover:shadow-[0_24px_46px_-18px_rgba(29,78,216,0.9)]">Tambah Cabang</a>
+            <a href="{{ route('branches.create') }}" class="app-action-primary px-5 py-3">Tambah Cabang</a>
         </div>
     </x-slot>
 
     <div class="py-6 sm:py-7">
         <div class="mx-auto max-w-7xl space-y-6 px-4 sm:px-6 lg:px-8">
-            @if (session('status'))
-                <div class="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700">{{ session('status') }}</div>
-            @endif
-
             <section class="app-panel p-5">
                 <form method="GET" class="grid gap-3 md:grid-cols-4">
                     <div class="md:col-span-3">
@@ -24,7 +20,7 @@
                     </div>
                     <div>
                         <x-input-label for="status" value="Status" />
-                        <select id="status" name="status" class="mt-2 block w-full rounded-2xl border border-slate-200/90 bg-white px-4 py-3 text-sm text-slate-700 shadow-[0_10px_30px_-18px_rgba(15,23,42,0.35)] focus:border-sky-400 focus:ring-4 focus:ring-sky-100">
+                        <select id="status" name="status" class="app-select mt-2 block w-full">
                             <option value="">Semua</option>
                             <option value="active" @selected($filters['status'] === 'active')>Active</option>
                             <option value="inactive" @selected($filters['status'] === 'inactive')>Inactive</option>
@@ -32,13 +28,13 @@
                     </div>
                     <div class="md:col-span-4 flex flex-wrap gap-3">
                         <x-primary-button>Terapkan Filter</x-primary-button>
-                        <a href="{{ route('branches.index') }}" class="inline-flex items-center rounded-2xl border border-sky-200 bg-sky-50 px-5 py-3 text-sm font-semibold text-sky-900 shadow-sm shadow-sky-100/80 transition hover:border-sky-300 hover:bg-sky-100">Reset</a>
+                        <a href="{{ route('branches.index') }}" class="app-action-secondary px-5 py-3">Reset</a>
                     </div>
                 </form>
             </section>
 
             <section class="app-panel p-5">
-                <div class="hidden overflow-hidden rounded-[1.5rem] border border-slate-200 lg:block shadow-[0_18px_40px_-30px_rgba(15,23,42,0.28)]">
+                <div class="hidden overflow-hidden rounded-lg border border-slate-200 lg:block">
                     <table class="min-w-full divide-y divide-slate-200 text-sm">
                         <thead class="bg-slate-50 text-left text-slate-500">
                             <tr>
@@ -59,7 +55,7 @@
                                     <td class="px-4 py-4 text-slate-600">{{ $branch->city }}</td>
                                     <td class="px-4 py-4 text-slate-600">{{ $timezones[$branch->timezone] ?? $branch->timezone }}</td>
                                     <td class="px-4 py-4"><span class="rounded-full px-3 py-1 text-xs font-semibold {{ $branch->is_active ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-600' }}">{{ $branch->is_active ? 'Active' : 'Inactive' }}</span></td>
-                                    <td class="px-4 py-4"><a href="{{ route('branches.edit', $branch) }}" class="inline-flex items-center rounded-2xl border border-sky-200 bg-sky-50 px-4 py-2 text-sm font-semibold text-sky-900 shadow-sm shadow-sky-100/80 transition hover:border-sky-300 hover:bg-sky-100">Edit</a></td>
+                                    <td class="px-4 py-4"><a href="{{ route('branches.edit', $branch) }}" class="app-btn-sm px-4 py-2">Edit</a></td>
                                 </tr>
                             @empty
                                 <tr><td colspan="5" class="px-4 py-8 text-center text-sm text-slate-500">Belum ada cabang yang terdaftar.</td></tr>
@@ -79,10 +75,10 @@
                                 <span class="rounded-full px-3 py-1 text-xs font-semibold {{ $branch->is_active ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-600' }}">{{ $branch->is_active ? 'Active' : 'Inactive' }}</span>
                             </div>
                             <p class="mt-4 text-sm text-slate-600">{{ $timezones[$branch->timezone] ?? $branch->timezone }}</p>
-                            <a href="{{ route('branches.edit', $branch) }}" class="mt-4 inline-flex items-center rounded-2xl border border-sky-200 bg-sky-50 px-4 py-2 text-sm font-semibold text-sky-900 shadow-sm shadow-sky-100/80">Edit Cabang</a>
+                            <a href="{{ route('branches.edit', $branch) }}" class="app-btn-sm mt-4 px-4 py-2">Edit Cabang</a>
                         </div>
                     @empty
-                        <div class="rounded-[1.5rem] border border-dashed border-slate-300 bg-slate-50 p-6 text-center text-sm text-slate-500">Belum ada cabang yang terdaftar.</div>
+                        <div class="app-empty-state">Belum ada cabang yang terdaftar.</div>
                     @endforelse
                 </div>
 

@@ -1,7 +1,7 @@
 # 10 Implementation Roadmap
 
 - Status: Draft
-- Last updated: 2026-04-02
+- Last updated: 2026-04-10
 - Purpose: Phased plan for building the MVP.
 
 ## Phase 1: Core Workflow Foundation
@@ -40,6 +40,13 @@
 - Done: mobile UI polish pass for typography, spacing, CTA hierarchy, and reusable form components
 - Done: sales visit compatibility option `order_by_wa` added and treated like `buka`
 - Done: `official_kode` input now normalizes to uppercase without spaces across all entry points
+- Done: UI/UX overhaul from glassmorphism to clean-colorful design system across all pages (dashboard, visit history, visit detail, outlets, branches, users, reports, auth, profile, navigation)
+- Done: visit edit and delete functionality for `admin_pusat` and `supervisor` (own branch) with `UpdateVisitRequest` form validation
+- Done: outlet detail page (show) with snapshot, KPI stats, OpenStreetMap embed, and paginated visit timeline
+- Done: outlet index and operational list pages redesigned with gradient hero headers and Detail buttons
+- Done: outlet delete for `admin_pusat` only, blocked when outlet has linked visits
+- Done: duplicate outlet detection and merge tool for `admin_pusat` and `supervisor`
+- Done: sidebar navigation restructured with collapsible menu groups
 - Phase 1 status: functionally complete
 
 ## Phase 2: Monitoring, Reporting, and Data Quality

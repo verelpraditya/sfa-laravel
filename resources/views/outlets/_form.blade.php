@@ -77,7 +77,7 @@
         </div>
 
         <div class="app-soft-panel p-5 text-sm leading-7 text-slate-600">
-            <p class="font-semibold text-ink-950">Catatan rule bisnis</p>
+            <p class="font-semibold text-slate-900">Catatan rule bisnis</p>
             <p class="mt-2">Gunakan `Prospek` untuk outlet yang masih tahap follow up, `Pending` untuk outlet yang masih menunggu official kode, `Aktif` untuk outlet yang sudah resmi aktif, dan `Inactive` untuk outlet yang sudah tidak berjalan.</p>
         </div>
     </section>
@@ -85,5 +85,5 @@
 
 <div class="mt-6 flex flex-wrap gap-3">
     <x-primary-button>{{ $submitLabel }}</x-primary-button>
-    <a href="{{ route('outlets.index') }}" class="inline-flex items-center rounded-2xl border border-sky-200 bg-sky-50 px-5 py-3 text-sm font-semibold text-sky-900 shadow-sm shadow-sky-100/80 transition hover:border-sky-300 hover:bg-sky-100">Kembali</a>
+    <a href="{{ route('outlets.index') }}" class="app-action-secondary px-5 py-3">Kembali</a>
 </div>

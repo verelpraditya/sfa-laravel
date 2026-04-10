@@ -2,7 +2,7 @@
     <x-slot name="header">
         <div>
             <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Admin Pusat</p>
-            <h2 class="mt-2 text-3xl font-semibold leading-tight text-ink-950">Tambah Cabang</h2>
+            <h2 class="mt-2 text-3xl font-semibold leading-tight text-slate-900">Tambah Cabang</h2>
         </div>
     </x-slot>
 
