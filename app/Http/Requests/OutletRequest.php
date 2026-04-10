@@ -34,6 +34,8 @@ class OutletRequest extends FormRequest
                 Rule::exists(Branch::class, 'id'),
             ],
             'name' => ['required', 'string', 'max:255'],
+            'pic_name' => ['nullable', 'string', 'max:255'],
+            'pic_phone' => ['nullable', 'numeric'],
             'address' => ['required', 'string'],
             'district' => ['required', 'string', 'max:255'],
             'city' => ['required', 'string', 'max:255'],
@@ -61,6 +63,8 @@ class OutletRequest extends FormRequest
     {
         $payload = $this->safe()->only([
             'name',
+            'pic_name',
+            'pic_phone',
             'address',
             'district',
             'city',

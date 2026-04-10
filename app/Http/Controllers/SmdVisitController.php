@@ -89,6 +89,8 @@ class SmdVisitController extends Controller
                         'category' => $request->string('new_outlet_category')->toString(),
                         'outlet_status' => $initialStatus,
                         'official_kode' => $request->string('new_outlet_official_kode')->toString() ?: null,
+                        'pic_name' => $request->string('new_outlet_pic_name')->toString() ?: null,
+                        'pic_phone' => $request->string('new_outlet_pic_phone')->toString() ?: null,
                         'verified_by' => $initialStatus === 'active' ? $user->id : null,
                         'verified_at' => $initialStatus === 'active' ? now() : null,
                         'created_by' => $user->id,

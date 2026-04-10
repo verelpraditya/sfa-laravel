@@ -72,7 +72,16 @@
                             </div>
                             <div class="min-w-0 flex-1">
                                 <p class="text-xs font-bold uppercase tracking-[0.14em] text-sky-600">Outlet</p>
-                                <h3 class="mt-1 text-xl font-bold leading-tight text-slate-900 sm:text-2xl">{{ $visit->outlet?->name }}</h3>
+                                <div class="mt-1 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                                    <h3 class="text-xl font-bold leading-tight text-slate-900 sm:text-2xl">{{ $visit->outlet?->name }}</h3>
+                                    @if ($visit->outlet?->official_kode)
+                                        <a href="{{ route('outlets.show', $visit->outlet) }}" class="inline-flex items-center gap-1 rounded-md bg-slate-100 px-2.5 py-1 font-mono text-xs font-bold text-slate-600 transition hover:bg-sky-100 hover:text-sky-700" title="Lihat detail outlet">
+                                            <svg class="h-3 w-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
+                                            {{ $visit->outlet->official_kode }}
+                                            <svg class="h-2.5 w-2.5 shrink-0 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                                        </a>
+                                    @endif
+                                </div>
                                 <div class="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-slate-500">
                                     <span class="inline-flex items-center gap-1">
                                         <svg class="h-3.5 w-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>

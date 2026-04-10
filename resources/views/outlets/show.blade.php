@@ -116,6 +116,24 @@
                             </div>
                         </div>
 
+                        @if ($outlet->pic_name || $outlet->pic_phone)
+                            <div class="flex items-center gap-4 px-5 py-3.5">
+                                <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-cyan-50 text-cyan-500">
+                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                </div>
+                                <div class="min-w-0 flex-1">
+                                    <p class="text-[11px] font-semibold uppercase tracking-wide text-slate-400">PIC / Penanggung Jawab</p>
+                                    <p class="mt-0.5 truncate text-sm font-semibold text-slate-900">{{ $outlet->pic_name ?: '-' }}</p>
+                                    @if ($outlet->pic_phone)
+                                        <p class="mt-0.5 flex items-center gap-1.5 text-xs text-slate-500">
+                                            <svg class="h-3 w-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+                                            {{ $outlet->pic_phone }}
+                                        </p>
+                                    @endif
+                                </div>
+                            </div>
+                        @endif
+
                         @if ($outlet->verifier)
                             <div class="flex items-center gap-4 px-5 py-3.5">
                                 <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-500">

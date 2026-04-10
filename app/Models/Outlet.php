@@ -15,6 +15,8 @@ class Outlet extends Model
     protected $fillable = [
         'branch_id',
         'name',
+        'pic_name',
+        'pic_phone',
         'address',
         'district',
         'city',

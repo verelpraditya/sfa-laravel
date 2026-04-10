@@ -10,6 +10,18 @@
                     <x-input-error class="mt-2" :messages="$errors->get('name')" />
                 </div>
 
+                <div>
+                    <x-input-label for="pic_name" value="Nama PIC (opsional)" />
+                    <x-text-input id="pic_name" name="pic_name" class="mt-2 block w-full" :value="old('pic_name', $outlet->pic_name)" placeholder="Nama pemilik / penanggung jawab" />
+                    <x-input-error class="mt-2" :messages="$errors->get('pic_name')" />
+                </div>
+
+                <div>
+                    <x-input-label for="pic_phone" value="No. Telepon PIC (opsional)" />
+                    <x-text-input id="pic_phone" name="pic_phone" class="mt-2 block w-full" :value="old('pic_phone', $outlet->pic_phone)" placeholder="08xxxxxxxxxx" inputmode="numeric" />
+                    <x-input-error class="mt-2" :messages="$errors->get('pic_phone')" />
+                </div>
+
                 @if ($user->isAdminPusat())
                     <div class="sm:col-span-2">
                         <x-input-label for="branch_id" value="Cabang" />

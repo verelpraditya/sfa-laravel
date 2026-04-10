@@ -46,6 +46,16 @@
                                     <x-input-label value="Alamat" />
                                     <div class="mt-2 rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700">{{ $outlet->address }}</div>
                                 </div>
+                                @if ($outlet->pic_name || $outlet->pic_phone)
+                                    <div>
+                                        <x-input-label value="Nama PIC" />
+                                        <div class="mt-2 rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700">{{ $outlet->pic_name ?: '-' }}</div>
+                                    </div>
+                                    <div>
+                                        <x-input-label value="No. Telp PIC" />
+                                        <div class="mt-2 rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700">{{ $outlet->pic_phone ?: '-' }}</div>
+                                    </div>
+                                @endif
                             </div>
                         </div>
 

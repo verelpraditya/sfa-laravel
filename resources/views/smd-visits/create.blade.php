@@ -130,6 +130,16 @@
                                             <x-input-error class="mt-1.5" :messages="$errors->get('new_outlet_name')" />
                                         </div>
                                         <div>
+                                            <x-input-label for="new_outlet_pic_name" value="Nama PIC (opsional)" />
+                                            <x-text-input id="new_outlet_pic_name" name="new_outlet_pic_name" class="mt-1.5 block w-full" :value="old('new_outlet_pic_name')" placeholder="Pemilik / penanggung jawab" />
+                                            <x-input-error class="mt-1.5" :messages="$errors->get('new_outlet_pic_name')" />
+                                        </div>
+                                        <div>
+                                            <x-input-label for="new_outlet_pic_phone" value="No. Telp PIC (opsional)" />
+                                            <x-text-input id="new_outlet_pic_phone" name="new_outlet_pic_phone" class="mt-1.5 block w-full" :value="old('new_outlet_pic_phone')" placeholder="08xxxxxxxxxx" inputmode="numeric" />
+                                            <x-input-error class="mt-1.5" :messages="$errors->get('new_outlet_pic_phone')" />
+                                        </div>
+                                        <div>
                                             <x-input-label for="new_outlet_category" value="Kategori outlet" />
                                             <select id="new_outlet_category" name="new_outlet_category" class="app-select mt-1.5 block w-full">
                                                 <option value="salon" @selected(old('new_outlet_category', 'salon') === 'salon')>Salon</option>
