@@ -1,7 +1,7 @@
 # 05 Navigation
 
 - Status: Draft
-- Last updated: 2026-03-31
+- Last updated: 2026-04-10
 - Purpose: Menu structure and navigation rules per role.
 
 ## Navigation Pattern
@@ -46,6 +46,27 @@
 - `History Kunjungan`
 - `Outlet`
 - `Kunjungan SMD`
+
+## Collapsible Sidebar Groups
+
+The sidebar uses collapsible groups to organise menu items. Implementation uses Alpine.js `x-data` with the `x-collapse` plugin.
+
+### Sidebar Structure
+
+- **Dashboard** (ungrouped)
+- **Master Data** group (admin_pusat only): Cabang, User
+- **Outlet** group: Outlet, Verifikasi Outlet, Outlet Inactive, Prospek, Deteksi Duplikat
+- **Kunjungan** group: History Kunjungan, Kunjungan Sales, Kunjungan SMD
+- **Monitoring** group: Laporan
+- **Profil** (ungrouped)
+
+### Behavior
+
+- Each group header toggles its child list open/closed.
+- A chevron icon on the group header rotates to indicate open/closed state.
+- Groups auto-open when a child item matches the current route (active state).
+- The same collapsible group structure is used on both the desktop sidebar and the mobile offcanvas menu.
+- Ungrouped items (Dashboard, Profil) render as standalone links outside any collapsible section.
 
 ## Important Navigation Behavior
 

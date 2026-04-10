@@ -9,6 +9,7 @@ use App\Models\Visit;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 class OutletController extends Controller
@@ -143,6 +144,25 @@ class OutletController extends Controller
         ]);
 
         return redirect()->route('outlets.edit', $outlet)->with('status', 'Outlet berhasil diperbarui.');
+    }
+
+    public function destroy(Request $request, Outlet $outlet): RedirectResponse
+    {
+        $user = $request->user();
+
+        abort_unless($user->canDeleteOutlets(), 403);
+
+        if ($outlet->visits()->exists()) {
+            return back()->with('error', 'Outlet tidak bisa dihapus karena sudah memiliki data kunjungan. Hapus semua kunjungan terlebih dahulu atau gunakan fitur Merge.');
+        }
+
+        DB::transaction(function () use ($outlet) {
+            DB::table('outlet_status_histories')->where('outlet_id', $outlet->id)->delete();
+            DB::table('outlet_verification_logs')->where('outlet_id', $outlet->id)->delete();
+            $outlet->delete();
+        });
+
+        return redirect()->route('outlets.index')->with('status', 'Outlet berhasil dihapus.');
     }
 
     public function search(Request $request): JsonResponse

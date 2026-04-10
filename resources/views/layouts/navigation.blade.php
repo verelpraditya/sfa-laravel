@@ -1,40 +1,9 @@
 @php
     $user = auth()->user();
 
-    $navItems = [];
-
-    $navItems[] = ['label' => 'Dashboard', 'route' => route('dashboard'), 'active' => request()->routeIs('dashboard'), 'icon' => 'dashboard'];
-
-    if ($user->isAdminPusat()) {
-        $navItems[] = ['label' => 'Cabang', 'route' => route('branches.index'), 'active' => request()->routeIs('branches.*'), 'icon' => 'branch'];
-        $navItems[] = ['label' => 'User', 'route' => route('users.index'), 'active' => request()->routeIs('users.*'), 'icon' => 'users'];
-    }
-
-    $navItems[] = ['label' => 'Outlet', 'route' => route('outlets.index'), 'active' => request()->routeIs('outlets.*'), 'icon' => 'outlet'];
-    $navItems[] = ['label' => 'History Kunjungan', 'route' => route('visit-history.index'), 'active' => request()->routeIs('visit-history.*'), 'icon' => 'history'];
-
-    if ($user->canViewReports()) {
-        $navItems[] = ['label' => 'Laporan', 'route' => route('reports.index'), 'active' => request()->routeIs('reports.*'), 'icon' => 'report'];
-    }
-
-    if ($user->canVerifyOutlets()) {
-        $navItems[] = ['label' => 'Verifikasi Outlet', 'route' => route('outlet-verifications.index'), 'active' => request()->routeIs('outlet-verifications.*'), 'icon' => 'shield'];
-        $navItems[] = ['label' => 'Outlet Inactive', 'route' => route('outlet-lists.inactive'), 'active' => request()->routeIs('outlet-lists.inactive'), 'icon' => 'pause'];
-    }
-
-    if ($user->canViewOperationalOutletLists()) {
-        $navItems[] = ['label' => 'Prospek', 'route' => route('outlet-lists.prospects'), 'active' => request()->routeIs('outlet-lists.prospects'), 'icon' => 'target'];
-    }
-
-    if ($user->canViewSalesVisitModule()) {
-        $navItems[] = ['label' => 'Kunjungan Sales', 'route' => route('sales-visits.index'), 'active' => request()->routeIs('sales-visits.*'), 'icon' => 'sales'];
-    }
-
-    if ($user->canViewSmdVisitModule()) {
-        $navItems[] = ['label' => 'Kunjungan SMD', 'route' => route('smd-visits.index'), 'active' => request()->routeIs('smd-visits.*'), 'icon' => 'activity'];
-    }
-
-    $navItems[] = ['label' => 'Profil', 'route' => route('profile.edit'), 'active' => request()->routeIs('profile.*'), 'icon' => 'profile'];
+    // ─── Grouped navigation structure ───
+    // Ungrouped items render as standalone links.
+    // Grouped items render inside collapsible sections.
 
     $navIcon = static function (string $icon): string {
         return match ($icon) {
@@ -50,11 +19,112 @@
             'target' => '<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="7.25" stroke-width="1.75" /><circle cx="12" cy="12" r="3.25" stroke-width="1.75" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M12 2.75v2.5M12 18.75v2.5M21.25 12h-2.5M5.25 12h-2.5" /></svg>',
             'sales' => '<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M5.75 17.25 10 13l2.75 2.75L18.25 9.5" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M14.75 9.5h3.5V13" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M5.75 5.75v12.5h12.5" /></svg>',
             'activity' => '<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M4.75 12h4l2.25-5 4 10 2.25-5h2" /></svg>',
+            'duplicate' => '<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="8" y="8" width="11.25" height="11.25" rx="2" stroke-width="1.75" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M16 8V6.75A2 2 0 0 0 14 4.75H6.75a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2H8" /></svg>',
             default => '<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="8.25" r="3.25" stroke-width="1.75" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M6.5 18.25a5.5 5.5 0 0 1 11 0" /></svg>',
         };
     };
+
+    // Build grouped navigation
+    $navigation = [];
+
+    // ── Dashboard (ungrouped) ──
+    $navigation[] = [
+        'type' => 'link',
+        'label' => 'Dashboard',
+        'route' => route('dashboard'),
+        'active' => request()->routeIs('dashboard'),
+        'icon' => 'dashboard',
+    ];
+
+    // ── Master Data (admin only) ──
+    if ($user->isAdminPusat()) {
+        $navigation[] = [
+            'type' => 'group',
+            'label' => 'Master Data',
+            'icon' => 'branch',
+            'children' => [
+                ['label' => 'Cabang', 'route' => route('branches.index'), 'active' => request()->routeIs('branches.*'), 'icon' => 'branch'],
+                ['label' => 'User', 'route' => route('users.index'), 'active' => request()->routeIs('users.*'), 'icon' => 'users'],
+            ],
+        ];
+    }
+
+    // ── Outlet ──
+    $outletChildren = [];
+    $outletChildren[] = ['label' => 'Outlet', 'route' => route('outlets.index'), 'active' => request()->routeIs('outlets.index') || request()->routeIs('outlets.show') || request()->routeIs('outlets.create') || request()->routeIs('outlets.edit'), 'icon' => 'outlet'];
+
+    if ($user->canVerifyOutlets()) {
+        $outletChildren[] = ['label' => 'Verifikasi Outlet', 'route' => route('outlet-verifications.index'), 'active' => request()->routeIs('outlet-verifications.*'), 'icon' => 'shield'];
+        $outletChildren[] = ['label' => 'Outlet Inactive', 'route' => route('outlet-lists.inactive'), 'active' => request()->routeIs('outlet-lists.inactive'), 'icon' => 'pause'];
+    }
+
+    if ($user->canViewOperationalOutletLists()) {
+        $outletChildren[] = ['label' => 'Prospek', 'route' => route('outlet-lists.prospects'), 'active' => request()->routeIs('outlet-lists.prospects'), 'icon' => 'target'];
+    }
+
+    if ($user->canMergeOutlets()) {
+        $outletChildren[] = ['label' => 'Deteksi Duplikat', 'route' => route('outlets.duplicates'), 'active' => request()->routeIs('outlets.duplicates') || request()->routeIs('outlets.merge'), 'icon' => 'duplicate'];
+    }
+
+    $navigation[] = [
+        'type' => 'group',
+        'label' => 'Outlet',
+        'icon' => 'outlet',
+        'children' => $outletChildren,
+    ];
+
+    // ── Kunjungan ──
+    $visitChildren = [];
+    $visitChildren[] = ['label' => 'History Kunjungan', 'route' => route('visit-history.index'), 'active' => request()->routeIs('visit-history.*'), 'icon' => 'history'];
+
+    if ($user->canViewSalesVisitModule()) {
+        $visitChildren[] = ['label' => 'Kunjungan Sales', 'route' => route('sales-visits.index'), 'active' => request()->routeIs('sales-visits.*'), 'icon' => 'sales'];
+    }
+
+    if ($user->canViewSmdVisitModule()) {
+        $visitChildren[] = ['label' => 'Kunjungan SMD', 'route' => route('smd-visits.index'), 'active' => request()->routeIs('smd-visits.*'), 'icon' => 'activity'];
+    }
+
+    $navigation[] = [
+        'type' => 'group',
+        'label' => 'Kunjungan',
+        'icon' => 'history',
+        'children' => $visitChildren,
+    ];
+
+    // ── Monitoring ──
+    if ($user->canViewReports()) {
+        $navigation[] = [
+            'type' => 'group',
+            'label' => 'Monitoring',
+            'icon' => 'report',
+            'children' => [
+                ['label' => 'Laporan', 'route' => route('reports.index'), 'active' => request()->routeIs('reports.*'), 'icon' => 'report'],
+            ],
+        ];
+    }
+
+    // ── Profil (ungrouped) ──
+    $navigation[] = [
+        'type' => 'link',
+        'label' => 'Profil',
+        'route' => route('profile.edit'),
+        'active' => request()->routeIs('profile.*'),
+        'icon' => 'profile',
+    ];
+
+    // Helper: check if any child in a group is active
+    $groupHasActive = static function (array $group): bool {
+        foreach ($group['children'] as $child) {
+            if ($child['active']) return true;
+        }
+        return false;
+    };
 @endphp
 
+{{-- ════════════════════════════════════════════════════════
+     DESKTOP SIDEBAR (xl+)
+     ════════════════════════════════════════════════════════ --}}
 <aside class="hidden xl:flex xl:w-[22rem] xl:flex-col xl:pl-4 xl:pr-3 xl:py-4">
     <div class="relative flex h-full flex-col overflow-hidden rounded-[2.15rem] border border-white/12 bg-[radial-gradient(circle_at_top_left,rgba(103,232,249,0.22),transparent_20%),linear-gradient(180deg,#091122_0%,#0f172a_18%,#13213b_62%,#17284a_100%)] px-5 py-6 text-white shadow-[0_36px_90px_-42px_rgba(2,6,23,0.95)]">
         <div class="app-grid-glow absolute inset-0 opacity-[0.08]"></div>
@@ -89,15 +159,42 @@
             <span class="text-[11px] font-semibold uppercase tracking-[0.18em] text-sky-200/70">{{ now()->translatedFormat('D, d M') }}</span>
         </div>
 
-        <nav class="relative mt-4 flex-1 space-y-2 overflow-y-auto pr-1">
-            @foreach ($navItems as $item)
-                <x-nav-link :href="$item['route']" :active="$item['active']">
-                    <span class="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-white/6 text-slate-100 transition duration-200 group-hover:border-white/16 group-hover:bg-white/12">
-                        {!! $navIcon($item['icon']) !!}
-                    </span>
-                    <span class="flex-1">{{ $item['label'] }}</span>
-                    <span class="h-2 w-2 rounded-full {{ $item['active'] ? 'bg-cyan-300 shadow-[0_0_18px_rgba(103,232,249,0.9)]' : 'bg-white/10 group-hover:bg-white/20' }}"></span>
-                </x-nav-link>
+        <nav class="relative mt-4 flex-1 space-y-1 overflow-y-auto pr-1">
+            @foreach ($navigation as $item)
+                @if ($item['type'] === 'link')
+                    <x-nav-link :href="$item['route']" :active="$item['active']">
+                        <span class="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-white/6 text-slate-100 transition duration-200 group-hover:border-white/16 group-hover:bg-white/12">
+                            {!! $navIcon($item['icon']) !!}
+                        </span>
+                        <span class="flex-1">{{ $item['label'] }}</span>
+                        <span class="h-2 w-2 rounded-full {{ $item['active'] ? 'bg-cyan-300 shadow-[0_0_18px_rgba(103,232,249,0.9)]' : 'bg-white/10 group-hover:bg-white/20' }}"></span>
+                    </x-nav-link>
+                @else
+                    <div x-data="{ open: {{ $groupHasActive($item) ? 'true' : 'false' }} }" class="space-y-1">
+                        <button @click="open = !open" class="group flex w-full items-center gap-3 rounded-[1.2rem] px-4 py-2.5 text-sm font-semibold text-slate-300 transition duration-200 hover:bg-white/8 hover:text-white">
+                            <span class="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-white/8 bg-white/5 text-slate-300 transition duration-200 group-hover:border-white/14 group-hover:bg-white/10">
+                                {!! $navIcon($item['icon']) !!}
+                            </span>
+                            <span class="flex-1 text-left">{{ $item['label'] }}</span>
+                            @if ($groupHasActive($item))
+                                <span class="mr-1 h-1.5 w-1.5 rounded-full bg-cyan-300 shadow-[0_0_12px_rgba(103,232,249,0.8)]"></span>
+                            @endif
+                            <svg class="h-4 w-4 text-slate-400 transition-transform duration-200" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                        </button>
+
+                        <div x-show="open" x-collapse x-cloak class="space-y-1 pl-4">
+                            @foreach ($item['children'] as $child)
+                                <x-nav-link :href="$child['route']" :active="$child['active']">
+                                    <span class="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-white/6 text-slate-100 transition duration-200 group-hover:border-white/16 group-hover:bg-white/12">
+                                        {!! $navIcon($child['icon']) !!}
+                                    </span>
+                                    <span class="flex-1">{{ $child['label'] }}</span>
+                                    <span class="h-2 w-2 rounded-full {{ $child['active'] ? 'bg-cyan-300 shadow-[0_0_18px_rgba(103,232,249,0.9)]' : 'bg-white/10 group-hover:bg-white/20' }}"></span>
+                                </x-nav-link>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
             @endforeach
         </nav>
         <form method="POST" action="{{ route('logout') }}" class="relative mt-6">
@@ -109,6 +206,9 @@
     </div>
 </aside>
 
+{{-- ════════════════════════════════════════════════════════
+     MOBILE OFFCANVAS (< xl)
+     ════════════════════════════════════════════════════════ --}}
 <div x-data="{ open: false }" class="xl:hidden">
     <div class="sticky top-0 z-40 border-b border-slate-200 bg-white shadow-sm">
         <div class="mx-auto max-w-7xl px-4 py-3 sm:px-6">
@@ -155,17 +255,46 @@
                 </div>
             </div>
 
-            <nav class="relative mt-6 flex-1 space-y-2 overflow-y-auto pr-1">
-                @foreach ($navItems as $item)
-                    <x-responsive-nav-link :href="$item['route']" :active="$item['active']">
-                        <span class="flex items-center gap-3">
-                            <span class="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-white/6 text-slate-100 transition duration-200 group-hover:border-white/16 group-hover:bg-white/12">
-                                {!! $navIcon($item['icon']) !!}
+            <nav class="relative mt-6 flex-1 space-y-1 overflow-y-auto pr-1">
+                @foreach ($navigation as $item)
+                    @if ($item['type'] === 'link')
+                        <x-responsive-nav-link :href="$item['route']" :active="$item['active']">
+                            <span class="flex items-center gap-3">
+                                <span class="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-white/6 text-slate-100 transition duration-200 group-hover:border-white/16 group-hover:bg-white/12">
+                                    {!! $navIcon($item['icon']) !!}
+                                </span>
+                                <span class="flex-1">{{ $item['label'] }}</span>
+                                <span class="h-2 w-2 rounded-full {{ $item['active'] ? 'bg-cyan-300 shadow-[0_0_18px_rgba(103,232,249,0.9)]' : 'bg-white/10 group-hover:bg-white/20' }}"></span>
                             </span>
-                            <span class="flex-1">{{ $item['label'] }}</span>
-                            <span class="h-2 w-2 rounded-full {{ $item['active'] ? 'bg-cyan-300 shadow-[0_0_18px_rgba(103,232,249,0.9)]' : 'bg-white/10 group-hover:bg-white/20' }}"></span>
-                        </span>
-                    </x-responsive-nav-link>
+                        </x-responsive-nav-link>
+                    @else
+                        <div x-data="{ open: {{ $groupHasActive($item) ? 'true' : 'false' }} }" class="space-y-1">
+                            <button @click="open = !open" class="group flex w-full items-center gap-3 rounded-[1.2rem] px-4 py-2.5 text-sm font-semibold text-slate-300 transition duration-200 hover:bg-white/8 hover:text-white">
+                                <span class="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-white/8 bg-white/5 text-slate-300 transition duration-200 group-hover:border-white/14 group-hover:bg-white/10">
+                                    {!! $navIcon($item['icon']) !!}
+                                </span>
+                                <span class="flex-1 text-left">{{ $item['label'] }}</span>
+                                @if ($groupHasActive($item))
+                                    <span class="mr-1 h-1.5 w-1.5 rounded-full bg-cyan-300 shadow-[0_0_12px_rgba(103,232,249,0.8)]"></span>
+                                @endif
+                                <svg class="h-4 w-4 text-slate-400 transition-transform duration-200" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                            </button>
+
+                            <div x-show="open" x-collapse x-cloak class="space-y-1 pl-4">
+                                @foreach ($item['children'] as $child)
+                                    <x-responsive-nav-link :href="$child['route']" :active="$child['active']">
+                                        <span class="flex items-center gap-3">
+                                            <span class="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-white/6 text-slate-100 transition duration-200 group-hover:border-white/16 group-hover:bg-white/12">
+                                                {!! $navIcon($child['icon']) !!}
+                                            </span>
+                                            <span class="flex-1">{{ $child['label'] }}</span>
+                                            <span class="h-2 w-2 rounded-full {{ $child['active'] ? 'bg-cyan-300 shadow-[0_0_18px_rgba(103,232,249,0.9)]' : 'bg-white/10 group-hover:bg-white/20' }}"></span>
+                                        </span>
+                                    </x-responsive-nav-link>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
                 @endforeach
             </nav>
 

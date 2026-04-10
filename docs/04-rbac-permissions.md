@@ -30,6 +30,15 @@
 | View branch dashboard | Yes | Yes | No | No |
 | View personal dashboard | Yes | Yes | Yes | Yes |
 
+## Named Permission Methods
+
+The `User` model exposes convenience methods used in Blade templates and controllers:
+
+| Method | Allowed Roles | Notes |
+|---|---|---|
+| `canDeleteOutlets()` | admin_pusat | Hard delete only when outlet has no linked visits |
+| `canMergeOutlets()` | admin_pusat, supervisor | Supervisor scoped to own branch |
+
 ## Branch Scope Rules
 
 - `sales`, `smd`, and `supervisor` can only access data from their own branch.

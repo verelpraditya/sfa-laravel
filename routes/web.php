@@ -3,6 +3,7 @@
 use App\Http\Controllers\BranchController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\OutletController;
+use App\Http\Controllers\OutletMergeController;
 use App\Http\Controllers\OutletVerificationController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReportController;
@@ -42,6 +43,14 @@ Route::middleware('auth')->group(function () {
     Route::middleware('role:admin_pusat')->group(function () {
         Route::resource('branches', BranchController::class)->except(['show', 'destroy']);
         Route::resource('users', UserManagementController::class)->except(['show', 'destroy']);
+        Route::delete('/outlets/{outlet}', [OutletController::class, 'destroy'])->name('outlets.destroy');
+    });
+
+    // Duplicate detection & merge — MUST be registered before Route::resource('outlets')
+    Route::middleware('role:admin_pusat,supervisor')->group(function () {
+        Route::get('/outlets/duplicates', [OutletMergeController::class, 'index'])->name('outlets.duplicates');
+        Route::get('/outlets/duplicates/{outlet}', [OutletMergeController::class, 'show'])->name('outlets.merge');
+        Route::post('/outlets/duplicates/{outlet}/merge', [OutletMergeController::class, 'merge'])->name('outlets.merge.execute');
     });
 
     Route::get('/outlets/search', [OutletController::class, 'search'])->name('ajax.outlets.search');

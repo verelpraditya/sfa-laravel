@@ -162,6 +162,16 @@ class User extends Authenticatable
         return in_array($this->role, [self::ROLE_ADMIN_PUSAT, self::ROLE_SUPERVISOR], true);
     }
 
+    public function canMergeOutlets(): bool
+    {
+        return in_array($this->role, [self::ROLE_ADMIN_PUSAT, self::ROLE_SUPERVISOR], true);
+    }
+
+    public function canDeleteOutlets(): bool
+    {
+        return $this->role === self::ROLE_ADMIN_PUSAT;
+    }
+
     public function createdOutlets(): HasMany
     {
         return $this->hasMany(Outlet::class, 'created_by');

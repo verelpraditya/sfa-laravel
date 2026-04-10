@@ -128,6 +128,9 @@
                                             @if (auth()->user()->canManageOutletMaster())
                                                 <a href="{{ route('outlets.edit', $outlet) }}" class="app-btn-sm">Edit</a>
                                             @endif
+                                            @if (auth()->user()->canDeleteOutlets())
+                                                <button type="button" onclick="document.getElementById('deleteOutlet{{ $outlet->id }}').classList.remove('hidden')" class="inline-flex items-center rounded-lg border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs font-semibold text-rose-600 transition hover:bg-rose-100">Hapus</button>
+                                            @endif
                                         </div>
                                     </td>
                                 </tr>
@@ -172,6 +175,9 @@
 
                             {{-- Card Footer: actions --}}
                             <div class="flex items-center justify-end gap-2 border-t border-slate-100 px-4 py-2.5">
+                                @if (auth()->user()->canDeleteOutlets())
+                                    <button type="button" onclick="document.getElementById('deleteOutlet{{ $outlet->id }}').classList.remove('hidden')" class="inline-flex items-center rounded-lg border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs font-semibold text-rose-600 transition hover:bg-rose-100">Hapus</button>
+                                @endif
                                 @if (auth()->user()->canManageOutletMaster())
                                     <a href="{{ route('outlets.edit', $outlet) }}" class="app-btn-sm">Edit</a>
                                 @endif
@@ -189,4 +195,48 @@
             </section>
         </div>
     </div>
+
+    @if (session('status'))
+        <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 4000)" x-transition
+             class="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-full bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white shadow-lg">
+            {{ session('status') }}
+        </div>
+    @endif
+
+    @if (session('error'))
+        <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 5000)" x-transition
+             class="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-full bg-rose-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg">
+            {{ session('error') }}
+        </div>
+    @endif
+
+    {{-- Delete Outlet Modals (admin_pusat only) --}}
+    @if (auth()->user()->canDeleteOutlets())
+        @foreach ($outlets as $outlet)
+            <div id="deleteOutlet{{ $outlet->id }}" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/50 p-4">
+                <div class="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
+                    <div class="flex items-center gap-3">
+                        <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-rose-100 text-rose-600">
+                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold text-slate-900">Hapus Outlet?</h3>
+                            <p class="mt-1 text-sm text-slate-500">"{{ $outlet->name }}" akan dihapus permanen. Outlet dengan kunjungan tidak bisa dihapus.</p>
+                        </div>
+                    </div>
+                    <div class="mt-6 flex justify-end gap-3">
+                        <button type="button" onclick="document.getElementById('deleteOutlet{{ $outlet->id }}').classList.add('hidden')" class="app-action-secondary">Batal</button>
+                        <form method="POST" action="{{ route('outlets.destroy', $outlet) }}">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="inline-flex items-center gap-1.5 rounded-lg bg-rose-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-rose-700">
+                                <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                Ya, Hapus
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        @endforeach
+    @endif
 </x-app-layout>
