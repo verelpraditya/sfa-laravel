@@ -1,7 +1,7 @@
 # 09 UI System
 
 - Status: Draft
-- Last updated: 2026-04-10
+- Last updated: 2026-04-11
 - Purpose: Visual direction, component behavior, and responsive rules.
 
 ## Design Direction
@@ -83,6 +83,9 @@
 
 - Desktop: tables for reports and master data lists
 - Mobile: cards or stacked list items
+- Visit history mobile uses infinite scroll (IntersectionObserver + JSON fetch) instead of traditional pagination
+- Page 1 data is embedded server-side for instant render, subsequent pages fetched on demand
+- Loading spinner shown during fetch, end-of-list indicator when all data loaded
 
 ## Interaction Rules
 

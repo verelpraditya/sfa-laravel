@@ -1,7 +1,7 @@
 # 10 Implementation Roadmap
 
 - Status: Draft
-- Last updated: 2026-04-10
+- Last updated: 2026-04-11
 - Purpose: Phased plan for building the MVP.
 
 ## Phase 1: Core Workflow Foundation
@@ -47,6 +47,8 @@
 - Done: outlet delete for `admin_pusat` only, blocked when outlet has linked visits
 - Done: duplicate outlet detection and merge tool for `admin_pusat` and `supervisor`
 - Done: sidebar navigation restructured with collapsible menu groups
+- Done: visit history KPI refactored to DB aggregate queries per role (no redundant metrics)
+- Done: visit history mobile infinite scroll with embedded page 1 data and on-demand JSON fetch
 - Phase 1 status: functionally complete
 
 ## Phase 2: Monitoring, Reporting, and Data Quality

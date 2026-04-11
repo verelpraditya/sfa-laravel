@@ -1,7 +1,7 @@
 # 08 API and AJAX
 
 - Status: Draft
-- Last updated: 2026-03-31
+- Last updated: 2026-04-11
 - Purpose: Define lightweight JSON endpoints used by Blade and Alpine.
 
 ## Principles
@@ -44,6 +44,42 @@
 - `GET /ajax/dashboard/supervisor`
 - `GET /ajax/outlets/check-duplicate`
 - `GET /ajax/outlets/{id}`
+
+### `GET /visit-history` (JSON mode)
+
+- Triggered when request sends `Accept: application/json` header
+- Query params: `from`, `to`, `type`, `condition`, `search`, `page`
+- Returns paginated visit data formatted for mobile card rendering
+- Respects role and branch scoping (same as HTML mode)
+
+### Example response
+
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "visited_at_formatted": "10 Apr 09:30",
+      "user_name": "Budi",
+      "outlet_name": "Toko Makmur",
+      "visit_type": "sales",
+      "outlet_condition": "buka",
+      "sales_amount": 500000,
+      "collection_amount": 200000,
+      "can_edit": false,
+      "url_show": "/visit-history/1",
+      "url_edit": null,
+      "url_destroy": null
+    }
+  ],
+  "meta": {
+    "current_page": 2,
+    "last_page": 10,
+    "per_page": 15,
+    "total": 150
+  }
+}
+```
 
 ## Frontend Behavior
 

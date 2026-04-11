@@ -1,7 +1,7 @@
 # 11 Decisions Log
 
 - Status: Active
-- Last updated: 2026-04-10
+- Last updated: 2026-04-11
 - Purpose: Record major product and technical decisions.
 
 ## 2026-03-28
@@ -85,3 +85,11 @@
 - Outlet delete was restricted to `admin_pusat` only and is blocked when the outlet has any linked visits. This prevents accidental loss of visit business records.
 - Duplicate outlet detection and merge tool was implemented for `admin_pusat` and `supervisor`. Detection uses case-insensitive name matching and official_kode matching within the same branch. Merge transfers all visits and audit logs from duplicates to a selected master outlet, then deletes the empty duplicates.
 - Sidebar navigation was restructured with collapsible menu groups using Alpine.js. Groups: Master Data (admin only), Outlet (outlet-related pages), Kunjungan (visit-related pages), Monitoring (reports). Groups auto-expand when a child item is active.
+
+## 2026-04-11
+
+- Visit history KPI metrics were refactored to use separate DB aggregate queries instead of computing from the paginator collection. KPI now reflects the full filtered dataset, not just the 15 items on the current page.
+- KPI metrics are now role-appropriate and non-redundant: sales sees Total Visit, Sales Amount, Collection; SMD sees Total Visit, PO Amount, Collection; supervisor/admin sees Total Visit, Sales Visit, SMD Visit, Sales Amount, Collection.
+- Visit history mobile view was refactored from server-rendered Blade `@forelse` to Alpine.js infinite scroll. Page 1 data is embedded server-side via `@js()` for instant render (no initial fetch). Subsequent pages are loaded on demand using IntersectionObserver with a 200px root margin, fetching JSON from the same route via `Accept: application/json`.
+- Desktop visit history table and pagination remain unchanged — server-rendered with Laravel paginator links.
+- The `VisitHistoryController@index` method now serves dual responses: HTML for full page loads and JSON for mobile infinite scroll requests. No new routes were added.

@@ -1,7 +1,7 @@
 # 06 Pages and Forms
 
 - Status: Draft
-- Last updated: 2026-04-10
+- Last updated: 2026-04-11
 - Purpose: Page list, key form fields, and validation behavior.
 
 ## Core Pages
@@ -160,6 +160,32 @@
 - No custom supervisor-only form.
 - Supervisor selects visit type first.
 - Selected type loads the same validation rules as the target form.
+
+## Visit History
+
+- `GET /visit-history` — paginated visit list with filters
+- Desktop: server-rendered table with Laravel pagination (15 per page)
+- Mobile: Alpine.js infinite scroll — page 1 data is embedded via `@js()` (no initial fetch delay), subsequent pages loaded via IntersectionObserver + JSON fetch
+- Same route handles both HTML and JSON responses — JSON triggered by `Accept: application/json` header
+- Filters (date range, type, condition, search) apply to both desktop and mobile via form submit (page reload)
+
+### KPI metrics
+
+- Computed from separate DB aggregate queries (not from paginator collection)
+- Role-appropriate — no redundant data:
+  - `sales`: Total Visit, Sales Amount, Collection
+  - `smd`: Total Visit, PO Amount, Collection
+  - `supervisor` / `admin_pusat`: Total Visit, Sales Visit, SMD Visit, Sales Amount, Collection
+
+### Mobile infinite scroll behavior
+
+- Page 1 data embedded server-side for instant render (no flicker)
+- Sentinel element observed 200px before entering viewport
+- Fetches next page via JSON endpoint with current filter params
+- Shows loading spinner during fetch
+- Displays "Semua data telah dimuat" when all pages loaded
+- Observer disconnects after last page to avoid unnecessary checks
+- Delete actions use inline forms with CSRF (same as desktop)
 
 ## Visit Detail
 

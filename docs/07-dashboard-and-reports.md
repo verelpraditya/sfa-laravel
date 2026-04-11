@@ -1,7 +1,7 @@
 # 07 Dashboard and Reports
 
 - Status: Draft
-- Last updated: 2026-04-01
+- Last updated: 2026-04-11
 - Purpose: Dashboard content, reporting direction, and chart usage.
 
 ## Dashboard Pattern
@@ -22,6 +22,8 @@
 - `Sales Amount Hari Ini` on supervisor/admin combines sales order and SMD PO for the same day.
 - Dashboard visit table is limited to today's latest 10 visits in the current role scope.
 - Full visit history is moved to a dedicated `History Kunjungan` page with detail view.
+- Visit history page uses role-appropriate KPI metrics from DB aggregate queries (not from paginated data).
+- Visit history mobile view uses Alpine.js infinite scroll with embedded page 1 data and on-demand JSON fetching for subsequent pages.
 - Supervisor/admin dashboard now includes customer insight blocks for top customers and customers inactive for more than 30 days.
 
 ## Charts
