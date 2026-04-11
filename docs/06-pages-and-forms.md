@@ -44,9 +44,11 @@
 - `GET /outlets/{outlet}`
   - outlet detail/show page with 4 sections:
     1. Snapshot: name, branch, address, district, city, status badge, category badge, official kode, created by, verified by
-    2. KPI stats: total visits, total sales, total collection, last visit date
+    2. KPI stats: total visits, total sales, total collection, last visit date — always outlet-wide (all users), computed via SQL aggregates
     3. Location: embedded OpenStreetMap from last visit coordinates, Google Maps shortcut
-    4. Timeline: paginated visit history to this outlet
+    4. Timeline: visit history to this outlet, scoped per user for sales/SMD (sales only sees own visits, supervisor/admin sees all)
+  - Desktop: paginated table (10 per page) with Laravel pagination links
+  - Mobile: Alpine.js infinite scroll with embedded page 1 data and on-demand JSON fetch (same route, `Accept: application/json`)
   - "Edit" and "Hapus" buttons for authorized users
 - `GET /outlets/create`
   - create master outlet form

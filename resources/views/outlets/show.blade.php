@@ -265,38 +265,67 @@
                     </table>
                 </div>
 
-                {{-- Mobile Cards --}}
-                <div class="mt-5 space-y-3 lg:hidden">
-                    @forelse ($visits as $visit)
-                        <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:shadow-md">
-                            <div class="flex items-start justify-between gap-3">
-                                <div class="min-w-0">
-                                    <p class="truncate font-bold text-slate-900">{{ $visit->user?->name }}</p>
-                                    <p class="mt-0.5 text-xs text-slate-500">{{ $visit->visitedAtForBranch()?->format('d M Y H:i') }}</p>
+                {{-- Mobile Cards — Alpine.js Infinite Scroll --}}
+                <div class="mt-5 lg:hidden"
+                     x-data="outletVisitScroll({
+                         initial: @js($mobileInitialData),
+                         baseUrl: '{{ route('outlets.show', $outlet) }}',
+                     })"
+                     x-init="boot()">
+
+                    <div class="space-y-3">
+                        <template x-for="visit in items" :key="visit.id">
+                            <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:shadow-md">
+                                <div class="flex items-start justify-between gap-3">
+                                    <div class="min-w-0">
+                                        <p class="truncate font-bold text-slate-900" x-text="visit.user_name"></p>
+                                        <p class="mt-0.5 text-xs text-slate-500" x-text="visit.visited_at_full"></p>
+                                    </div>
+                                    <span class="app-badge shrink-0" :class="visit.visit_type === 'sales' ? 'app-badge-sky' : 'app-badge-violet'" x-text="visit.visit_type.toUpperCase()"></span>
                                 </div>
-                                <span class="app-badge shrink-0 {{ $visit->visit_type === 'sales' ? 'app-badge-sky' : 'app-badge-violet' }}">{{ $visit->typeLabel() }}</span>
-                            </div>
-                            <div class="mt-3 grid grid-cols-2 gap-3">
-                                <div class="rounded-lg border border-blue-100 bg-blue-50 px-3 py-2.5">
-                                    <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-blue-600">Sales Amount</p>
-                                    <p class="mt-0.5 text-sm font-bold text-slate-900">Rp {{ number_format($visit->salesAmount(), 0, ',', '.') }}</p>
+                                <div class="mt-3 grid grid-cols-2 gap-3">
+                                    <div class="rounded-lg border border-blue-100 bg-blue-50 px-3 py-2.5">
+                                        <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-blue-600">Sales Amount</p>
+                                        <p class="mt-0.5 text-sm font-bold text-slate-900" x-text="formatCurrency(visit.sales_amount)"></p>
+                                    </div>
+                                    <div class="rounded-lg border border-emerald-100 bg-emerald-50 px-3 py-2.5">
+                                        <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-emerald-600">Collection</p>
+                                        <p class="mt-0.5 text-sm font-bold text-slate-900" x-text="formatCurrency(visit.collection_amount)"></p>
+                                    </div>
                                 </div>
-                                <div class="rounded-lg border border-emerald-100 bg-emerald-50 px-3 py-2.5">
-                                    <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-emerald-600">Collection</p>
-                                    <p class="mt-0.5 text-sm font-bold text-slate-900">Rp {{ number_format($visit->collectionAmount(), 0, ',', '.') }}</p>
+                                <div class="mt-3 flex justify-end">
+                                    <a :href="visit.url_show" class="app-btn-sm-primary">Lihat Detail</a>
                                 </div>
                             </div>
-                            <div class="mt-3 flex justify-end">
-                                <a href="{{ route('visit-history.show', $visit) }}" class="app-btn-sm-primary">Lihat Detail</a>
-                            </div>
-                        </div>
-                    @empty
-                        <div class="app-empty-state">Belum ada kunjungan ke outlet ini.</div>
-                    @endforelse
+                        </template>
+                    </div>
+
+                    {{-- Sentinel for IntersectionObserver --}}
+                    <div x-ref="sentinel" class="h-4"></div>
+
+                    {{-- Loading indicator --}}
+                    <div x-show="loading" x-cloak class="flex items-center justify-center gap-2 py-6">
+                        <svg class="h-5 w-5 animate-spin text-sky-500" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                        </svg>
+                        <span class="text-sm font-medium text-slate-500">Memuat data...</span>
+                    </div>
+
+                    {{-- All loaded indicator --}}
+                    <div x-show="!hasMore && items.length > 0" x-cloak class="py-4 text-center text-xs font-medium text-slate-400">
+                        Semua data telah dimuat
+                    </div>
+
+                    {{-- Empty state --}}
+                    <div x-show="!loading && items.length === 0" x-cloak class="app-empty-state">
+                        Belum ada kunjungan ke outlet ini.
+                    </div>
                 </div>
 
+                {{-- Desktop pagination only --}}
                 @if ($visits->hasPages())
-                    <div class="mt-5">{{ $visits->links() }}</div>
+                    <div class="mt-5 hidden lg:block">{{ $visits->links() }}</div>
                 @endif
             </section>
 
@@ -344,4 +373,80 @@
             </div>
         </div>
     @endif
+
+    @push('scripts')
+        <script>
+            function outletVisitScroll({ initial, baseUrl }) {
+                return {
+                    items: initial.data || [],
+                    currentPage: initial.meta?.current_page || 1,
+                    lastPage: initial.meta?.last_page || 1,
+                    loading: false,
+                    observer: null,
+
+                    get hasMore() {
+                        return this.currentPage < this.lastPage;
+                    },
+
+                    boot() {
+                        if (!this.hasMore) return;
+
+                        this.$nextTick(() => {
+                            const sentinel = this.$refs.sentinel;
+                            if (!sentinel) return;
+
+                            this.observer = new IntersectionObserver(
+                                ([entry]) => {
+                                    if (entry.isIntersecting && !this.loading && this.hasMore) {
+                                        this.loadMore();
+                                    }
+                                },
+                                { rootMargin: '200px' }
+                            );
+                            this.observer.observe(sentinel);
+                        });
+                    },
+
+                    async loadMore() {
+                        this.loading = true;
+
+                        try {
+                            const params = new URLSearchParams();
+                            params.set('page', this.currentPage + 1);
+
+                            const response = await fetch(baseUrl + '?' + params.toString(), {
+                                headers: {
+                                    'Accept': 'application/json',
+                                    'X-Requested-With': 'XMLHttpRequest',
+                                },
+                            });
+
+                            if (!response.ok) throw new Error('Network error');
+
+                            const json = await response.json();
+                            this.items = this.items.concat(json.data || []);
+                            this.currentPage = json.meta?.current_page || this.currentPage;
+                            this.lastPage = json.meta?.last_page || this.lastPage;
+
+                            if (!this.hasMore && this.observer) {
+                                this.observer.disconnect();
+                            }
+                        } catch (err) {
+                            console.error('Infinite scroll error:', err);
+                        } finally {
+                            this.loading = false;
+                        }
+                    },
+
+                    formatCurrency(amount) {
+                        return new Intl.NumberFormat('id-ID', {
+                            style: 'currency',
+                            currency: 'IDR',
+                            maximumFractionDigits: 0,
+                        }).format(Number(amount || 0));
+                    },
+                };
+            }
+        </script>
+    @endpush
 </x-app-layout>

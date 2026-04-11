@@ -93,3 +93,8 @@
 - Visit history mobile view was refactored from server-rendered Blade `@forelse` to Alpine.js infinite scroll. Page 1 data is embedded server-side via `@js()` for instant render (no initial fetch). Subsequent pages are loaded on demand using IntersectionObserver with a 200px root margin, fetching JSON from the same route via `Accept: application/json`.
 - Desktop visit history table and pagination remain unchanged — server-rendered with Laravel paginator links.
 - The `VisitHistoryController@index` method now serves dual responses: HTML for full page loads and JSON for mobile infinite scroll requests. No new routes were added.
+- Outlet detail page visit timeline is now scoped per user for sales/SMD roles — sales only sees their own visits to the outlet, SMD only sees their own. Supervisor and admin_pusat see all visits. This fixes a data leak where sales could see other sales users' visits.
+- Outlet KPI stats (total visits, total sales, total collection) remain outlet-wide (all users) regardless of role — this is intentional so users see the full business context of the outlet.
+- Outlet stats were refactored from N+1 PHP collection aggregation to efficient SQL JOIN aggregates (2 queries instead of 6+).
+- Outlet detail mobile timeline was refactored from server-rendered Blade `@forelse` to Alpine.js infinite scroll, using the same pattern as visit history: page 1 embedded via `@js()`, subsequent pages fetched on demand via JSON from the same `outlets.show` route.
+- `OutletController@show` now serves dual responses: HTML for full page loads and JSON for mobile infinite scroll. No new routes were added.

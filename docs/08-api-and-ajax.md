@@ -81,6 +81,39 @@
 }
 ```
 
+### `GET /outlets/{outlet}` (JSON mode)
+
+- Triggered when request sends `Accept: application/json` header
+- Query params: `page`
+- Returns paginated visit timeline for the outlet, formatted for mobile card rendering
+- Visit list is scoped per user for sales/SMD roles (own visits only), full list for supervisor/admin
+- KPI stats remain outlet-wide (all users)
+
+### Example response
+
+```json
+{
+  "data": [
+    {
+      "id": 5,
+      "visited_at_formatted": "10 Apr 09:30",
+      "visited_at_full": "10 Apr 2026 09:30",
+      "user_name": "Budi",
+      "visit_type": "sales",
+      "sales_amount": 500000,
+      "collection_amount": 200000,
+      "url_show": "/visit-history/5"
+    }
+  ],
+  "meta": {
+    "current_page": 2,
+    "last_page": 5,
+    "per_page": 10,
+    "total": 48
+  }
+}
+```
+
 ## Frontend Behavior
 
 - Use debounce for autocomplete.

@@ -56,7 +56,7 @@ class OutletController extends Controller
         ]);
     }
 
-    public function show(Request $request, Outlet $outlet): View
+    public function show(Request $request, Outlet $outlet): View|JsonResponse
     {
         $user = $request->user();
 
@@ -64,46 +64,53 @@ class OutletController extends Controller
 
         $outlet->load(['branch', 'creator', 'verifier']);
 
-        $visits = Visit::where('outlet_id', $outlet->id)
-            ->when(! $user->isAdminPusat(), fn ($q) => $q->where('branch_id', $user->branch_id))
+        // Visit query — scoped per user for sales/SMD
+        $visitQuery = Visit::where('outlet_id', $outlet->id)
+            ->when(! $user->isAdminPusat(), fn ($q) => $q->where('visits.branch_id', $user->branch_id))
+            ->when($user->isSales() || $user->isSmd(), fn ($q) => $q->where('visits.user_id', $user->id));
+
+        // JSON response for mobile infinite scroll
+        if ($request->expectsJson()) {
+            $paginator = (clone $visitQuery)
+                ->with(['user', 'salesDetail', 'smdDetail', 'branch'])
+                ->latest('visited_at')
+                ->paginate(10);
+
+            return response()->json([
+                'data' => $paginator->getCollection()->map(fn (Visit $visit) => $this->formatVisitForOutlet($visit)),
+                'meta' => [
+                    'current_page' => $paginator->currentPage(),
+                    'last_page' => $paginator->lastPage(),
+                    'per_page' => $paginator->perPage(),
+                    'total' => $paginator->total(),
+                ],
+            ]);
+        }
+
+        // HTML response
+        $visits = (clone $visitQuery)
             ->with(['user', 'salesDetail', 'smdDetail', 'branch'])
             ->latest('visited_at')
             ->paginate(10);
 
-        $totalVisits = Visit::where('outlet_id', $outlet->id)->count();
-        $totalSales = Visit::where('outlet_id', $outlet->id)
-            ->whereHas('salesDetail')
-            ->with('salesDetail')
-            ->get()
-            ->sum(fn ($v) => (float) ($v->salesDetail?->order_amount ?? 0))
-            + Visit::where('outlet_id', $outlet->id)
-                ->whereHas('smdDetail')
-                ->with('smdDetail')
-                ->get()
-                ->sum(fn ($v) => (float) ($v->smdDetail?->po_amount ?? 0));
+        // Stats — Opsi B: always show full outlet stats (all users), computed via SQL aggregates
+        $stats = $this->buildOutletStats($outlet);
 
-        $totalCollection = Visit::where('outlet_id', $outlet->id)
-            ->whereHas('salesDetail')
-            ->with('salesDetail')
-            ->get()
-            ->sum(fn ($v) => (float) ($v->salesDetail?->receivable_amount ?? 0))
-            + Visit::where('outlet_id', $outlet->id)
-                ->whereHas('smdDetail')
-                ->with('smdDetail')
-                ->get()
-                ->sum(fn ($v) => (float) ($v->smdDetail?->payment_amount ?? 0));
-
-        $lastVisit = Visit::where('outlet_id', $outlet->id)->latest('visited_at')->first();
+        $mobileInitialData = [
+            'data' => $visits->getCollection()->map(fn (Visit $visit) => $this->formatVisitForOutlet($visit)),
+            'meta' => [
+                'current_page' => $visits->currentPage(),
+                'last_page' => $visits->lastPage(),
+                'per_page' => $visits->perPage(),
+                'total' => $visits->total(),
+            ],
+        ];
 
         return view('outlets.show', [
             'outlet' => $outlet,
             'visits' => $visits,
-            'stats' => [
-                'total_visits' => $totalVisits,
-                'total_sales' => $totalSales,
-                'total_collection' => $totalCollection,
-                'last_visit' => $lastVisit,
-            ],
+            'stats' => $stats,
+            'mobileInitialData' => $mobileInitialData,
         ]);
     }
 
@@ -279,5 +286,58 @@ class OutletController extends Controller
     {
         abort_unless($user->canManageOutletMaster(), 403);
         abort_if(! $user->isAdminPusat() && $user->branch_id !== $outlet->branch_id, 404);
+    }
+
+    /**
+     * Build outlet-level stats via SQL aggregates (always all users — Opsi B).
+     */
+    private function buildOutletStats(Outlet $outlet): array
+    {
+        $outletId = $outlet->id;
+
+        $totalVisits = Visit::where('outlet_id', $outletId)->count();
+
+        $salesAgg = Visit::where('outlet_id', $outletId)
+            ->where('visit_type', 'sales')
+            ->leftJoin('sales_visit_details', 'sales_visit_details.visit_id', '=', 'visits.id')
+            ->selectRaw('COALESCE(SUM(sales_visit_details.order_amount), 0) as total_order, COALESCE(SUM(sales_visit_details.receivable_amount), 0) as total_receivable')
+            ->first();
+
+        $smdAgg = Visit::where('outlet_id', $outletId)
+            ->where('visit_type', 'smd')
+            ->leftJoin('smd_visit_details', 'smd_visit_details.visit_id', '=', 'visits.id')
+            ->selectRaw('COALESCE(SUM(smd_visit_details.po_amount), 0) as total_po, COALESCE(SUM(smd_visit_details.payment_amount), 0) as total_payment')
+            ->first();
+
+        $totalSales = (float) ($salesAgg->total_order ?? 0) + (float) ($smdAgg->total_po ?? 0);
+        $totalCollection = (float) ($salesAgg->total_receivable ?? 0) + (float) ($smdAgg->total_payment ?? 0);
+
+        $lastVisit = Visit::where('outlet_id', $outletId)->with('branch')->latest('visited_at')->first();
+
+        return [
+            'total_visits' => $totalVisits,
+            'total_sales' => $totalSales,
+            'total_collection' => $totalCollection,
+            'last_visit' => $lastVisit,
+        ];
+    }
+
+    /**
+     * Format a single visit into a lean array for mobile card rendering in outlet show.
+     */
+    private function formatVisitForOutlet(Visit $visit): array
+    {
+        $formatted = $visit->visitedAtForBranch();
+
+        return [
+            'id' => $visit->id,
+            'visited_at_formatted' => $formatted?->format('d M H:i') ?? '-',
+            'visited_at_full' => $formatted?->format('d M Y H:i') ?? '-',
+            'user_name' => $visit->user?->name ?? '-',
+            'visit_type' => $visit->visit_type,
+            'sales_amount' => $visit->salesAmount(),
+            'collection_amount' => $visit->collectionAmount(),
+            'url_show' => route('visit-history.show', $visit),
+        ];
     }
 }

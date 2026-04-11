@@ -49,6 +49,9 @@
 - Done: sidebar navigation restructured with collapsible menu groups
 - Done: visit history KPI refactored to DB aggregate queries per role (no redundant metrics)
 - Done: visit history mobile infinite scroll with embedded page 1 data and on-demand JSON fetch
+- Done: outlet detail visit timeline scoped per user for sales/SMD (own visits only)
+- Done: outlet stats refactored to SQL aggregates (always outlet-wide, all users)
+- Done: outlet detail mobile infinite scroll for visit timeline
 - Phase 1 status: functionally complete
 
 ## Phase 2: Monitoring, Reporting, and Data Quality
